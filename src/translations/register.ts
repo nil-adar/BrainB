@@ -1,3 +1,4 @@
+import { INPUT_VALIDATION_RULES } from "node_modules/react-hook-form/dist/constants";
 
 export const registerTranslations = {
   en: {
@@ -26,6 +27,7 @@ export const registerTranslations = {
       passwordLength: "Password must be at least 6 characters long",
       invalidEmail: "Please enter a valid email address",
       invalidPhone: "Please enter a valid phone number",
+      invalidName: "Please enter your full name (first and last name)"
     },
     success: {
       register: "Registration successful! Welcome to BrainBridge",
@@ -58,6 +60,7 @@ export const registerTranslations = {
       passwordLength: "הסיסמה חייבת להכיל לפחות 6 תווים",
       invalidEmail: "נא להזין כתובת אימייל תקינה",
       invalidPhone: "נא להזין מספר טלפון תקין",
+      invalidName: "אנא הזן שם מלא (שם פרטי ושם משפחה)", 
     },
     success: {
       register: "!ההרשמה בוצעה בהצלחה! ברוכים הבאים ל-BrainBridge",

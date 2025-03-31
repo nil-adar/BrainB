@@ -2,22 +2,27 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import { userRouter } from './routes/users';
-import { messageRouter } from './routes/messages';
+//import { userRouter } from './routes/users';
+//import { messageRouter } from './routes/messages';
+import { authRouter } from './routes/auth.routes';
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api/users', authRouter);
+
 
 // Routes
-app.use('/api/users', userRouter);
-app.use('/api/messages', messageRouter);
+//app.use('/api/users', userRouter);
+//app.use('/api/messages', messageRouter);
 
 // MongoDB connection
 // Using environment variable for MongoDB URI when available
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://niladar:BVvpNnUq17DtfG47@schoolsdata.yg5ih.mongodb.net/';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://niladar:RX1DRQF36Rsavqgx@schoolsdata.yg5ih.mongodb.net/BrainB';
+
+
 const connectDB = async () => {
   try {
     await mongoose.connect(MONGODB_URI);
@@ -30,6 +35,12 @@ const connectDB = async () => {
 
 // Connect to MongoDB
 connectDB();
+mongoose.connection.once('open', () => {
+  console.log("✅ Connected to MongoDB database:", mongoose.connection.name);
+});
+
+
+
 
 // API endpoint for checking database connection
 app.get('/api/status', (req, res) => {

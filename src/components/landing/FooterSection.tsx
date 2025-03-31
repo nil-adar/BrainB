@@ -59,7 +59,7 @@ export function FooterSection({ description, contact, forTeachers, login, getSta
                 </div>
                 <div className={`flex items-center gap-2 ${isRTL ? 'justify-center' : 'text-left sm:text-left'}`}>
                   <Mail size={isMobile ? 14 : 16} className="shrink-0" />
-                  <span className="text-sm md:text-base">sandra@ebraude.ac.il</span>
+                  <span className="text-sm md:text-base">Sandra.knizhnik@e.braude.ac.il</span>
                 </div>
               </div>
             </div>

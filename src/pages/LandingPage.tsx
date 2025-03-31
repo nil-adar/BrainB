@@ -172,7 +172,7 @@ const translations = {
       title: "צור קשר",
       phone: "התקשרו אלינו:",
       phoneNumber: "+1 (555) 123-4567",
-      email: "אימייל:",
+      email: " ",
       emailAddress: "info@brainbridge.edu",
       support: "מרכז תמיכה",
       privacy: "מדיניות פרטיות",
