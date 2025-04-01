@@ -34,9 +34,10 @@ npm i
 npm run dev
 ```
 
-Landing page
+
 ![צילום מסך של טופס ההרשמה](./screenshot.png)
 ![Landing page](landing.png)
+
 
 
 - Vite
