@@ -34,6 +34,10 @@ npm i
 npm run dev
 ```
 
+Landing page
+![image](https://github.com/user-attachments/assets/ed98a631-8919-4a9a-bdab-c0fedb7d97e0)
+
+
 - Vite
 - TypeScript
 - React
