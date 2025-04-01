@@ -35,8 +35,11 @@ npm run dev
 ```
 
 
-![צילום מסך של טופס ההרשמה](./screenshot.png)
+
+## Landing Page
+
 ![Landing page](landing.png)
+
 
 
 
