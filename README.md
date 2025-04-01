@@ -25,12 +25,12 @@ The platform combines a modern tech stack with accessibility and ease of use, ai
 
 ### Step 1: Clone the repository
 ```bash
-git clone <YOUR_GIT_URL>
+git clone 
 ```
 
 ### Step 2: Navigate to the project directory
 ```bash
-cd <YOUR_PROJECT_NAME>
+cd BrainB
 ```
 
 ### Step 3: Install dependencies
@@ -62,7 +62,6 @@ This setup allows you to:
 npm install -g ts-node typescript
 ```
 
-Also, ensure MongoDB connection is properly configured in your `.env` file or directly in the connection string inside the project.
 
 
 
