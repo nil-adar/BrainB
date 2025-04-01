@@ -38,9 +38,6 @@ npm run dev
 
 
 
-## Landing Page
-
-![Landing page](landing.png)
 
 
 
