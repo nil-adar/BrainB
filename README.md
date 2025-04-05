@@ -1,4 +1,6 @@
+## Landing Page
 
+![Landing page](landing.png)
 ## Project Description
 
 This project is a platform designed to support individuals with ADHD. The system provides smart tools and features to assist users in managing their daily challenges and improving their quality of life.
@@ -19,23 +21,51 @@ The project is built using:
 
 The platform combines a modern tech stack with accessibility and ease of use, aiming to offer effective support for people with ADHD in both educational and personal contexts.
 
+## 🚀 How to Run the Project
 
-how to run the project 
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Step 1: Clone the repository
+```bash
+git clone 
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Step 2: Navigate to the project directory
+```bash
+cd BrainB
+```
 
-# Step 3: Install the necessary dependencies.
+### Step 3: Install dependencies
+```bash
 npm i
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Step 4: Run the development servers
+Open **two terminals**:
+
+#### Terminal 1 – Frontend (Vite)
+```bash
 npm run dev
 ```
 
-Landing page
-![image](https://github.com/user-attachments/assets/ed98a631-8919-4a9a-bdab-c0fedb7d97e0)
+#### Terminal 2 – Backend (Node.js)
+```bash
+npm run server
+```
+
+This setup allows you to:
+- View the frontend at `http://localhost:8080`
+- Have the backend API listening on your defined port (e.g., `5000`)
+
+---
+
+💡 Make sure you have `ts-node` installed and configured properly for the backend to work. If needed, install it globally:
+```bash
+npm install -g ts-node typescript
+```
+
+
+
+
+
 
 
 - Vite
