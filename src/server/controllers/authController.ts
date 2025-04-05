@@ -15,11 +15,22 @@ export async function login(req: Request, res: Response): Promise<void> {
   }
 
   try {
-    const user = await User.findOne({ uniqueId });
-    if (!user) {
-      res.status(404).json({ message: 'משתמש לא נמצא' });
-      return;
-    }
+    const users = await User.find({ isActivated: true });
+
+let user: any = null;
+for (const u of users) {
+  const isIdMatch = await bcrypt.compare(uniqueId, u.uniqueId);
+  if (isIdMatch) {
+    user = u;
+    break;
+  }
+}
+
+if (!user) {
+  res.status(404).json({ message: 'משתמש לא נמצא' });
+  return;
+}
+
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -56,6 +67,8 @@ export async function register(req: Request, res: Response): Promise<void> {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedId = await bcrypt.hash(uniqueId, 10);
+
 
     if (existingUser) {
       console.log("ℹ️ Updating existing (non-activated) user...");
@@ -64,6 +77,7 @@ export async function register(req: Request, res: Response): Promise<void> {
       existingUser.phone = phone;
       existingUser.role = role;
       existingUser.password = hashedPassword;
+      existingUser.uniqueId = hashedId;
       existingUser.isActivated = true;
 
       await existingUser.save();
@@ -76,7 +90,7 @@ export async function register(req: Request, res: Response): Promise<void> {
 
     // משתמש חדש
     const newUser = new User({
-      uniqueId,
+      uniqueId :hashedId,
       name,
       email,
       phone,
