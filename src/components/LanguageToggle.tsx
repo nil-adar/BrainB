@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import { Globe } from "lucide-react";//יבוא האייקון גלובוס 
 
 interface LanguageToggleProps {
   language: "en" | "he";
@@ -11,6 +12,7 @@ export const LanguageToggle = ({ language, toggleLanguage, className }: Language
   // Update document direction when language changes
   useEffect(() => {
     document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+    localStorage.setItem("language", language);
   }, [language]);
 
   return (
@@ -18,6 +20,7 @@ export const LanguageToggle = ({ language, toggleLanguage, className }: Language
       onClick={toggleLanguage}
       className={`text-gray-600 hover:text-gray-900 ${className}`}
     >
+    <Globe size={20} />
       {language === "en" ? "עברית" : "English"}
     </button>
   );

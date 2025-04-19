@@ -1,0 +1,278 @@
+{
+  "users": [
+    {
+      "name": "Teacher_0_0",
+      "email": "teacher_0_0@school.com",
+      "phone": "0525236975",
+      "password": "123456",
+      "role": "teacher",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "uniqueId": "teacher_9e7eb550",
+      "assignedClasses": [
+        "Class_A",
+        "Class_B"
+      ],
+      "subjects": [
+        "Math"
+      ]
+    },
+    {
+      "name": "Teacher_0_1",
+      "email": "teacher_0_1@school.com",
+      "phone": "0526064539",
+      "password": "123456",
+      "role": "teacher",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "uniqueId": "teacher_9a8eaf56",
+      "assignedClasses": [
+        "Class_A",
+        "Class_B"
+      ],
+      "subjects": [
+        "Math"
+      ]
+    },
+    {
+      "name": "Student_0_0_0",
+      "email": "student_0_0_0@school.com",
+      "phone": "0509100508",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "student_04564fac"
+    },
+    {
+      "name": "Student_0_0_1",
+      "email": "student_0_0_1@school.com",
+      "phone": "0508179382",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "student_b0f4d962"
+    },
+    {
+      "name": "Student_0_0_2",
+      "email": "student_0_0_2@school.com",
+      "phone": "0505464131",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "student_d27c877e"
+    },
+    {
+      "name": "Student_0_0_3",
+      "email": "student_0_0_3@school.com",
+      "phone": "0504491591",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "student_4afae642"
+    },
+    {
+      "name": "Student_0_0_4",
+      "email": "student_0_0_4@school.com",
+      "phone": "0509298070",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "student_c82b1d64"
+    },
+    {
+      "name": "Parent_0_0_0",
+      "email": "parent_0_0_0@school.com",
+      "phone": "0531138015",
+      "password": "123456",
+      "role": "parent",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "parent_0b471976",
+      "parentOf": [
+        "student_d27c877e",
+        "student_04564fac"
+      ]
+    },
+    {
+      "name": "Parent_0_0_1",
+      "email": "parent_0_0_1@school.com",
+      "phone": "0532924201",
+      "password": "123456",
+      "role": "parent",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "parent_632fba6a",
+      "parentOf": [
+        "student_4afae642",
+        "student_b0f4d962"
+      ]
+    },
+    {
+      "name": "Parent_0_0_2",
+      "email": "parent_0_0_2@school.com",
+      "phone": "0538608728",
+      "password": "123456",
+      "role": "parent",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_4a1ca0dd",
+      "className": "Class_A",
+      "uniqueId": "parent_d0e8948f",
+      "parentOf": [
+        "student_b0f4d962",
+        "student_4afae642"
+      ]
+    },
+    {
+      "name": "Student_0_1_0",
+      "email": "student_0_1_0@school.com",
+      "phone": "0501087209",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "student_fd2a80a9"
+    },
+    {
+      "name": "Student_0_1_1",
+      "email": "student_0_1_1@school.com",
+      "phone": "0505607626",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "student_b28dc7cb"
+    },
+    {
+      "name": "Student_0_1_2",
+      "email": "student_0_1_2@school.com",
+      "phone": "0502458450",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "student_37ab8ff6"
+    },
+    {
+      "name": "Student_0_1_3",
+      "email": "student_0_1_3@school.com",
+      "phone": "0502229814",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "student_3fc821ac"
+    },
+    {
+      "name": "Student_0_1_4",
+      "email": "student_0_1_4@school.com",
+      "phone": "0506158575",
+      "password": "123456",
+      "role": "student",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "student_01e63b97"
+    },
+    {
+      "name": "Parent_0_1_0",
+      "email": "parent_0_1_0@school.com",
+      "phone": "0539689124",
+      "password": "123456",
+      "role": "parent",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "parent_1cdc7157",
+      "parentOf": [
+        "student_01e63b97",
+        "student_37ab8ff6"
+      ]
+    },
+    {
+      "name": "Parent_0_1_1",
+      "email": "parent_0_1_1@school.com",
+      "phone": "0535412730",
+      "password": "123456",
+      "role": "parent",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "parent_d3131921",
+      "parentOf": [
+        "student_3fc821ac",
+        "student_37ab8ff6"
+      ]
+    },
+    {
+      "name": "Parent_0_1_2",
+      "email": "parent_0_1_2@school.com",
+      "phone": "0535125618",
+      "password": "123456",
+      "role": "parent",
+      "isActivated": false,
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1",
+      "classId": "class_1f7110cc",
+      "className": "Class_B",
+      "uniqueId": "parent_9d1726b9",
+      "parentOf": [
+        "student_fd2a80a9",
+        "student_01e63b97"
+      ]
+    }
+  ],
+  "schools": [
+    {
+      "schoolId": "school_a824e4fe",
+      "schoolName": "School_1"
+    }
+  ]
+}

@@ -2,21 +2,46 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-//import { userRouter } from './routes/users';
-//import { messageRouter } from './routes/messages';
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { messageRouter } from './routes/messages';
+
+import { userRouter } from './routes/user.routes';
+
 import { authRouter } from './routes/auth.routes';
+import { profileRouter } from './routes/profiles'; // 
+import { UserProfileModel } from './models/UserProfile';
+import { router as scheduleRouter } from './routes/schedule.routes';
+import studentRoutes from './routes/student.routes';
+
+
+
+
+
+
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(`🔹 [${timestamp}] Request incoming: ${req.method} ${req.originalUrl}`);
+  console.log(`Headers:`, req.headers);
+  next();
+});
 app.use('/api/users', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/profiles',profileRouter);
+app.use('/api/schedule', scheduleRouter);
+app.use("/api/students", studentRoutes);
+app.use('/api/messages', messageRouter);
 
 
-// Routes
-//app.use('/api/users', userRouter);
-//app.use('/api/messages', messageRouter);
+
+
 
 // MongoDB connection
 // Using environment variable for MongoDB URI when available
@@ -25,13 +50,18 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://niladar:RX1DRQF36R
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(process.env.MONGO_URI!, {
+      serverSelectionTimeoutMS: 5000, // 5 שניות timeout
+      socketTimeoutMS: 10000, // 10 שניות timeout
+    });
     console.log('Connected to MongoDB successfully');
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('🚨 MongoDB connection error:', error);
     process.exit(1);
   }
 };
+
+
 
 // Connect to MongoDB
 connectDB();
@@ -39,6 +69,17 @@ mongoose.connection.once('open', () => {
   console.log("✅ Connected to MongoDB database:", mongoose.connection.name);
 });
 
+mongoose.connection.on('error', (error) => {
+  console.error("❌ MongoDB Error:", error);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn("⚠️ MongoDB disconnected");
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.info("🔄 MongoDB reconnected");
+});
 
 
 
@@ -69,7 +110,8 @@ app.post('/api/mongo/config', (req, res) => {
       .then(() => {
         console.log('Disconnected from previous MongoDB instance');
         // Connect to new URI
-        return mongoose.connect(uri);
+        return mongoose.connect(process.env.MONGO_URI!);
+
       })
       .then(() => {
         console.log('Connected to new MongoDB instance successfully');

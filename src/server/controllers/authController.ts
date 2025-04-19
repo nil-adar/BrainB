@@ -17,20 +17,23 @@ export async function login(req: Request, res: Response): Promise<void> {
   try {
     const users = await User.find({ isActivated: true });
 
-let user: any = null;
-for (const u of users) {
-  const isIdMatch = await bcrypt.compare(uniqueId, u.uniqueId);
-  if (isIdMatch) {
-    user = u;
-    break;
-  }
-}
+    let user: any = null;
 
-if (!user) {
-  res.status(404).json({ message: 'משתמש לא נמצא' });
-  return;
-}
+    for (const u of users) {
+      // ✅ הוספנו בדיקה שהשדה u.uniqueId קיים
+      if (!u.uniqueId) continue;
 
+      const isIdMatch = await bcrypt.compare(uniqueId, u.uniqueId);
+      if (isIdMatch) {
+        user = u;
+        break;
+      }
+    }
+
+    if (!user) {
+      res.status(404).json({ message: 'משתמש לא נמצא' });
+      return;
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -39,72 +42,70 @@ if (!user) {
     }
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET);
-    res.status(200).json({ user, token });
+
+    res.status(200).json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+      token,
+    });
+
   } catch (error) {
     res.status(500).json({ message: 'שגיאה בשרת', error });
   }
 }
 
-// הרשמה
-// הרשמה
+
 export async function register(req: Request, res: Response): Promise<void> {
-  console.log("👉 Received registration body:", req.body);
   const { uniqueId, name, password, email, phone, role } = req.body;
 
-  if (!uniqueId || !name || !password || !role) {
-    console.warn("⚠️ Missing required fields");
+  if (!uniqueId || !name || !password || !role || !phone) {
     res.status(400).json({ message: 'נא למלא את כל השדות החיוניים' });
     return;
   }
 
   try {
-    const existingUser = await User.findOne({ uniqueId });
-
-    if (existingUser && existingUser.isActivated) {
-      console.warn("⚠️ User already exists and is activated:", existingUser);
-      res.status(400).json({ message: 'משתמש כבר קיים במערכת' });
+    // חיפוש לפי טלפון ותפקיד
+    const user = await User.findOne({ phone, role, isActivated: false });
+    if (!user) {
+      res.status(404).json({ message: 'משתמש לא מאושר או כבר רשום' });
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // בדיקה שהתפקיד שנבחר תואם למה שמוגדר במסד
+    if (user.role !== role) {
+      res.status(403).json({ message: 'אין אפשרות להירשם עם תפקיד שונה' });
+      return;
+    }
+
+    // הצפנה של ת"ז וסיסמה
     const hashedId = await bcrypt.hash(uniqueId, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
+    // עדכון פרטי המשתמש במסד
+    user.name = name;
+    user.email = email;
+    user.uniqueId = hashedId;
+    user.password = hashedPassword;
+    user.isActivated = true;
+    await user.save();
 
-    if (existingUser) {
-      console.log("ℹ️ Updating existing (non-activated) user...");
-      existingUser.name = name;
-      existingUser.email = email;
-      existingUser.phone = phone;
-      existingUser.role = role;
-      existingUser.password = hashedPassword;
-      existingUser.uniqueId = hashedId;
-      existingUser.isActivated = true;
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET);
 
-      await existingUser.save();
-      console.log("✅ Existing user updated and saved:", existingUser);
-
-      const token = jwt.sign({ id: existingUser._id, role: existingUser.role }, JWT_SECRET);
-      res.status(200).json({ user: existingUser, token });
-      return;
-    }
-
-    // משתמש חדש
-    const newUser = new User({
-      uniqueId :hashedId,
-      name,
-      email,
-      phone,
-      role,
-      password: hashedPassword,
-      isActivated: true,
+    res.status(200).json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+      token,
     });
-
-    console.log("📦 Saving new user...");
-    await newUser.save();
-    console.log("✅ New user saved to DB:", newUser);
-
-    const token = jwt.sign({ id: newUser._id, role: newUser.role }, JWT_SECRET);
-    res.status(201).json({ user: newUser, token });
 
   } catch (error) {
     console.error('❌ שגיאה בהרשמה:', error);
