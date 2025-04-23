@@ -20,7 +20,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     let user: any = null;
 
     for (const u of users) {
-      // ✅ הוספנו בדיקה שהשדה u.uniqueId קיים
+   
       if (!u.uniqueId) continue;
 
       const isIdMatch = await bcrypt.compare(uniqueId, u.uniqueId);
@@ -41,7 +41,8 @@ export async function login(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET);
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "2h" });
+
 
     res.status(200).json({
       user: {
@@ -76,7 +77,7 @@ export async function register(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // בדיקה שהתפקיד שנבחר תואם למה שמוגדר במסד
+    //       
     if (user.role !== role) {
       res.status(403).json({ message: 'אין אפשרות להירשם עם תפקיד שונה' });
       return;
@@ -94,7 +95,8 @@ export async function register(req: Request, res: Response): Promise<void> {
     user.isActivated = true;
     await user.save();
 
-    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET);
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "2h" });// במערכת שלנו תוקף הטוקן לשעתיים 
+
 
     res.status(200).json({
       user: {

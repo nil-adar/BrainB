@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 interface StudentCardActionsProps {
   studentId: string;
+  studentName: string;
   translations: {
     createAssessment: string;
     viewPreAssessments: string;
@@ -20,6 +21,7 @@ interface StudentCardActionsProps {
 
 export const StudentCardActions = ({
   studentId,
+  studentName,
   translations: t,
   onContactParent,
   onViewProgress,
@@ -39,7 +41,9 @@ export const StudentCardActions = ({
         variant="secondary" 
         size="sm"
         className={`w-full justify-between ${textDirection} bg-secondary-foreground/10 hover:bg-secondary-foreground/20 text-foreground`}
-        onClick={() => navigate("/create-assessment")}
+        onClick={() => navigate(`/create-assessment?studentId=${studentId}&studentName=${encodeURIComponent(studentName)}`)}
+
+
       >
         <FileSpreadsheet className="w-4 h-4" />
         {t.createAssessment}

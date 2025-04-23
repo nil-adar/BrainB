@@ -34,8 +34,19 @@ export const StudentCard = ({
   const actions = actionTranslations[language];
 
   const getPath = (path: string | ((id: string) => string)) => {
-    return typeof path === "function" ? path(student.id) : path;
+    if (typeof path === "function") {
+      return path(student.id);
+    }
+  
+    // הוספת פרטי תלמיד לנתיב של יצירת אבחון
+    if (path === "/create-assessment") {
+      const studentName = encodeURIComponent(`${student.firstName} ${student.lastName}`);
+      return `/create-assessment?studentId=${student.id}&studentName=${studentName}`;
+    }
+  
+    return path;
   };
+  
 
   const handleViewProgress = () => {
     if (onViewProgress) {

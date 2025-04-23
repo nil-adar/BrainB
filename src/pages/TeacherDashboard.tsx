@@ -46,21 +46,23 @@ export default function TeacherDashboard() {
   
   const handleSendMessage = async () => {
     if (!messageText.trim()) return;
-    const newMessage = {
-      senderId: teacherId,
+    const newMessage: Message = {
+      id: crypto.randomUUID(), // 👈 חובה כדי להתאים לטיפוס Message
+      senderId: teacherId!,
       receiverId: selectedParentId!,
       content: messageText,
       senderRole: "teacher",
       isRead: false,
       timestamp: new Date().toISOString(),
     };
+    
     setMessages(prev => [...prev, newMessage]);
     setMessageText("");
   };
   
 
   const [assignedClasses, setAssignedClasses] = useState<
-    { schoolId: string; schoolName: string; classId: string; className: string; isActive: boolean }[]
+    { schoolId: string; schoolName: string; classId: string; className: string;  }[]
   >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentClass, setCurrentClass] = useState<{
@@ -90,11 +92,17 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     if (!teacherId) return;
+  
     teacherService.getAssignedClasses(teacherId)
-      .then(classes => setAssignedClasses(classes))
-      .catch(console.error);
+      .then(classes => {
+        console.log("📥 קיבלתי מהשרת כיתות:", classes);
+        setAssignedClasses(classes);
+      })
+      .catch(error => {
+        console.error("❌ שגיאה בשליפת כיתות:", error);
+      });
   }, [teacherId]);
-
+  
   const t = dashboardTranslations[language];
 
   useEffect(() => {
@@ -115,7 +123,7 @@ export default function TeacherDashboard() {
     queryFn: () => userProfileService.getUserProfile(teacherId!),
     enabled: !!teacherId,
   });
-
+  console.log("👨‍🏫 teacherProfile:", teacherProfile);
   useEffect(() => {
     if (teacherProfile?.assignedClasses?.length) {
       const active =
@@ -138,11 +146,47 @@ export default function TeacherDashboard() {
   console.log("🟢 currentClass:", currentClass);
   console.log("🟢 allStudents:", allStudents);
 
-  const filteredStudents = allStudents?.filter(s => {
-    const matches = currentClass ? s.class?.trim() === currentClass.classId?.trim() : true;
-    console.log("🔍 comparing (FIXED):", s.class?.trim(), "===", currentClass?.classId?.trim(), "=>", matches);
-    return matches;
+  const filteredStudents = allStudents?.filter((s, index) => {
+    console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
+  
+    const normalize = (val: any) =>
+      String(val ?? "")
+        .normalize("NFKC") // Normalize composed characters
+        .replace(/\s+/g, "") // Remove all whitespace
+        .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
+  
+    const studentClassId = normalize(s.classId);
+    const currentClassId = normalize(currentClass?.classId);
+  
+    const matchesClass =
+      currentClassId && studentClassId
+        ? studentClassId === currentClassId
+        : true;
+  
+    const matchesTeacher = s.teacherId === teacherId;
+  
+    const unicodeBreakdown = (str: string) =>
+      str.split("").map((char) => char.charCodeAt(0)).join(",");
+  
+    console.log(`👩‍🏫 תלמיד ${index + 1}:`);
+    console.log("🆔 student.classId (raw):", s.classId);
+    console.log("🎯 currentClass.classId (raw):", currentClass?.classId);
+    console.log("🧼 studentClassId (norm):", studentClassId);
+    console.log("🧼 currentClassId (norm):", currentClassId);
+    console.log("🔢 יוניקוד תלמיד:", unicodeBreakdown(studentClassId));
+    console.log("🔢 יוניקוד כיתה נבחרת:", unicodeBreakdown(currentClassId));
+    console.log("🎓 התאמת כיתה:", matchesClass);
+    console.log("📚 teacherId תלמיד:", s.teacherId);
+    console.log("👨‍🏫 teacherId נוכחי:", teacherId);
+    console.log("✅ התאמה מורה:", matchesTeacher);
+    console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
+    console.log("────────────");
+  
+    return matchesClass && matchesTeacher;
   });
+  
+  
+  
 
   
 
@@ -152,13 +196,22 @@ export default function TeacherDashboard() {
   const handleClassChange = (classData: any) => setCurrentClass(classData);
 
   const classSwitcherComponent = teacherId ? (
-    <ClassSwitcher
-      teacherId={teacherId}
-      classOptions={assignedClasses}
-      language={language}
-      onClassChange={handleClassChange}
-    />
+<ClassSwitcher
+  teacherId={teacherId}
+  classOptions={teacherProfile?.assignedClasses || []}
+  language={language}
+  onClassChange={handleClassChange}
+/>
+
+
   ) : null;
+  
+
+  const greetingClassText = currentClass
+  ? language === "he"
+    ? `כיתה ${currentClass.className}, ${currentClass.schoolName}`
+    : `Class ${currentClass.className}, ${currentClass.schoolName}`
+  : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -185,7 +238,7 @@ export default function TeacherDashboard() {
           <TeacherGreeting
             teacherName={teacherName}
             translations={{ greeting: t.greeting, grade: t.grade }}
-            assignedClass={currentClass?.className || teacherData?.assignedClass}
+            assignedClass={greetingClassText}
             classSwitcher={classSwitcherComponent}
           />
         </div>

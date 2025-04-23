@@ -8,23 +8,25 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 
-interface MessageSheetProps {
+export interface MessageSheetProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   selectedStudentName: string;
   senderId: string;
-  senderRole: 'teacher' | 'parent';
+  senderRole: "teacher" | "parent";
   receiverId: string;
   messages: Message[];
   messageText: string;
   onMessageChange: (text: string) => void;
   onSendMessage: () => void;
   translations: {
-    messageToParent: string;
+    messageToParent?: string;
+    messageToTeacher?: string;
     writeMessage: string;
     sendMessage: string;
   };
 }
+
 
 
 
@@ -77,12 +79,14 @@ export const MessageSheet = ({
 
     try {
       const newMessage = {
-        senderId,
+        id: crypto.randomUUID(), 
         receiverId,
         content: messageText,
         senderRole,
         isRead: false,
+        timestamp: new Date().toISOString() // גם חשוב לטיפוס שלך
       };
+      
       await axios.post('/api/messages', newMessage);
       setMessageText("");
       fetchMessages();

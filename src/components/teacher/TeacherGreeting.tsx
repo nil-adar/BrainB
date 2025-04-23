@@ -37,7 +37,10 @@ export const TeacherGreeting = ({
           <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
             {t.greeting}, <span className="text-primary">המורה {teacherName}</span>
           </h1>
-          <p className="text-muted-foreground">{assignedClass ? `כיתה ${assignedClass}, ליאו-בק` : t.grade}</p>
+          <p className="text-muted-foreground">
+  {assignedClass || t.grade}
+</p>
+        
         </div>
         
         <div className="flex flex-col items-center">

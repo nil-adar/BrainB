@@ -1,8 +1,10 @@
 
 // Basic user types
 export interface User {
-  id: string;                // מזהה מערכת פנימי
-  uniqueId: string;         // תעודת זהות
+  id: string;              
+  uniqueId: string;     
+  _id: string;
+   
   name: string;
   email: string;
   phone: string;           // מספר טלפון
@@ -27,10 +29,13 @@ export interface Student extends User {
   lastName: string;
   class: string;
   grade: string;
+  classId: string;
+  teacherId: string; 
   dateOfBirth: string;
   parentIds: string[];
-  avatar: string;
+  avatar?: string;
   tasks: Task[];
+  className: string; 
   progressReports: Report[];
 }
 

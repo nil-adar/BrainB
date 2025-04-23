@@ -1,110 +1,119 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useToast } from "@/hooks/use-toast";
 import { externalAssessmentService } from "@/services/externalAssessmentService";
 import { Button } from "@/components/ui/button";
 import { studentService } from "@/services/studentService";
-import { Student } from "@/types/school";
+import { parentService as authService } from "@/services/parentService";
+import { Student, User } from "@/types/school";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageToggle } from "@/components/LanguageToggle";
-
+import { useSearchParams } from "react-router-dom";
 const translations = {
   en: {
     back: "Back",
     createNewAssessment: "Create New Assessment",
     studentName: "Student Name",
-    selectStudent: "Select Student",
     date: "Date",
     notes: "Notes",
     addNotes: "Add notes...",
-    createAssessment: "Create Assessment for Student",
     home: "Home",
-    loadingStudents: "Loading students...",
+    loadingStudent: "Loading student...",
+    errorLoading: "Error loading student",
     externalSystem: "This assessment will be performed in an external system",
-    externalSystemExplanation: "The student  will be redirected to the external system to complete the assessment. After completion, results will be sent back to BrainBridge.",
-    startAssessment: "Open assessment for student "
+    externalSystemExplanation:
+      "The student will be redirected to the external system to complete the assessment. After completion, results will be sent back.",
+    startAssessment: "Start Assessment",
   },
   he: {
     back: "חזור",
-    createNewAssessment: "צור אבחון לתמיד",
+    createNewAssessment: "צור אבחון חדש",
     studentName: "שם התלמיד",
-    selectStudent: "בחר תלמיד",
     date: "תאריך",
     notes: "הערות",
     addNotes: "הוסף הערות...",
-    createAssessment: "צור הערכה",
     home: "דף הבית",
-    loadingStudents: "טוען תלמידים...",
+    loadingStudent: "טוען תלמיד...",
+    errorLoading: "שגיאה בטעינת תלמיד",
     externalSystem: "אבחון זה יתבצע במערכת חיצונית",
-    externalSystemExplanation: "התלמיד יועבר למערכת החיצונית כדי להשלים את האבחון. לאחר השלמתו, התוצאות יישלחו בחזרה למערכת BrainBridge.",
-    startAssessment: " פתח גישה לתלמיד לאבחון   "
-  }
+    externalSystemExplanation:
+      "התלמיד יועבר למערכת החיצונית כדי להשלים את האבחון. לאחר השלמתו, התוצאות יישלחו בחזרה למערכת.",
+    startAssessment: "התחל אבחון",
+  },
 };
 
-const CreateAssessment = () => {
+export default function CreateAssessment() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [language, setLanguage] = useState<"en" | "he">(document.documentElement.dir === "rtl" ? "he" : "en");
+  const [language, setLanguage] = useState<"en" | "he">(
+    document.documentElement.dir === "rtl" ? "he" : "en"
+  );
   const t = translations[language];
 
-  const [selectedStudent, setSelectedStudent] = useState<string>("");
-  const [date, setDate] = useState<string>("");
-  const [notes, setNotes] = useState<string>(language === "he"
-    ? ""
-    : "");
+  // Sync document direction
+  useEffect(() => {
+    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+  }, [language]);
+
+  // Get studentId from URL
+  const [searchParams] = useSearchParams();
+  const studentId = searchParams.get("studentId");
+  const studentName = searchParams.get("studentName");
+  console.log("ID שהגיע מה-URL:", studentId); // <--- הוסף את זה
+  console.log("🔍 [CreateAssessment] studentId from URL:", studentId);
+
+  // Fetch the specific student
+  const {
+    data: student,
+    isLoading: loadingStudent,
+    error: studentError,
+  } = useQuery<Student, Error>({
+    queryKey: ["student", studentId],
+    enabled: !!studentId,
+    queryFn: () => studentService.getStudentById(studentId!),
+  });
+  console.log("סטטוס טעינה:", loadingStudent); // <--- הוסף את זה
+  console.log("שגיאה בטעינה:", studentError);  // <--- הוסף את זה
+  console.log("נתוני הסטודנט שהתקבלו:", student); // <--- הוסף את זה
+
+  // Form state
+  const today = new Date().toISOString().slice(0, 10);
+  const [date, setDate] = useState<string>(today);
+  const [notes, setNotes] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const assessmentType = "behavioral";
-  const isExternalAssessment = true;
+  const toggleLanguage = () => setLanguage((prev) => (prev === "he" ? "en" : "he"));
 
-  const { data: students, isLoading: isLoadingStudents } = useQuery({
-    queryKey: ['students'],
-    queryFn: studentService.getAllStudents
-  });
-
+  // Breadcrumbs
   const breadcrumbItems = [
     { label: t.home, href: "/" },
-    { label: selectedStudent ? students?.find(s => s.id === selectedStudent)?.name || "" : "", 
-      href: selectedStudent ? `/student/${selectedStudent}` : "" },
+    {
+      label: studentName ?? t.loadingStudent,
+
+      href: student ? `/student/${studentId}` : undefined,
+    },
     { label: t.createNewAssessment },
   ];
 
-  const toggleLanguage = () => {
-    const newLang = language === "he" ? "en" : "he";
-    setLanguage(newLang);
-    document.documentElement.dir = newLang === "he" ? "rtl" : "ltr";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!selectedStudent) {
-      toast({
-        title: "שגיאה",
-        description: "יש לבחור תלמיד",
-        variant: "destructive",
-      });
+    if (!studentId) {
+      toast({ title: "Error", description: t.errorLoading, variant: "destructive" });
       return;
     }
-
     setLoading(true);
-
     try {
       const assessment = await externalAssessmentService.startExternalAssessment(
-        selectedStudent,
-        assessmentType
+        studentId,
+        "behavioral"
       );
       navigate(`/external-assessment/${assessment.id}`);
-    } catch (error) {
-      console.error("Error creating assessment:", error);
-      toast({
-        title: "שגיאה",
-        description: "אירעה שגיאה ביצירת האבחון",
-        variant: "destructive",
-      });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error", description: "Failed to start assessment", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -117,7 +126,7 @@ const CreateAssessment = () => {
         <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
       </div>
 
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-6 hover:bg-gray-100 p-2 rounded-lg"
       >
@@ -132,29 +141,24 @@ const CreateAssessment = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium mb-1">{t.studentName}</label>
-              <select 
-                className="w-full p-2 border rounded-lg"
-                value={selectedStudent}
-                onChange={(e) => setSelectedStudent(e.target.value)}
-                required
-              >
-                <option value="">{t.selectStudent}</option>
-                {isLoadingStudents ? (
-                  <option disabled>{t.loadingStudents}</option>
-                ) : (
-                  students?.map((student: Student) => (
-                    <option key={student.id} value={student.id}>
-                      {student.name}
-                    </option>
-                  ))
-                )}
-              </select>
+              {loadingStudent ? (
+                <p>{t.loadingStudent}</p>
+              ) : studentError || !student ? (
+                <p className="text-red-500">{t.errorLoading}</p>
+              ) : (
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded-lg"
+                  value={`${student.firstName} ${student.lastName}`}
+                  readOnly
+                />
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">{t.date}</label>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 className="w-full p-2 border rounded-lg"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
@@ -164,7 +168,7 @@ const CreateAssessment = () => {
 
             <div>
               <label className="block text-sm font-medium mb-1">{t.notes}</label>
-              <textarea 
+              <textarea
                 className="w-full p-2 border rounded-lg h-32"
                 placeholder={t.addNotes}
                 value={notes}
@@ -177,18 +181,16 @@ const CreateAssessment = () => {
               <p className="text-blue-700 text-sm mt-2">{t.externalSystemExplanation}</p>
             </div>
 
-            <Button 
+            <Button
               type="submit"
               className="w-full bg-primary text-white py-2 rounded-lg hover:opacity-90 transition-opacity"
-              disabled={loading}
+              disabled={loading || loadingStudent}
             >
-              {t.startAssessment}
+              {loading ? "..." : t.startAssessment}
             </Button>
           </form>
         </Card>
       </div>
     </div>
   );
-};
-
-export default CreateAssessment;
+}

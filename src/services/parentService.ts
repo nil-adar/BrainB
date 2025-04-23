@@ -1,94 +1,85 @@
+import axios from "axios";
+import { User, Student } from "@/types/school";
 
-import { Parent, Student } from "@/types/school";
-import { mockParents } from "./mock/parents";
-import { mockStudents } from "./mock/students";
+
+const authAxios = axios.create({
+  baseURL: "http://localhost:5000",
+});
+
+authAxios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export const parentService = {
-  getAllParents: async () => {
-    return new Promise<Parent[]>((resolve) => {
-      setTimeout(() => resolve(mockParents), 500);
-    });
+  getLoggedInUser: async (): Promise<User> => {
+    try {
+      const res = await authAxios.get("/api/users/me");
+      console.log("🧒 משתמש מהשרת:", res.data);
+      return res.data;
+    } catch (error) {
+      console.error("❌ שגיאה בקבלת פרטי המשתמש המחובר:", error);
+      throw error;
+    }
   },
 
-  getParent: async (id: string) => {
-    return new Promise<Parent | undefined>((resolve) => {
-      setTimeout(() => {
-        const parent = mockParents.find(p => p.id === id);
-        if (parent) {
-          const children = mockStudents.filter(s => parent.childrenIds.includes(s.id));
-          resolve({ ...parent, children });
-        } else {
-          resolve(undefined);
-        }
-      }, 500);
-    });
+  getParentChildren: async (parentId: string): Promise<Student[]> => {
+    try {
+      const res = await authAxios.get(`/api/students/by-parent/${parentId}`);
+      console.log("🧒 ילדים שהתקבלו מהשרת:", res.data);
+      return res.data;
+    } catch (error) {
+      console.error("❌ שגיאה בשליפת ילדים של ההורה:", error);
+      return [];
+    }
+  },
+  getStudentById: async (studentId: string): Promise<Student> => {
+  const res = await authAxios.get(`/api/students/${studentId}`);
+  return res.data;
+},
+  getParentById: async (parentId: string): Promise<any> => {
+    try {
+      const res = await authAxios.get(`/api/parents/${parentId}`);
+      return res.data;
+    } catch (error) {
+      console.error("❌ שגיאה בשליפת מידע הורה:", error);
+      return null;
+    }
   },
 
-  getStudentParents: async (studentId: string) => {
-    return new Promise<Parent[]>((resolve) => {
-      setTimeout(() => {
-        const student = mockStudents.find(s => s.id === studentId);
-        if (!student) {
-          resolve([]);
-          return;
-        }
-        const parents = mockParents.filter(p => student.parentIds.includes(p.id));
-        resolve(parents);
-      }, 500);
-    });
+  updateParentInfo: async (
+    parentId: string,
+    updateData: Partial<{ email: string; phone: string; name: string }>
+  ): Promise<boolean> => {
+    try {
+      await authAxios.patch(`/api/parents/${parentId}`, updateData);
+      return true;
+    } catch (error) {
+      console.error("❌ שגיאה בעדכון פרטי הורה:", error);
+      return false;
+    }
   },
 
-  getParentChildren: async (parentId: string) => {
-    return new Promise<Student[]>((resolve) => {
-      setTimeout(() => {
-        const parent = mockParents.find(p => p.id === parentId);
-        if (!parent) {
-          resolve([]);
-          return;
-        }
-        const children = mockStudents.filter(s => parent.childrenIds.includes(s.id));
-        resolve(children);
-      }, 500);
-    });
+  sendMessageToTeacher: async (message: {
+    senderId: string;
+    receiverId: string;
+    content: string;
+    studentId?: string;
+  }): Promise<boolean> => {
+    try {
+      await authAxios.post("/api/messages", {
+        ...message,
+        senderRole: "parent",
+        timestamp: new Date().toISOString(),
+        isRead: false,
+      });
+      return true;
+    } catch (error) {
+      console.error("❌ שגיאה בשליחת הודעה:", error);
+      return false;
+    }
   },
-
-  updateParent: async (parentId: string, updateData: Partial<Parent>) => {
-    return new Promise<Parent | null>((resolve) => {
-      setTimeout(() => {
-        const index = mockParents.findIndex(p => p.id === parentId);
-        if (index === -1) {
-          resolve(null);
-          return;
-        }
-        mockParents[index] = { ...mockParents[index], ...updateData };
-        resolve(mockParents[index]);
-      }, 500);
-    });
-  },
-
-  addParent: async (newParent: Omit<Parent, 'id'>) => {
-    return new Promise<Parent>((resolve) => {
-      setTimeout(() => {
-        const parent = {
-          ...newParent,
-          id: `p${mockParents.length + 1}`,
-        } as Parent;
-        mockParents.push(parent);
-        resolve(parent);
-      }, 500);
-    });
-  },
-
-  deleteParent: async (parentId: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        const initialLength = mockParents.length;
-        const index = mockParents.findIndex(p => p.id === parentId);
-        if (index > -1) {
-          mockParents.splice(index, 1);
-        }
-        resolve(mockParents.length < initialLength);
-      }, 500);
-    });
-  }
 };

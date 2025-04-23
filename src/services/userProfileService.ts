@@ -22,13 +22,17 @@ export const userProfileService = {
    */
   getUserProfile: async (userId: string): Promise<UserProfile | null> => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/profiles/${userId}`);
-      return response.data;
+      const res = await axios.get(`${API_BASE_URL}/users/${userId}`);
+      return res.data.data; // 
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;
     }
   },
+  
+  
+  
+  
 
   /**
    * Update user profile picture

@@ -1,10 +1,5 @@
-
 import { Router, Request, Response } from 'express';
-import { User as UserModel } from '../models/User';
-
-
-
-
+import { User as UserModel, IUser } from '../models/User';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'secret123'; 
@@ -12,9 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret123';
 const router = Router();
 
 // Get all users
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response): Promise<void> => {
   try {
-    const users = await UserModel.find({}, { password: 0 }); // Exclude password from results
+    const users = await UserModel.find({}, { password: 0 });
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -22,29 +17,64 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
+// Get user by MongoDB _id
+
+
+// Get teacher's classes
+router.get('/:id/classes', async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+  try {
+    const user = await UserModel.findById(req.params.id)
+      .select('role assignedClasses schoolId schoolName')
+      .lean<IUser>();
+
+    if (!user) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+
+    if (user.role !== 'teacher') {
+      res.status(403).json({ success: false, message: 'User is not a teacher' });
+      return;
+    }
+
+    const assignedClasses = (user.assignedClasses || []).map(cls =>
+      typeof cls === "string"
+        ? {
+            classId: cls,
+            className: cls,
+            schoolId: user.schoolId || "",
+            schoolName: user.schoolName || ""
+          }
+        : cls
+    );
+
+    res.json({ success: true, classes: assignedClasses });
+  } catch (error) {
+    console.error('❌ Error fetching assigned classes:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Login user
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response): Promise<void> => {
   try {
     const { uniqueId, password } = req.body;
-    
     if (!uniqueId || !password) {
       res.status(400).json({ message: 'ID and password are required' });
       return;
     }
 
     const user = await UserModel.findOne({ uniqueId });
-    
     if (!user) {
       res.status(401).json({ message: 'משתמש לא רשום במערכת. אנא הירשם תחילה' });
       return;
     }
-    
-    if (user.password !== password) { // In production, you should use bcrypt or similar
+
+    if (user.password !== password) {
       res.status(401).json({ message: 'סיסמה שגויה' });
       return;
     }
-    
-    // Return user without password
+
     const userWithoutPassword = { ...user.toObject(), password: undefined };
     res.json(userWithoutPassword);
   } catch (error) {
@@ -54,22 +84,16 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 // Register new user
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', async (req: Request, res: Response): Promise<void> => {
   try {
     const { uniqueId, email, name, phone, password, role } = req.body;
-    
-    // Validate required fields
     if (!uniqueId || !email || !password || !phone || !role) {
       res.status(400).json({ message: 'All fields are required' });
       return;
     }
-    
-    // Check if user already exists
+
     const existingUser = await UserModel.findOne({ 
-      $or: [
-        { uniqueId },
-        { email }
-      ]
+      $or: [ { uniqueId }, { email } ]
     });
 
     if (existingUser) {
@@ -81,43 +105,33 @@ router.post('/register', async (req: Request, res: Response) => {
       return;
     }
 
-    // Create new user
     const user = new UserModel({
       uniqueId,
       email,
-      name: name || uniqueId, // Use uniqueId as name if not provided
+      name: name || uniqueId,
       phone,
-      password, // In production, should hash password
+      password,
       role,
-      // Add default values based on role
       childrenIds: role === 'parent' ? [] : undefined,
       teacherId: role === 'student' ? undefined : undefined,
       parentIds: role === 'student' ? [] : undefined,
     });
-    
+
     await user.save();
-    
-    // Return user without password
     const userWithoutPassword = { ...user.toObject(), password: undefined };
     res.status(201).json(userWithoutPassword);
   } catch (error) {
     console.error('Error registering user:', error);
     if (error instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ 
-        message: 'שגיאת אימות נתונים', 
-        details: error.message 
-      });
+      res.status(400).json({ message: 'שגיאת אימות נתונים', details: error.message });
     } else {
-      res.status(500).json({ 
-        message: 'אירעה שגיאה בהרשמה', 
-        error: error instanceof Error ? error.message : String(error) 
-      });
+      res.status(500).json({ message: 'אירעה שגיאה בהרשמה', error: String(error) });
     }
   }
 });
 
 // Get user by uniqueId
-router.get('/:uniqueId', async (req: Request, res: Response) => {
+router.get('/unique/:uniqueId', async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await UserModel.findOne({ uniqueId: req.params.uniqueId }, { password: 0 });
     if (!user) {
@@ -132,7 +146,7 @@ router.get('/:uniqueId', async (req: Request, res: Response) => {
 });
 
 // Update user
-router.put('/:uniqueId', async (req: Request, res: Response) => {
+router.put('/:uniqueId', async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await UserModel.findOneAndUpdate(
       { uniqueId: req.params.uniqueId },
@@ -151,7 +165,7 @@ router.put('/:uniqueId', async (req: Request, res: Response) => {
 });
 
 // Delete user
-router.delete('/:uniqueId', async (req: Request, res: Response) => {
+router.delete('/:uniqueId', async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await UserModel.findOneAndDelete({ uniqueId: req.params.uniqueId });
     if (!user) {
@@ -164,30 +178,5 @@ router.delete('/:uniqueId', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error deleting user', error });
   }
 });
-
-
-// נקודת קצה שמחזירה את פרטי המשתמש המחובר לפי הטוקן
-router.get('/:id/classes', async (req: Request<{ id: string }>, res: Response): Promise<void> => {
-  try {
-    const user = await UserModel.findById(req.params.id).select('role assignedClasses');
-
-    if (!user) {
-      res.status(404).json({ success: false, message: 'User not found' });
-      return;
-    }
-
-    if (user.role !== 'teacher') {
-      res.status(403).json({ success: false, message: 'User is not a teacher' });
-      return;
-    }
-
-    const assignedClasses = user.assignedClasses || [];
-    res.json({ success: true, classes: assignedClasses });
-  } catch (error) {
-    console.error('❌ Error fetching assigned classes:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
 
 export { router as userRouter };

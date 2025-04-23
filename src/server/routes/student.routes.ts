@@ -1,46 +1,152 @@
-// src/server/routes/students.ts
 import { Router, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { StudentProfile } from '../models/StudentProfile';
+import { User } from '../models/User';
 
 const router = Router();
 
-router.get("/", async (req: Request, res: Response): Promise<void> => {
-  const teacherIdRaw = req.query.teacherId as string;
-  if (!teacherIdRaw) {
-    res.status(400).json({ message: "Missing teacherId" });
-    return;
+/**
+ * 1) שליפת תלמידים לפי מורה
+ *    GET /api/students?teacherId=<teacherId>
+ */
+router.get(
+  '/',
+  async (req: Request, res: Response): Promise<void> => {
+    const teacherIdRaw = req.query.teacherId as string;
+    if (!teacherIdRaw) {
+      res.status(400).json({ message: 'Missing teacherId' });
+      return;
+    }
+
+    let teacherId: mongoose.Types.ObjectId;
+    try {
+      teacherId = new mongoose.Types.ObjectId(teacherIdRaw);
+    } catch {
+      res.status(400).json({ message: 'Invalid teacherId format' });
+      return;
+    }
+
+    try {
+      const docs = await User.find({ teacherId, role: 'student' })
+        .select('name firstName lastName class classId parentIds avatar teacherId')
+        .lean();
+
+      const students = docs.map((doc) => {
+        // פיצול השדה name אם firstName/lastName חסרים
+        let firstName = doc.firstName || '';
+        let lastName = doc.lastName || '';
+        if (!firstName && !lastName && doc.name) {
+          const parts = doc.name.trim().split(' ');
+          firstName = parts[0] || '';
+          lastName = parts.slice(1).join(' ') || '';
+        }
+        return {
+          id: doc._id.toString(),
+          firstName,
+          lastName,
+          class: doc.class,
+          classId: doc.classId,
+          teacherId: doc.teacherId,
+          parentIds: (doc.parentIds || []).map((pid) => pid.toString()),
+          avatar: doc.avatar || '',
+        };
+      });
+
+      res.status(200).json(students);
+    } catch (error) {
+      console.error('Error in GET /api/students:', error);
+      res.status(500).json({ message: 'Server error', error });
+    }
   }
+);
 
-  let teacherId: mongoose.Types.ObjectId;
-  try {
-    teacherId = new mongoose.Types.ObjectId(teacherIdRaw);
-  } catch {
-    res.status(400).json({ message: "Invalid teacherId format" });
-    return;
+/**
+ * 2) שליפת תלמידים לפי הורה
+ *    GET /api/students/by-parent/:parentId
+ */
+router.get(
+  '/by-parent/:parentId',
+  async (req: Request, res: Response): Promise<void> => {
+    const { parentId } = req.params;
+    console.log('📥 בקשת תלמידים עבור הורה:', parentId);
+
+    try {
+      const parent = await User.findById(parentId);
+      if (!parent) {
+        res.status(404).json({ message: 'Parent not found' });
+        return;
+      }
+      if (parent.role !== 'parent') {
+        res.status(403).json({ message: 'User is not a parent' });
+        return;
+      }
+
+      const docs = await User.find({
+        _id: { $in: parent.parentOf },
+        role: 'student',
+      })
+        .select('name classId teacherId parentIds avatar')
+        .lean();
+
+      const students = docs.map((doc) => {
+        const parts = doc.name ? doc.name.trim().split(' ') : [];
+        const firstName = doc.firstName || parts[0] || '';
+        const lastName = doc.lastName || parts.slice(1).join(' ') || '';
+        return {
+          id: doc._id.toString(),
+          firstName,
+          lastName,
+          classId: doc.classId,
+          teacherId: doc.teacherId,
+          parentIds: (doc.parentIds || []).map((pid) => pid.toString()),
+          avatar: doc.avatar || '',
+        };
+      });
+
+      console.log('📦 נמצאו תלמידים (parent):', students.length);
+      res.status(200).json(students);
+    } catch (error) {
+      console.error('❌ שגיאה בשליפת תלמידים לפי הורה:', error);
+      res.status(500).json({ message: 'Server error', error });
+    }
   }
+);
 
-  try {
-    const docs = await StudentProfile.find({ teacherId })
-      // שמים את השדה הנכון: "class" ולא "className"
-      .select("firstName lastName class parentIds avatar")
-      .lean();
+/**
+ * 3) שליפת תלמיד בודד לפי מזהה
+ *    GET /api/students/:studentId
+ */
+router.get(
+  '/:studentId',
+  async (req: Request, res: Response): Promise<void> => {
+    const { studentId } = req.params;
+    try {
+      const doc = await User.findById(studentId)
+        .select('name firstName lastName classId teacherId parentIds avatar')
+        .lean();
+      if (!doc) {
+        res.status(404).json({ message: 'Student not found' });
+        return;
+      }
 
-    const students = docs.map(doc => ({
-      id:        doc._id.toString(),
-      firstName: doc.firstName,
-      lastName:  doc.lastName,
-      // מיפוי לשדה הקיים
-      class:     doc.class, 
-      parentIds: doc.parentIds.map(pid => pid.toString()),
-      avatar:    doc.avatar || ""
-    }));
+      const parts = doc.name ? doc.name.trim().split(' ') : [];
+      const firstName = doc.firstName || parts[0] || '';
+      const lastName = doc.lastName || parts.slice(1).join(' ') || '';
+      const student = {
+        id: doc._id.toString(),
+        firstName,
+        lastName,
+        classId: doc.classId,
+        teacherId: doc.teacherId,
+        parentIds: (doc.parentIds || []).map((pid) => pid.toString()),
+        avatar: doc.avatar || '',
+      };
 
-    res.status(200).json(students);
-  } catch (error) {
-    console.error("Error in /students:", error);
-    res.status(500).json({ message: "Server error" });
+      res.status(200).json(student);
+    } catch (err) {
+      console.error('❌ שגיאה בשליפת תלמיד לפי id:', err);
+      res.status(500).json({ message: 'Server error', error: err });
+    }
   }
-});
+);
 
 export default router;

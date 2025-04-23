@@ -10,24 +10,36 @@ export interface IUser extends Document {
   role: 'admin' | 'teacher' | 'parent' | 'student';
   password: string;
   isActivated?: boolean;
-  parentOf?: string[];    // הורה: מזהי ילדים
-  teacherId?: string;     // ← חדש: המורה של התלמיד
-  parentIds?: string[];   // ← חדש: רשימת ההורים של התלמיד
-  grade?: string;         // ← חדש
-  class?: string;         // ← חדש (שם הכיתה)
-  avatar?: string;        // ← חדש: URL לתמונה
-  dateOfBirth?: Date;     // ← חדש
-  specialNeeds?: string[];// ← חדש
+  schoolName?: string;
+  classId?: string;
+  className?: string;
+  
+
+
+  schoolId ?:string;
+  parentOf?: string[];    // 
+  teacherId?: string;     //  
+  parentIds?: string[];   //
+  grade?: string;         //← 
+  class?: string;         // 
+  avatar?: string;        // 
+  dateOfBirth?: Date;     //
+  specialNeeds?: string[];// 
   subjects?: string[];
-  assignedClasses?: string[];
+  assignedClasses?: {
+    schoolId: string;
+    schoolName: string;
+    classId: string;
+    className: string;
+  }[];
 }
 
 const UserSchema: Schema<IUser> = new Schema(
   {
     uniqueId:    { type: String, required: true, unique: true },
     name:        { type: String, required: true },
-    firstName:   { type: String },      // ← הוסף
-    lastName:    { type: String },      // ← הוסף
+    firstName:   { type: String },      //
+    lastName:    { type: String },      //
     email:       { type: String },
     phone:       { type: String },
     role:        {
@@ -43,10 +55,19 @@ const UserSchema: Schema<IUser> = new Schema(
     grade:       { type: String },      
     class:       { type: String },      
     avatar:      { type: String },     
-    dateOfBirth: { type: Date },       
+    dateOfBirth: { type: Date },   
+    classId:   { type: String },   
+    className: { type: String }, 
     specialNeeds:[{ type: String }],    
     subjects:    [{ type: String }],
-    assignedClasses:[{ type: String }],
+    assignedClasses: [
+      {
+        schoolId: { type: String },
+        schoolName: { type: String },
+        classId: { type: String },
+        className: { type: String }
+      }
+    ]
   },
   { timestamps: true }
 );

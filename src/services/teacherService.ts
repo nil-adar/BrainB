@@ -36,26 +36,22 @@ export const teacherService = {
   /**
    * Get the list of classes this teacher is assigned to
    */
-  getAssignedClasses: async (
-    teacherId: string
-  ): Promise<
-    { schoolId: string; schoolName: string; classId: string; className: string; isActive: boolean }[]
-  > => {
-    try {
-      const response = await api.get(`/users/${teacherId}`);
-      const rawClasses = response.data?.data?.assignedClasses || [];
-      return rawClasses.map((className: string, index: number) => ({
-        schoolId: "",
-        schoolName: "",
-        classId: className,
-        className,
-        isActive: index === 0
-      }));
-    } catch (error) {
-      console.error("Error fetching assigned classes:", error);
-      return [];
-    }
-  },
+  /**
+ * Get the list of classes this teacher is assigned to
+ */
+getAssignedClasses: async (
+  teacherId: string
+): Promise<
+  { schoolId: string; schoolName: string; classId: string; className: string }[]
+> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/users/${teacherId}/classes`);
+    return response.data?.classes || [];
+  } catch (error) {
+    console.error("❌ Error fetching assigned classes:", error);
+    return [];
+  }
+},
 
   /**
    * Send a message from teacher to parent (or vice versa)

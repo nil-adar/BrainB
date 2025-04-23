@@ -20,6 +20,8 @@ interface ClassSwitcherProps {
 }
 
 export const ClassSwitcher = ({ teacherId, language, onClassChange, classOptions }: ClassSwitcherProps) => {
+  console.log("📦 classOptions המלא:", classOptions);
+
   const translations = {
     en: {
       switchClass: "Switch Class",

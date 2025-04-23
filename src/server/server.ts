@@ -32,8 +32,9 @@ app.use((req, res, next) => {
   console.log(`Headers:`, req.headers);
   next();
 });
-app.use('/api/users', authRouter);
 app.use('/api/users', userRouter);
+app.use('/api/users', authRouter);
+
 app.use('/api/profiles',profileRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use("/api/students", studentRoutes);

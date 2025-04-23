@@ -1,6 +1,7 @@
 // src/services/studentService.ts
 import api from "./api";           // זה יכול להיות axios.create({ baseURL: ... })
 import { Student } from "@/types/school";
+import { User } from "@/types/school";
 
 const STUDENTS_API = "/api/students";
 
@@ -23,15 +24,21 @@ export const studentService = {
   /**
    * משוך תלמיד בודד לפי ID
    */
-  getStudentById: async (studentId: string): Promise<Student | null> => {
-    try {
-      const res = await api.get<Student>(`${STUDENTS_API}/${studentId}`);
-      return res.data;
-    } catch (err) {
-      console.error(`Error fetching student ${studentId}:`, err);
-      return null;
-    }
-  },
+ getStudentById: async (id: string): Promise<User | null> => {
+  try {
+    const res = await api.get(`/students/${id}`);
+    return res.data;
+
+
+    const user = res.data;
+    if (user.role !== "student") return null;
+    return user;
+  } catch (err) {
+    console.error(`Error fetching user ${id}:`, err);
+    return null;
+  }
+},
+
 
   /**
    * הוסף תלמיד חדש (נזקק ל־POST /api/students)
