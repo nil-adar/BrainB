@@ -33,6 +33,9 @@ export const teacherService = {
     }
   },
 
+
+  
+
   /**
    * Get the list of classes this teacher is assigned to
    */
@@ -52,6 +55,8 @@ getAssignedClasses: async (
     return [];
   }
 },
+
+
 
   /**
    * Send a message from teacher to parent (or vice versa)
@@ -85,5 +90,15 @@ getAssignedClasses: async (
   }> => {
     const res = await axios.get(`/api/messages/conversation/${teacherId}/${parentId}`);
     return { success: res.status === 200, data: res.data };
+  },
+
+  addNewStudent: async (studentData: any): Promise<{ success: boolean }> => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/students`, studentData);
+      return { success: response.status === 201 };
+    } catch (error) {
+      console.error("❌ Error adding student:", error);
+      return { success: false };
+    }
   },
 };

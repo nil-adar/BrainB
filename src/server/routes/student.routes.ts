@@ -147,6 +147,30 @@ router.get(
       res.status(500).json({ message: 'Server error', error: err });
     }
   }
-);
+);router.post("/", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const existing = await User.findOne({ uniqueId: req.body.uniqueId });
+    if (existing) {
+      res.status(409).json({
+        success: false,
+        message: "תלמיד עם תעודת זהות זו כבר קיים"
+      });
+      return;
+    }
+
+    const newStudent = new User({
+      ...req.body,
+      role: "student",
+    });
+
+    await newStudent.save();
+    res.status(201).json({ success: true, studentId: newStudent._id });
+  } catch (error) {
+    console.error("❌ שגיאה ביצירת תלמיד:", error);
+    res.status(500).json({ success: false, error });
+  }
+});
+
+
 
 export default router;

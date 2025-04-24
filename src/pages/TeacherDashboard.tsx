@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { teacherService } from "@/services/teacherService";
 import { dataService } from "@/services/dataService";
+import { AddStudentModal } from "@/components/teacher/AddStudentModal";
 import { dashboardTranslations } from "@/utils/dashboardTranslations";
 import { TeacherHeader } from "@/components/teacher/TeacherHeader";
 import { TeacherGreeting } from "@/components/teacher/TeacherGreeting";
@@ -12,6 +13,9 @@ import { MessageSheet } from "@/components/teacher/MessageSheet";
 import { userProfileService } from "@/services/userProfileService";
 import { useNavigate } from "react-router-dom";
 import { Message } from "@/types/school";
+import { Button } from "@/components/ui/button";
+
+
 
 function getUserIdFromToken(): string | null {
   const token = localStorage.getItem('token');
@@ -74,6 +78,8 @@ export default function TeacherDashboard() {
   const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>("");
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
+
 
   const openMessageSheet = (
     studentId: string,
@@ -273,7 +279,15 @@ export default function TeacherDashboard() {
             language={language}
           />
         )}
-
+        <div className="flex items-center justify-between mb-4 mt-10">
+          <h2 className="text-xl font-semibold">{t.classStudents}</h2>
+           <Button
+                className="rounded-xl shadow px-3 py-2 text-sm"
+            onClick={() => setIsAddStudentOpen(true)}
+               >
+             ➕ הוסף תלמיד חדש
+          </Button>
+        </div>
         <StudentsList
           students={filteredStudents || []}
           isLoading={isLoading}
@@ -301,7 +315,16 @@ export default function TeacherDashboard() {
               `${student.firstName} ${student.lastName}`
             )
           }
-        />
+          />
+
+          <AddStudentModal
+            open={isAddStudentOpen}
+            onOpenChange={setIsAddStudentOpen}
+            currentClass={currentClass}
+            teacherId={teacherId!}
+            classes={assignedClasses.map(cls => cls.classId)} 
+          />
+
       </div>
     </div>
   );
