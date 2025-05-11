@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/70157cb1204ca26691b11450306cd5f4?family=Harmonia+Sans+W06+Semi+Bold+Cn"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <title>נודוס - בדיקת קול</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/background-FAQ.png' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-family: 'Assistant', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #0063A0;
+            direction: rtl;
+        }
+
+        .header {
+            background-color: #0f75bc;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header img {
+            width: 70px;
+        }
+
+        .header nav a {
+            color: white;
+            margin-right: 20px;
+            margin-left: 0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .header nav a:hover {
+            color: #16B06F;
+        }
+
+        .hero {
+            background-image: url("{% static 'images/background-FAQ.png' %}");
+										 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 80px 20px 20px;
+            height: 500px;
+        }
+
+        .hero h1 {
+            margin: 0px;
+            font-size: 3em;
+            color: #0063A0;
+            font-family: 'Assistant', sans-serif;
+        }
+
+        .hero p {
+            margin: 10px;
+            font-size: 2em;
+            color: #0063A0;
+            font-family: 'Assistant', sans-serif;
+        }
+
+        .hero button {
+            margin: 20px;
+            background-color: #01C5A2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Assistant', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .hero button:hover {
+            background-color: #019c84;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            margin: 20px 0px;
+            padding: 50px 20px;
+            text-align: center;
+											
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+        }
+
+        .content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .columns {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 75%;
+            align-items: center;
+            align-self: center;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .column img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .column h3 {
+            margin: 0px;
+        }
+
+        .footer {
+            background-color: #0f75bc;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            bottom: 0px;
+            width: 100%;
+        }
+
+
+        .footer div {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer input[type="email"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        .footer input[type="email"]:focus {
+            outline: none;
+            border: 2px solid #00a859;
+        }
+
+        .footer input[type="submit"] {
+            background-color: #00a859;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .footer input[type="submit"]:hover {
+            background-color: #007d40;
+        }
+
+        .logo-name {
+            text-align: right;
+            text-decoration: none;
+            align-items: center;
+            color: white;
+            font-size: x-large;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .logo-name:hover {
+            color: #16B06F;
+        }
+
+        .section-2-title {
+            padding: 0px 10% 0px 10%;
+            text-align: right;
+        }
+
+        .title-icon {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .section-2-content {
+            width: 60%;
+            justify-content: center;
+        }
+
+        .section-2-content button {
+            margin: 20px;
+            background-color: #01C5A2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Assistant', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .section-2-content button:hover {
+            background-color: #019c84;
+        }
+
+        #mic {
+            background-color: #01C5A2;
+        }
+
+        #mic:hover {
+            background-color: #019c84;
+        }
+
+        #mic.is-recording {
+            background-color: #d33636;
+        }
+
+        #mic.is-recording:hover {
+            background-color: #952525;
+        }
+
+        .test-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .text-to-read {
+            padding: 10px;
+            width: 80%;
+            border-radius: 20px;
+            background-color: #99c1da;
+        }
+
+        .text-to-read h1 {
+            color: black;
+        }
+
+        .microphone {
+            display: flex;
+            flex-direction: column-reverse;
+            padding: 10px;
+            border-radius: 20px;
+            width: 20%;
+            height: 128px;
+            background-color: grey;
+        }
+        
+        /* Language selector styles */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .language-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover, .language-btn.active {
+            background-color: #16B06F;
+            border-color: #16B06F;
+        }
+    </style>
+</head>
+
+<body class="rtl he">
+    <header class="header">
+        <div style="justify-content: left; display: flex; text-align: center; align-items: center;">
+																										  
+										   
+            <a class="logo-name navigation-element" href="#"
+                onclick="location.href='{% url 'landing' %}'"><strong data-translate="nodus">נודוס</strong></a>
+            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px">
+        </div>
+        <div style="display: flex; align-items: center;">
+            <nav style="padding: 10px;">
+                <a class="navigation-element" href="#" onclick="location.href='{% url 'landing' %}'" data-translate="home">דף הבית</a>
+                <a class="navigation-element" href="#" onclick="location.href='{% url 'consent' %}'" data-translate="start_test">התחל בדיקה</a>
+                <a class="navigation-element" href="#" onclick="location.href='{% url 'FAQ' %}'" data-translate="faq">שאלות נפוצות</a>
+            </nav>
+            <div class="language-selector">
+                <button class="language-btn" onclick="changeLanguage('en')" data-lang="en">EN</button>
+                <button class="language-btn active" onclick="changeLanguage('he')" data-lang="he">עב</button>
+            </div>
+        </div>
+    </header>
+
+
+
+    <section class="content">
+        <div class="section-2-title">
+            <div class="title-icon">
+                <img src="{% static 'images/microphone.png'%}" style="margin:20px;" alt="">
+                <h2 data-translate="vocal_test">חלק #2 - בדיקת קול</h2>
+            </div>
+            <h4 data-translate="vocal_test_instructions">קרא את רשימת המילים הבאה בקול רם ולתוך המיקרופון. לחץ על כפתור המיקרופון כדי להקליט כשאתה מוכן.</h4>
+								 
+        </div>
+
+        <div class="section-2-content">
+            <div class="test-content">
+                <div class="text-to-read">
+                    <h1 data-translate="reading_text">החתול ישב על המחצלת.<br>
+                        השועל החום המהיר קופץ מעל הכלב העצלן. <br>
+                        היא מוכרת קונכיות בחוף הים. <br>
+                        הוא בונה מגדלים גבוהים עם קוביות. <br>
+                        אני אוהב גלידה ועוגה. <br>
+                        התפוח אדום ומבריק. <br>
+                        אני קופץ למעלה ולמטה בשמחה.</h1>
+                </div>
+                <div class="microphone">
+                    <button class="mic-toggle" id="mic">
+                        <span class="material-icons">mic</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="button">
+                <button id="next-page-button" style="display: none;" data-translate="next">הבא</button>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <footer class="footer">
+        <div style="text-align: center; align-items: center; padding: 20px;">
+            <h3 data-translate="learn_more">למד עוד על ADHD</h3>
+            <p><a href="https://applications.emro.who.int/docs/EMRPUB_leaflet_2019_mnh_214_en.pdf" target="_blank" data-translate="who_adhd">ארגון הבריאות העולמי - ADHD</a></p>
+            <p><a href="https://www.cdc.gov/adhd/index.html" target="_blank" data-translate="cdc_adhd">CDC.gov - ADHD</a></p>
+        </div>
+        <div style="padding: 20px;">
+            <h3 data-translate="contact_us">צור קשר</h3>
+            <p>Safwan.Halabi@e.braude.ac.il</p>
+            <p>Bishara.Bisharat@e.braude.ac.il</p>
+        </div>
+        <div style="padding: 20px; display: flex; align-items: center; justify-content: center; flex-direction: row;">
+            <h2><strong style="font-size: 30px;" data-translate="nodus">נודוס</strong></h2>
+            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px"
+                style="width: 70px;">
+        </div>
+    </footer>
+    
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                nodus: "NODUS",
+                home: "Home",
+                start_test: "Start Test",
+                faq: "FAQ",
+                vocal_test: "Section #2 - Vocal Test",
+                vocal_test_instructions: "Read the following list of words out loud and into the microphone. Press the microphone button to record when ready.",
+                reading_text: "The cat sat on the mat.<br>The quick brown fox jumps over the lazy dog. <br>She sells seashells by the seashore. <br>He builds tall towers with blocks. <br>I love ice cream and cake. <br>The apple is red and shiny. <br>I jump up and down with joy.",
+                next: "Next",
+                recording_sent: "Recording sent to server",
+                please_wait: "Please wait, you will be directed to the next page shortly.",
+                ok: "OK",
+                learn_more: "Learn more about ADHD",
+                who_adhd: "World Health Organization - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "Contact Us"
+            },
+            he: {
+                nodus: "נודוס",
+                home: "דף הבית",
+                start_test: "התחל בדיקה",
+                faq: "שאלות נפוצות",
+                vocal_test: "חלק #2 - בדיקת קול",
+                vocal_test_instructions: "קרא את רשימת המילים הבאה בקול רם ולתוך המיקרופון. לחץ על כפתור המיקרופון כדי להקליט כשאתה מוכן.",
+                reading_text: "החתול ישב על המחצלת.<br>השועל החום המהיר קופץ מעל הכלב העצלן. <br>היא מוכרת קונכיות בחוף הים. <br>הוא בונה מגדלים גבוהים עם קוביות. <br>אני אוהב גלידה ועוגה. <br>התפוח אדום ומבריק. <br>אני קופץ למעלה ולמטה בשמחה.",
+                next: "הבא",
+                recording_sent: "ההקלטה נשלחה לשרת",
+                please_wait: "אנא המתן, אתה תועבר לדף הבא בקרוב.",
+                ok: "אישור",
+                learn_more: "למד עוד על ADHD",
+                who_adhd: "ארגון הבריאות העולמי - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "צור קשר"
+            }
+        };
+
+        // Current selected language (default to Hebrew)
+        let currentLanguage =  'he';
+
+        // Change language function
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update language buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.language-btn[data-lang="${lang}"]`).classList.add('active');
+            
+            // Update text direction and font
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+            
+            // Remove any previous language classes
+            document.body.classList.remove('rtl', 'he');
+            
+            if (lang === 'he') {
+                document.body.classList.add('rtl', 'he');
+            }
+            
+            // Update all translated elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Save language preference
+            localStorage.setItem('language', lang);
+        }
+
+        function customAlert(message) {
+            Swal.fire({
+                icon: 'success',
+                title: translations[currentLanguage].recording_sent,
+                text: translations[currentLanguage].please_wait,
+                confirmButtonText: translations[currentLanguage].ok
+            });
+        }
+
+        let next_flag = true;
+
+        const mic_btn = document.querySelector('#mic');
+        const playback = document.querySelector('.playback');
+        const next_btn = document.getElementById('next-page-button');
+
+        mic_btn.addEventListener('click', ToggleMic);
+        next_btn.addEventListener('click', async () => {
+            if (next_flag) {
+                next_flag = false;
+                console.log("Next pressed");
+                const navigationElements = document.querySelectorAll('a.navigation-element');
+                navigationElements.forEach(element => {
+                    element.href = '#'; // Set href to # to avoid navigation
+                    element.onclick = (event) => {
+                        event.preventDefault(); // Prevent default behavior
+                        return false; // Ensure any default action is cancelled
+                    };
+                    
+            });
+                customAlert(translations[currentLanguage].please_wait);
+                await sendRecording();
+                location.href = '{% url 'questionnaire' %}';
+            }
+        });
+
+        let global_blob = null;
+        let recorded = false;
+        let can_record = false;
+        let is_recording = false;
+        let recorder = null;
+        let chunks = [];
+
+        async function sendRecording() {
+            const formData = new FormData();
+            formData.append('audio-recording', global_blob, 'audio-recording.mp3');
+
+            const response = await fetch('/audio-configuration/', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.status === 200) {
+                console.log("Audio upload complete, proceed to next test");
+
+            } else {
+
+                console.error('Video upload failed');
+            }
+        }
+
+        function SetupAudio() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices
+                    .getUserMedia({
+                        audio: true
+                    })
+                    .then(SetupStream)
+                    .catch(err => {
+                        console.error(err)
+                    });
+            }
+        }
+
+        function SetupStream(stream) {
+            recorder = new MediaRecorder(stream);
+
+            recorder.ondataavailable = e => {
+                chunks.push(e.data);
+            }
+
+            recorder.onstop = e => {
+                const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+                recorded = !recorded;
+                global_blob = blob;
+                next_btn.style.display = 'block';
+
+            }
+
+            can_record = true;
+        }
+
+        function ToggleMic() {
+            if (!can_record) return;
+
+            is_recording = !is_recording
+
+            if (is_recording) {
+                recorder.start();
+                mic_btn.classList.add("is-recording");
+                // mic_btn.textContent = "Stop Recording";
+            } else {
+                recorder.stop();
+                mic_btn.classList.remove("is-recording")
+                // mic_btn.textContent = "Record";
+            }
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            changeLanguage(currentLanguage);
+            
+           
+		SetupAudio();
+        });
+    </script>
+    <audio class="playback"></audio>
+</body>
+
+</html>

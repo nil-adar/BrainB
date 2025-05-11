@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="he">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/70157cb1204ca26691b11450306cd5f4?family=Harmonia+Sans+W06+Semi+Bold+Cn"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>NODUS - Results</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #0063A0;
+        }
+        
+        /* Add RTL support */
+        body.rtl {
+            direction: rtl;
+        }
+
+        body.he {
+            font-family: 'Assistant', sans-serif;
+        }
+        
+        .rtl .header nav a {
+            margin-right: 20px;
+            margin-left: 0;
+        }
+        
+        .rtl .logo-name {
+            text-align: right;
+        }
+        
+        .rtl .labResultsHeaderText {
+            text-align: right;
+        }
+        
+        .rtl .resultOverview {
+            text-align: right;
+        }
+        
+        .rtl .types {
+            text-align: right;
+            margin-right: 20%;
+            margin-left: 0;
+        }
+
+        .header {
+            background-color: #0f75bc;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header img {
+            width: 70px;
+        }
+
+        .header nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .header nav a:hover {
+            color: #16B06F;
+        }
+
+        .hero {
+            background-image: url("{% static 'images/background-FAQ.png' %}");
+            /* Add your image URL here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 20px 20px 20px;
+            min-height: 500px;
+        }
+
+        .hero h1 {
+            align-items: center;
+            margin: 0px;
+            font-size: 3em;
+            color: #0063A0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .hero h2 {
+            align-items: center;
+            margin: 0px;
+            font-size: 2em;
+            color: #0063A0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .hero h3 {
+            align-items: center;
+            margin: 0px;
+            font-size: 1em;
+            color: #0063A0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+
+        .hero p {
+            margin: 10px;
+            font-size: 2em;
+            color: #0063A0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .hero button {
+            margin: 20px;
+            background-color: #01C5A2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .hero button:hover {
+            background-color: #019c84;
+        }
+
+        .content {
+            margin: 20px 0px;
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #e9f5fe;
+        }
+
+        .content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .columns {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 75%;
+            align-items: center;
+            align-self: center;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .column img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .column h3 {
+            margin: 0px;
+        }
+
+        .footer {
+            background-color: #0f75bc;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .footer div {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer input[type="email"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        .footer input[type="email"]:focus {
+            outline: none;
+            border: 2px solid #00a859;
+        }
+
+        .footer input[type="submit"] {
+            background-color: #00a859;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .footer input[type="submit"]:hover {
+            background-color: #007d40;
+        }
+
+        .logo-name {
+            text-align: left;
+            text-decoration: none;
+            align-items: center;
+            color: white;
+            font-size: x-large;
+            font: bold;
+            transition: color 0.3s ease;
+        }
+
+        .logo-name:hover {
+            color: #16B06F;
+        }
+
+        .labResultsHeader {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+
+        }
+
+        .labResultsHeaderText {
+            justify-content: left;
+        }
+
+        .overlay {
+            margin-right: 20%;
+            margin-left: 20%;
+
+        }
+
+        .card {
+            border: 1px solid;
+            border-radius: 25px;
+            background-color: #ADD1E7;
+            display: flex;
+            flex-direction: row;
+            min-height: 200px;
+            min-width: 100px;
+            padding: 5px;
+        }
+
+        .card p {
+            color: #0063A0;
+            font-size: 1.3em;
+        }
+
+        .resultOverview {
+            margin: 10px;
+            text-align: left;
+            max-width: 50%;
+        }
+
+        .resultOverview h2 {
+            margin: 10px;
+        }
+        
+        /* Language selector styles */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .language-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;  
+        }
+        .language-btn:hover, .language-btn.active {
+            background-color: #16B06F;
+            border-color: #16B06F;
+        }
+        
+        /* For mobile screens - responsive adjustments */
+        @media (max-width: 768px) {
+            .card {
+                flex-direction: column;
+            }
+            .resultOverview {
+                max-width: 100%;
+            }
+            .overlay {
+                margin-right: 5%;
+                margin-left: 5%;
+            }
+            .types {
+                margin-left: 0 !important;
+                text-align: center !important;
+            }
+            .rtl .types {
+                margin-right: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div style="justify-content: right; display: flex; text-align: center; align-items: center;">
+            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px">
+            <!-- Add your logo URL here -->
+            <a class="logo-name" href="#" onclick="location.href='{% url 'landing' %}'" data-translate="nodus"><strong>NODUS</strong></a>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <nav style="padding: 10px;">
+                <a href="#" onclick="location.href='{% url 'landing' %}'" data-translate="home">Home</a>
+                <a href="#" onclick="location.href='{% url 'consent' %}'" data-translate="start_test">Start Test</a>
+                <a href="#" onclick="location.href='{% url 'FAQ' %}'" data-translate="faq">FAQ</a>
+            </nav>
+            <!-- Language selector buttons -->
+            <div class="language-selector">
+                <button class="language-btn active" onclick="changeLanguage('en')">EN</button>
+                <button class="language-btn" onclick="changeLanguage('he')">עב</button>
+            </div>
+        </div>
+    </header>
+    <section class="hero">
+        <div class="overlay" style="margin-top: 3%;">
+            <div class="labResultsHeader">
+                <img src="{% static 'images/Lab.png' %}" alt="lab-logo" sizes="50px">
+                <div class="labResultsHeaderText">
+                    <h1 data-translate="results_title">Results and Treatment</h1>
+                    <h3 data-translate="results_subtitle">This is what your test results say about you (according to our analysis)</h3>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="resultOverview">
+                    <p data-translate="dominant_type">Your dominant ADHD subtype is:</p>
+                    <h2 id="dominant" style="align-self: center;">Combined - 75%</h2>
+                    <p id="tips-text">{{ tips }}</p>
+                    <p id="tips-he" style="display:none;">{{ tips_he }}</p>
+                    <p id="tips-en" style="display:none;">{{ tips_en }}</p>
+
+                </div>
+
+                <div class="resultsGraph">
+                    <canvas id="myPieChart" width="400" height="400"></canvas>
+                    <div class="types" style="margin-left: 20%; text-align: left;">
+                        <p id="combined">Combined - 0%</p>
+                        <p id="impulse">Impulsive/Hyperactive - 0%</p>
+                        <p id="inattentive">Inattentive - 0%</p>
+                        <p id="none">No ADHD - 0%</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <button onclick="location.href='{% url 'landing' %}'" data-translate="back_home">Back to homepage</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div style="text-align: center; align-items: center; padding: 20px;">
+            <h3 data-translate="learn_more">Learn more about ADHD</h3>
+            <p><a href="https://applications.emro.who.int/docs/EMRPUB_leaflet_2019_mnh_214_en.pdf" data-translate="who_adhd">World Health
+                    Organization - ADHD</a></p>
+            <p><a href="https://www.cdc.gov/adhd/index.html" data-translate="cdc_adhd">CDC.gov - ADHD</a></p>
+        </div>
+        <div style="padding: 20px;">
+            <h3 data-translate="contact_us">Contact Us</h3>
+            <p>Safwan.Halabi@e.braude.ac.il</p>
+            <p>Bishara.Bisharat@e.braude.ac.il</p>
+        </div>
+        <div style="padding: 20px; display: flex; align-items: center; justify-content: center; flex-direction: row;">
+            <h2><strong style="font-size: 30px;" data-translate="nodus">NODUS</strong></h2>
+            <img src="{% static 'images/nodus-icon-removebg-preview.png' %}" alt="NODUS Logo" sizes="50px"
+                style="width: 70px;">
+        </div>
+    </footer>
+
+    <script>
+        let currentLanguage = 'he';
+    
+        const translations = {
+            en: {
+                nodus: "NODUS",
+                home: "Home",
+                start_test: "Start Test",
+                faq: "FAQ",
+                results_title: "Results and Treatment",
+                results_subtitle: "This is what your test results say about you (according to our analysis)",
+                dominant_type: "Your dominant ADHD subtype is:",
+                combined: "Combined",
+                impulsive_hyperactive: "Impulsive/Hyperactive",
+                inattentive: "Inattentive",
+                no_adhd: "No ADHD",
+                back_home: "Back to homepage",
+                incomplete_form: "Incomplete Form",
+                form_error: "Some questions are not answered.\nPlease answer all questions.",
+                learn_more: "Learn more about ADHD",
+                who_adhd: "World Health Organization - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "Contact Us"
+            },
+            he: {
+                nodus: "נודוס",
+                home: "דף הבית",
+                start_test: "התחל בדיקה",
+                faq: "שאלות נפוצות",
+                results_title: "תוצאות וטיפול",
+                results_subtitle: "אלו התוצאות שלך (לפי הניתוח שלנו)",
+                dominant_type: "תת הסוג הדומיננטי שלך הוא:",
+                combined: "משולב",
+                impulsive_hyperactive: "אימפולסיבי/היפראקטיבי",
+                inattentive: "חוסר קשב",
+                no_adhd: "ללא ADHD",
+                back_home: "חזרה לדף הבית",
+                incomplete_form: "טופס לא שלם",
+                form_error: "חלק מהשאלות לא נענו.\nאנא ענה על כל השאלות.",
+                learn_more: "למד עוד על ADHD",
+                who_adhd: "ארגון הבריאות העולמי - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "צור קשר"
+            }
+        };
+    
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+    
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`).classList.add('active');
+    
+            document.documentElement.lang = lang;
+            document.body.classList.remove('rtl', 'he');
+            if (lang === 'he') {
+                document.body.classList.add('rtl', 'he');
+            }
+    
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+    
+            updateChartLabels();
+            updateResultTexts();
+            updateTipsText();
+        }
+    
+        function updateResultTexts() {
+            const diagnosisLabels = {
+                en: {
+                    combined: "Combined",
+                    impulsive: "Impulsive/Hyperactive",
+                    inattentive: "Inattentive",
+                    none: "No ADHD"
+                },
+                he: {
+                    combined: "משולב",
+                    impulsive: "אימפולסיבי/היפראקטיבי",
+                    inattentive: "חוסר קשב",
+                    none: "ללא ADHD"
+                }
+            };
+    
+            const comb = document.getElementById('combined');
+            const imp = document.getElementById('impulse');
+            const inat = document.getElementById('inattentive');
+            const none = document.getElementById('none');
+            const dom = document.getElementById('dominant');
+    
+            const combPercent = parseFloat(diagnosisDataBackend[0] * 100).toFixed(2);
+            const impPercent = parseFloat(diagnosisDataBackend[1] * 100).toFixed(2);
+            const inatPercent = parseFloat(diagnosisDataBackend[2] * 100).toFixed(2);
+            const nonePercent = parseFloat(diagnosisDataBackend[3] * 100).toFixed(2);
+    
+            comb.textContent = `${diagnosisLabels[currentLanguage].combined} - ${combPercent}%`;
+            imp.textContent = `${diagnosisLabels[currentLanguage].impulsive} - ${impPercent}%`;
+            inat.textContent = `${diagnosisLabels[currentLanguage].inattentive} - ${inatPercent}%`;
+            none.textContent = `${diagnosisLabels[currentLanguage].none} - ${nonePercent}%`;
+    
+            const types = [
+                diagnosisLabels[currentLanguage].combined,
+                diagnosisLabels[currentLanguage].impulsive,
+                diagnosisLabels[currentLanguage].inattentive,
+                diagnosisLabels[currentLanguage].none
+            ];
+            dom.textContent = `${types[index]} - ${parseFloat(diagnosisDataBackend[index] * 100).toFixed(2)}%`;
+        }
+    
+        function updateTipsText() {
+            const tipsTextElement = document.getElementById('tips-text');
+            const tipsHe = document.getElementById('tips-he')?.innerText || '';
+            const tipsEn = document.getElementById('tips-en')?.innerText || '';
+    
+            if (tipsTextElement) {
+                tipsTextElement.innerText = currentLanguage === 'he' ? tipsHe : tipsEn;
+            }
+        }
+    
+        function updateChartLabels() {
+            if (window.myPieChart) {
+                const chartLabels = {
+                    en: ['Combined', 'Impulsive / Hyperactive', 'Inattentive', 'No ADHD'],
+                    he: ['משולב', 'אימפולסיבי / היפראקטיבי', 'חוסר קשב', 'ללא ADHD']
+                };
+                window.myPieChart.data.labels = chartLabels[currentLanguage];
+                window.myPieChart.update();
+            }
+        }
+    
+        function customAlert(message) {
+            Swal.fire({
+                icon: 'warning',
+                title: translations[currentLanguage].incomplete_form,
+                text: translations[currentLanguage].form_error,
+                confirmButtonText: 'OK'
+            });
+        }
+    
+        async function cleanUp() {
+            const response1 = await fetch('/done/', {
+                method: 'GET',
+                body: null
+            });
+            if (response1.ok) {
+                console.log("flushed files from backend");
+            } else {
+                const data = await response.json();
+                const message = data.message;
+                customAlert(message + ", try running the test again to remove your files");
+            }
+        }
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            cleanUp();
+            changeLanguage('he');
+        });
+    
+        let diagnosisDataBackend = [];
+        {% for item in percentages %}
+        diagnosisDataBackend.push({{ item }});
+        {% endfor %}
+    
+        let max = -1;
+        let index = -1;
+        for (let i = 0; i < diagnosisDataBackend.length; i++) {
+            if (diagnosisDataBackend[i] > max) {
+                max = diagnosisDataBackend[i];
+                index = i;
+            }
+        }
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('myPieChart').getContext('2d');
+            const data = {
+                labels: ['Combined', 'Impulsive / Hyperactive', 'Inattentive', 'No ADHD'],
+                datasets: [{
+                    label: 'Results',
+                    data: diagnosisDataBackend,
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)',
+                        'rgb(102, 22, 200)'
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+    
+            const config = {
+                type: 'pie',
+                data: data,
+            };
+    
+            window.myPieChart = new Chart(ctx, config);
+        });
+    </script>
+    
+
+
+
+</body>
+
+</html>

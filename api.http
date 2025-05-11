@@ -1,0 +1,16 @@
+### List Students for Teacher t1
+GET http://localhost:5000/api/students?teacherId=t1
+Accept: application/json
+
+### Send a Message
+POST http://localhost:5000/api/messages
+Content-Type: application/json
+
+{
+  "senderId": "t1",
+  "receiverId": "p1",
+  "studentId": "s123",
+  "content": "שלום, זה מבחן",
+  "senderRole": "teacher",
+  "isRead": false
+}

@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/70157cb1204ca26691b11450306cd5f4?family=Harmonia+Sans+W06+Semi+Bold+Cn"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>NODUS - Instructions</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/background-FAQ.png' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #0063A0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+      /* RTL support for Hebrew */
+      body.rtl {
+            direction: rtl;
+        }
+        
+        body.he {
+            font-family: 'Assistant', sans-serif;
+        }
+        
+        /* Enhanced RTL support */
+        .rtl .header nav a {
+            margin-right: 20px;
+            margin-left: 0;
+        }
+        
+        .rtl .logo-name {
+            text-align: right;
+        }
+        
+        .rtl input {
+            text-align: right;
+        }
+        
+        .rtl .faq-content {
+            text-align: right !important;
+            margin-left: auto !important;
+            margin-right: 18% !important;
+        }
+        .rtl li img {
+             margin-right: 10px; margin-left: 0; }
+        
+        .rtl li {
+            /* Reverse flex direction for list items that have flex display */
+            flex-direction: row-reverse;
+        }
+        
+        .rtl li p {
+            text-align: right;
+        }
+        
+            /* Adjust image position in RTL mode */
+            .rtl li img {
+            margin-right: 5px !important;
+            margin-left: 0 !important;
+            float: left !important;
+            clear: left !important;
+        }
+        
+        .rtl .hero .overlay,
+        .rtl .hero button {
+            text-align: center;
+        }
+        
+        .rtl .footer div {
+            text-align: right;
+        }
+        
+        .rtl .header > div:first-child {
+            justify-content: left;
+        }
+        
+        .rtl .header > div:last-child {
+            justify-content: flex-start;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .header {
+            background-color: #0f75bc;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header img {
+            width: 70px;
+        }
+
+        .header nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .header nav a:hover {
+            color: #16B06F;
+        }
+        
+        /* Language selector styles */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        
+        .language-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover, .language-btn.active {
+            background-color: #16B06F;
+            border-color: #16B06F;
+        }
+
+        .hero {
+            color: white;
+            text-align: center;
+            padding: 80px 20px 20px;
+        }
+
+        .hero h1 {
+            margin: 0px;
+            font-size: 3em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        .hero p {
+            margin: 10px;
+            font-size: 1.5em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        .hero button {
+            margin: 20px;
+            background-color: #01C5A2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: inherit;
+            transition: background-color 0.3s ease;
+        }
+
+        .hero button:hover {
+            background-color: #019c84;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            margin: 20px 0px;
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #e9f5fe;
+            flex: 1;
+        }
+
+        .content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .columns {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 75%;
+            align-items: center;
+            align-self: center;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .column img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .column h3 {
+            margin: 0px;
+        }
+
+        .footer {
+            background-color: #0f75bc;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            bottom: 0px;
+            width: 100%;
+        }
+
+        .footer div {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer input[type="email"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        .footer input[type="email"]:focus {
+            outline: none;
+            border: 2px solid #00a859;
+        }
+
+        .footer input[type="submit"] {
+            background-color: #00a859;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .footer input[type="submit"]:hover {
+            background-color: #007d40;
+        }
+
+        .logo-name {
+            text-align: left;
+            text-decoration: none;
+            align-items: center;
+            color: white;
+            font-size: x-large;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .logo-name:hover {
+            color: #16B06F;
+        }
+
+        .faq-content p {
+            margin: 10px;
+            font-size: 1em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        .faq-content summary {
+            margin: 10px;
+            font-size: 1.2em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div style="justify-content: right; display: flex; text-align: center; align-items: center;">
+            <img src="{% static 'images/nodus-icon-removebg-preview.png' %}" alt="NODUS Logo" sizes="50px">
+            <a class="logo-name" href="#" onclick="location.href='{% url 'landing' %}'"><strong data-translate="nodus">NODUS</strong></a>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <nav style="padding: 10px;">
+                <a href="#" onclick="location.href='{% url 'landing' %}'" data-translate="home">Home</a>
+                <a href="#" onclick="location.href='{% url 'consent' %}'" data-translate="start_test">Start Test</a>
+                <a href="#" onclick="location.href='{% url 'FAQ' %}'" data-translate="faq">FAQ</a>
+            </nav>
+            <div class="language-selector">
+                <button class="language-btn" onclick="changeLanguage('en')" data-lang="en">EN</button>
+                <button class="language-btn" onclick="changeLanguage('he')" data-lang="he">עב</button>
+            </div>
+        </div>
+    </header>
+    <section class="hero">
+        <div class="overlay" style="width: 65%; margin: auto;">
+            <h1 data-translate="test_instructions">Test Instructions</h1>
+            <p data-translate="follow_instructions">Follow these instructions in order for the test to work properly</p>
+        </div>
+        <br>
+        <div class="container">
+            <div class="faq-content" style="width: 60%; margin: auto; text-align: left; margin-right: 18%;">
+                <ul>
+                    <li style="display:flex;">
+                        <p><strong data-translate="instruction_1">1. Click either "Allow this time" or "Allow on every visit" when this popup
+                                appears, if you don't see this image - refresh the page or configure your browsers
+                                permissions.</strong></p>
+                        <img src="{% static 'images/allow-camera.png'%}" alt="Camera Permission" sizes="10px">
+                    </li>
+                    <br>
+                    <li>
+                        <p><strong data-translate="instruction_2">2. When first starting the eye-test the system first has to be configurated, all you
+                                have to do is look at the center of the page at the red dot and then press start test.</strong>
+                        </p>
+                    </li>
+                    <br>
+                    <li>
+                        <p><strong data-translate="instruction_3">3. During the eye-test you will need to look at the red dot at all times, and press
+                                the spacebar when you see "press" inside the red dot.</strong>
+                        </p>
+                    </li>
+                    <br>
+                    <li>
+                        <p><strong data-translate="instruction_4">4. Avoid looking at anything aside from the red dot.</strong>
+                        </p>
+                    </li>
+                    <br>
+                    <li>
+                        <p><strong data-translate="instruction_5">5. During the vocal-test you will need to press on the microphone icon, if the icon
+                                is red that means that you're recording audio,
+                                you will then read the paragraph out-loud into the microphone, then press on the
+                                microphone icon again to make it turn green.
+                                you will then press on the "next" button that appears to navigate to the questionnaire
+                                part.</strong>
+                        </p>
+                    </li>
+                    <br>
+                    <li>
+                        <p><strong data-translate="instruction_6">6. If at any point in time during the test you press on the logo on the top-left, the
+                                FAQ button, the Start Test button or Home button the test will be cancelled and you will
+                                be redirected to another page.
+                                <br>Avoid pressing on any button on the navbar before getting to the results page at the
+                                end.</strong>
+                        </p>
+                    </li>
+                    <br>
+                    <button style="display: flex; margin: auto;" onclick="location.href='{% url 'ADHD' %}'" data-translate="start_the_test">
+                        Start Test
+                    </button>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div style="text-align: center; align-items: center; padding: 20px;">
+            <h3 data-translate="learn_more">Learn more about ADHD</h3>
+            <p><a href="https://applications.emro.who.int/docs/EMRPUB_leaflet_2019_mnh_214_en.pdf" target="_blank" data-translate="who_adhd">World Health
+                    Organization - ADHD</a></p>
+            <p><a href="https://www.cdc.gov/adhd/index.html" target="_blank" data-translate="cdc_adhd">CDC.gov - ADHD</a></p>
+        </div>
+        <div style="padding: 20px;">
+            <h3 data-translate="contact_us">Contact Us</h3>
+            <p>Safwan.Halabi@e.braude.ac.il</p>
+            <p>Bishara.Bisharat@e.braude.ac.il</p>
+        </div>
+        <div style="padding: 20px; display: flex; align-items: center; justify-content: center; flex-direction: row;">
+            <h2><strong style="font-size: 30px;" data-translate="nodus">NODUS</strong></h2>
+            <img src="{% static 'images/nodus-icon-removebg-preview.png' %}" alt="NODUS Logo" sizes="50px"
+                style="width: 70px;">
+        </div>
+    </footer>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                nodus: "NODUS",
+                home: "Home",
+                start_test: "Start Test",
+                faq: "FAQ",
+                test_instructions: "Test Instructions",
+                follow_instructions: "Follow these instructions in order for the test to work properly",
+                instruction_1: "1. Click either \"Allow this time\" or \"Allow on every visit\" when this popup appears, if you don't see this image - refresh the page or configure your browsers permissions.",
+                instruction_2: "2. When first starting the eye-test the system first has to be configurated, all you have to do is look at the center of the page at the red dot and then press start test.",
+                instruction_3: "3. During the eye-test you will need to look at the red dot at all times, and press the spacebar when you see \"press\" inside the red dot.",
+                instruction_4: "4. Avoid looking at anything aside from the red dot.",
+                instruction_5: "5. During the vocal-test you will need to press on the microphone icon, if the icon is red that means that you're recording audio, you will then read the paragraph out-loud into the microphone, then press on the microphone icon again to make it turn green. you will then press on the \"next\" button that appears to navigate to the questionnaire part.",
+                instruction_6: "6. If at any point in time during the test you press on the logo on the top-left, the FAQ button, the Start Test button or Home button the test will be cancelled and you will be redirected to another page. Avoid pressing on any button on the navbar before getting to the results page at the end.",
+                start_the_test: "Start Test",
+                learn_more: "Learn more about ADHD",
+                who_adhd: "World Health Organization - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "Contact Us"
+            },
+            he: {
+                nodus: "נודוס",
+                home: "דף הבית",
+                start_test: "התחל בדיקה",
+                faq: "שאלות נפוצות",
+                test_instructions: "הוראות בדיקה",
+                follow_instructions: "עקוב אחר ההוראות האלה כדי שהבדיקה תעבוד כראוי",
+                instruction_1: "1. לחץ על \"אפשר בפעם זו\" או \"אפשר בכל ביקור\" כאשר חלון קופץ זה מופיע, אם אינך רואה תמונה זו - רענן את הדף או הגדר את הרשאות הדפדפן שלך.",
+                instruction_2: "2. בתחילת בדיקת העיניים המערכת צריכה להיות מוגדרת תחילה, כל מה שעליך לעשות הוא להסתכל על מרכז הדף בנקודה האדומה ואז ללחוץ על התחל בדיקה.",
+                instruction_3: "3. במהלך בדיקת העיניים תצטרך להסתכל על הנקודה האדומה בכל עת, וללחוץ על מקש הרווח כאשר אתה רואה \"press\" בתוך הנקודה האדומה.",
+                instruction_4: "4. הימנע מלהסתכל על כל דבר מלבד הנקודה האדומה.",
+                instruction_5: "5. במהלך בדיקת הקול תצטרך ללחוץ על סמל המיקרופון, אם הסמל אדום זה אומר שאתה מקליט שמע, אז תקרא את הפסקה בקול רם למיקרופון, ואז תלחץ שוב על סמל המיקרופון כדי שיהפוך לירוק. אז תלחץ על כפתור \"הבא\" שמופיע כדי לנווט לחלק השאלון.",
+                instruction_6: "6. אם בכל נקודת זמן במהלך הבדיקה אתה לוחץ על הלוגו בפינה השמאלית העליונה, כפתור השאלות הנפוצות, כפתור התחל בדיקה או כפתור הבית, הבדיקה תבוטל ותועבר לדף אחר. הימנע מלחיצה על כל כפתור בסרגל הניווט לפני שתגיע לדף התוצאות בסוף.",
+                start_the_test: "התחל בדיקה",
+                learn_more: "למד עוד על ADHD",
+                who_adhd: "ארגון הבריאות העולמי - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "צור קשר"
+            }
+        };
+
+        // Current selected language (default to English or get from localStorage)
+        let currentLanguage = localStorage.getItem('language') || 'en';
+
+        // Change language function
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update language buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.language-btn[data-lang="${lang}"]`).classList.add('active');
+            
+            // Update text direction and font
+            document.documentElement.lang = lang;
+            
+            // Remove any previous language classes
+            document.body.classList.remove('rtl', 'he');
+            
+            if (lang === 'he') {
+                document.body.classList.add('rtl', 'he');
+            }
+            
+            // Update all translated elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Save language preference
+            localStorage.setItem('language', lang);
+        }
+
+        async function cleanUp() {
+            const response1 = await fetch('/done/', {
+                method: 'GET',
+                body: null
+            });
+
+            if (response1.ok) {
+                // Redirect to the new page
+                console.log("flushed files from backend")
+            } else {
+                const data = await response1.json();
+                const message = data.message;
+                alert(message + ", try running the test again to remove your files");
+            }
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Apply saved language or default to English
+            changeLanguage(currentLanguage);
+            
+            // Clean up files in backend
+            cleanUp();
+        });
+    </script>
+</body>
+</html>

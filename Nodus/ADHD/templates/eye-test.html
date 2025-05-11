@@ -1,0 +1,928 @@
+
+<!DOCTYPE html>
+<html lang="he">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://db.onlinewebfonts.com/c/70157cb1204ca26691b11450306cd5f4?family=Harmonia+Sans+W06+Semi+Bold+Cn"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+			 
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const staticUrls = {
+            images: {
+                car: "{% static 'images/test-images/car-removebg-preview.png' %}",
+                dice: "{% static 'images/test-images/dice-removebg-preview.png' %}",
+                giraffe: "{% static 'images/test-images/giraffe-removebg-preview.png' %}",
+                phone: "{% static 'images/test-images/phone-removebg-preview.png' %}",
+                shovel: "{% static 'images/test-images/shovel-removebg-preview.png' %}",
+                pen: "{% static 'images/test-images/pen-removebg-preview.png' %}",
+                redDot: "{% static 'images/red-dot.png' %}"
+            },
+            audio: {
+                bird: "{% static 'audio/bird.mp3' %}",
+                dice: "{% static 'audio/dice.mp3' %}",
+                doorKnock: "{% static 'audio/door-knock.mp3' %}",
+                elephant: "{% static 'audio/elephant.mp3' %}",
+                motorola: "{% static 'audio/motorola.mp3' %}",
+                stamp: "{% static 'audio/stamp.mp3' %}",
+                wind: "{% static 'audio/wind.mp3' %}"
+            }
+        };
+        let startTime;
+        let reactionTime;
+        let isPressVisible = false;
+        let imageTimerId;
+        let audioTimerId;
+        let pressTimerId;
+        let reactionTimeArrayBase = [];
+        let reactionTimeArrayDistractors = [];
+        let flag = false;
+        let hasPressed = false;
+        let concludedFlag = false; // CHANGE TO FALSE WHEN PUSHING TO PROD
+
+        const imagePaths = [
+            staticUrls.images.car,
+            staticUrls.images.dice,
+            staticUrls.images.giraffe,
+            staticUrls.images.phone,
+            staticUrls.images.shovel,
+            staticUrls.images.pen
+        ];
+
+        const audioPaths = [
+            staticUrls.audio.bird,
+            staticUrls.audio.dice,
+            staticUrls.audio.doorKnock,
+            staticUrls.audio.elephant,
+            staticUrls.audio.motorola,
+            staticUrls.audio.stamp,
+            staticUrls.audio.wind
+        ];
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const exclusionRadius = 150;
+
+        function getRandomPosition(element) {
+            const section = document.querySelector(".hero");
+            const sectionRect = section.getBoundingClientRect();
+            const elementWidth = element.clientWidth;
+            const elementHeight = element.clientHeight;
+
+            let randomX, randomY;
+
+            do {
+                randomX = Math.floor(Math.random() * (sectionRect.width - elementWidth));
+                randomY = Math.floor(Math.random() * (sectionRect.height - elementHeight));
+            } while (isWithinExclusionZone(randomX, randomY, elementWidth, elementHeight));
+
+            return [randomX, randomY];
+        }
+
+        function isWithinExclusionZone(x, y, width, height) {
+            const elementCenterX = x + width / 2;
+            const elementCenterY = y + height / 2;
+            const distance = Math.sqrt(Math.pow(elementCenterX - centerX, 2) + Math.pow(elementCenterY - centerY, 2));
+            return distance < exclusionRadius;
+        }
+
+        function createRandomImage() {
+            const section = document.querySelector(".hero");
+            const img = document.createElement('img');
+            const randomIndex = Math.floor(Math.random() * imagePaths.length);
+            img.src = imagePaths[randomIndex];
+            img.classList.add('random-image');
+            img.style.position = 'absolute';
+            img.style.width = '150px';
+            section.appendChild(img);
+
+            img.onload = function () {
+                const [x, y] = getRandomPosition(img);
+                img.style.left = `${x}px`;
+                img.style.top = `${y}px`;
+            }
+
+            setTimeout(() => {
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    img.remove();
+                }, 1000);
+            }, 2000);
+        }
+
+        function playRandomAudio() {
+            const randomSound = audioPaths[Math.floor(Math.random() * audioPaths.length)];
+            const audio = new Audio(randomSound);
+            audio.play();
+        }
+
+        function showPressText() {
+            const prompt = document.getElementById('center-text');
+            prompt.textContent = "press";
+            isPressVisible = true;
+            hasPressed = false;
+            startTime = new Date().getTime();
+
+            setTimeout(() => {
+                if (isPressVisible) {
+                    prompt.textContent = "";
+                    isPressVisible = false;
+                    if (!hasPressed) {
+                        if (!flag) {
+                            reactionTimeArrayBase.push(-1);
+                        } else {
+                            reactionTimeArrayDistractors.push(-1);
+                        }
+                        console.log('No response, appending -1');
+                    }
+                }
+            }, Math.random() * 2000 + 1000);
+        }
+
+        function centerReactionTime() {
+            const section = document.querySelector(".hero");
+            const img = document.createElement('img');
+            const prompt = document.createElement('h3');
+            img.src = staticUrls.images.redDot;
+            section.appendChild(img);
+            section.appendChild(prompt);
+
+            img.id = "center-dot";
+            img.style.position = 'absolute';
+            img.style.left = '50%';
+            img.style.top = '50%';
+            img.style.width = '100px';
+            img.style.transform = 'translate(-50%, -50%)';
+            img.style.height = 'auto';
+
+            prompt.id = "center-text";
+            prompt.style.position = 'absolute';
+            prompt.style.left = '50%';
+            prompt.style.top = '48%';
+            prompt.style.width = '100px';
+            prompt.style.transform = 'translate(-50%, -50%)';
+            prompt.style.height = 'auto';
+            prompt.textContent = "";
+
+            randomizePressText();
+        }
+
+        function randomizePressText() {
+            const interval = Math.random() * (10000 - 3000) + 3000;
+            pressTimerId = setTimeout(() => {
+                showPressText();
+                randomizePressText();
+            }, interval);
+        }
+
+        function randomizeImageInterval() {
+            const interval = Math.random() * (7000 - 3000) + 3000;
+            imageTimerId = setTimeout(() => {
+                createRandomImage();
+                randomizeImageInterval();
+            }, interval);
+        }
+
+        function randomizeAudioInterval() {
+            const interval = Math.random() * (7000 - 3000) + 3000;
+            audioTimerId = setTimeout(() => {
+                playRandomAudio();
+                randomizeAudioInterval();
+            }, interval);
+        }
+
+        function startTest() {
+            centerReactionTime();
+
+            reactionTimeArrayBase = [];
+            reactionTimeArrayDistractors = [];
+
+            // Start the baseline test (1 minute without distractions)
+            testID = setTimeout(() => {
+                console.log("Baseline test complete.");
+                flag = true;
+                // Start the test with distractions
+                randomizeImageInterval();
+                randomizeAudioInterval();
+                setTimeout(() => {
+                    concludedFlag = true;
+                    endTest();
+                    console.log("Test with distractions complete.");
+
+                }, 60000); // 1 minute with distractions
+            }, 60000); // 1 minute for baseline
+        }
+
+        function endTest() {
+            clearTimeout(imageTimerId);
+            clearTimeout(audioTimerId);
+            clearTimeout(pressTimerId);
+            clearTimeout(testID)
+            const img = document.getElementById('center-dot');
+            const prompt = document.getElementById('center-text');
+            if (img) img.remove();
+            if (prompt) prompt.remove();
+            sessionStorage.setItem('reactionTimeBase', JSON.stringify(reactionTimeArrayBase));
+            sessionStorage.setItem('reactionTimeDistractors', JSON.stringify(reactionTimeArrayDistractors));
+            console.log('Reaction times recorded (in ms):', reactionTimeArrayBase, reactionTimeArrayDistractors);
+
+            if (concludedFlag) {
+                const event = new CustomEvent('endTest', { detail: "concluded" });
+                document.dispatchEvent(event);
+            }
+
+        }
+
+        document.addEventListener('mousedown', (event) => {
+            if (event.button === 0 && isPressVisible) {
+                reactionTime = new Date().getTime() - startTime;
+                document.getElementById('center-text').textContent = "";
+                isPressVisible = false;
+                hasPressed = true;
+                if (!flag) {
+                    reactionTimeArrayBase.push(reactionTime);
+                } else {
+                    reactionTimeArrayDistractors.push(reactionTime);
+                }
+                console.log('Reaction Time:', reactionTime, 'ms');
+            }
+        });
+
+        function startCalibration() {
+            const section = document.querySelector(".hero");
+            const img = document.createElement('img');
+            img.src = staticUrls.images.redDot;
+            section.appendChild(img);
+
+            img.id = "center-dot";
+            img.style.position = 'absolute';
+            img.style.left = '50%';
+            img.style.top = '50%';
+            img.style.width = '100px';
+            img.style.transform = 'translate(-50%, -50%)';
+            img.style.height = 'auto';
+        }
+
+        function endCalibration() {
+            const img = document.getElementById('center-dot');
+            img.remove();
+        }
+
+
+    </script>
+    <title>NODUS - Eye Test</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/background-FAQ.png' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #0063A0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* RTL support for Hebrew */
+        body.rtl {
+            direction: rtl;
+        }
+        
+        body.he {
+            font-family: 'Assistant', sans-serif;
+        }
+        
+        .rtl .header nav a {
+            margin-right: 20px;
+            margin-left: 0;
+        }
+        
+        .rtl .logo-name {
+            text-align: right;
+        }
+        
+        .rtl input {
+            text-align: right;
+        }
+
+        .header {
+            background-color: #0f75bc;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header img {
+            width: 70px;
+        }
+
+        .header nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .header nav a:hover {
+            color: #16B06F;
+        }
+        
+        /* Language selector styles */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        
+        .language-btn {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover, .language-btn.active {
+            background-color: #16B06F;
+            border-color: #16B06F;
+        }
+
+        .hero {
+            color: white;
+            text-align: center;
+            padding: 80px 20px 20px;
+            min-height: 63vh;
+        }
+
+        .hero h1 {
+            margin: 0px;
+            font-size: 3em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        .hero p {
+            margin: 10px;
+            font-size: 1.5em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        .hero button {
+            margin: 20px;
+            background-color: #01C5A2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: inherit;
+            transition: background-color 0.3s ease;
+        }
+
+        .hero button:hover {
+            background-color: #019c84;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            margin: 20px 0px;
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #e9f5fe;
+            flex: 1;
+        }
+
+        .content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .columns {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 75%;
+            align-items: center;
+            align-self: center;
+        }
+
+        .column {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .column img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .column h3 {
+            margin: 0px;
+        }
+
+        .footer {
+            background-color: #0f75bc;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .footer div {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            transition: text-decoration 0.3s ease;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer input[type="email"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        .footer input[type="email"]:focus {
+            outline: none;
+            border: 2px solid #00a859;
+        }
+
+        .footer input[type="submit"] {
+            background-color: #00a859;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .footer input[type="submit"]:hover {
+            background-color: #007d40;
+        }
+
+        .logo-name {
+            text-align: left;
+            text-decoration: none;
+            align-items: center;
+            color: white;
+            font-size: x-large;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .logo-name:hover {
+            color: #16B06F;
+        }
+
+        .faq-content p {
+            margin: 10px;
+            font-size: 1em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        .faq-content summary {
+            margin: 10px;
+            font-size: 1.2em;
+            color: #0063A0;
+            font-family: inherit;
+        }
+
+        /* Hide the video element */
+        #webcam {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div style="justify-content: right; display: flex; text-align: center; align-items: center;">
+            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px">
+										   
+            <a class="logo-name navigation-element" href="#" onclick="location.href='{% url 'landing' %}'">
+                <strong data-translate="nodus">NODUS</strong>
+            </a>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <nav style="padding: 10px;">
+                <a class="navigation-element" href="#" onclick="location.href='{% url 'landing' %}'" data-translate="home">Home</a>
+                <a class="navigation-element" href="#" onclick="location.href='{% url 'consent' %}'" data-translate="start_test">Start Test</a>
+                <a class="navigation-element" href="#" onclick="location.href='{% url 'FAQ' %}'" data-translate="faq">FAQ</a>
+            </nav>
+            <div class="language-selector">
+                <button class="language-btn" onclick="changeLanguage('en')" data-lang="en">EN</button>
+                <button class="language-btn" onclick="changeLanguage('he')" data-lang="he">עב</button>
+            </div>
+        </div>
+    </header>
+    <section class="hero">
+        <h1 id="title" data-translate="eye_test">Eye Test</h1>
+        <p id="instructions" data-translate="eye_test_instructions"><strong>Configuration</strong> - press "<strong>Record</strong>", keep looking at the red
+            circle that will appear, wait 10 seconds then press stop recording.<br> further instructions will soon
+            follow.</p>
+        <p id="instructions-1"></p>
+        <video id="webcam" autoplay playsinline muted></video>
+        <a id="download-link" style="display:none; position: absolute; top: 0;">Download Video</a>
+        <button id="start-stop-button" data-translate="record">Record</button>
+        <button id="restore-elements-button" style="display:none;">Restore Elements</button>
+
+        <script>
+            const webcamElem = document.getElementById("webcam");
+            const downloadLink = document.getElementById("download-link");
+            const startStopButton = document.getElementById("start-stop-button");
+            let title = document.getElementById("title");
+            let instructions = document.getElementById("instructions");
+            let instructions1 = document.getElementById("instructions-1");
+
+            let mediaRecorder;
+            let recordedChunks = [];
+            let isRecording = false;
+            let initialCheck = true; // CHANGE TO TRUE WHEN PUSHING TO PROD
+            let Awaiting = false;
+            let testRunning = false;
+
+            // Clone elements before removal
+            const titleClone = title.cloneNode(true);
+            const instructionsClone = instructions.cloneNode(true);
+            const instructions1Clone = instructions1.cloneNode(true);
+
+            // When test concludes the function below isn't called
+            async function handleRecordingStop(blob) {
+                if (initialCheck) {
+                    instructions.textContent = "Awaiting result from server, please wait a few seconds.";
+                    Awaiting = !Awaiting;
+
+                    const formData = new FormData();
+                    formData.append('initial-video', blob, 'initial-video.webm');
+
+                    try {
+                        const response = await fetch('/video-configuration/', {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        Awaiting = !Awaiting;
+
+                        if (response.status === 200) {
+                            console.log("Configuration complete, proceed to test");
+                            initialCheck = !initialCheck;
+                            setupTest();
+                        } else {
+                            if (response.status === 201) {
+                                console.error('Cant locate face/eyes, try moving closer to the screen, brighten or dampen the light in the room');
+                                instructions.textContent = "Cant locate face/eyes, try moving closer to the screen, lighten or dampen the light in the room and try again";
+
+                            }
+                            else {
+                                console.error('Video upload failed');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error uploading video:', error);
+                    }
+                    // ***************************************************
+                } else {
+                    try {
+                        if (concludedFlag) {
+                            console.log("ENTERED")
+                            const navigationElements = document.querySelectorAll('a.navigation-element');
+                            navigationElements.forEach(element => {
+                                element.href = '#'; // Set href to # to avoid navigation
+                                element.onclick = (event) => {
+                                    event.preventDefault(); // Prevent default behavior
+                                    return false; // Ensure any default action is cancelled
+                                };
+                            });
+                            concludedFlag = !concludedFlag;
+                            instructions.textContent = "Sending video to server, you will be redirected to the next page shortly.";
+                            instructions1.textContent = "";
+                            const formData = new FormData();
+                            formData.append('recorded-video', blob, 'recorded-video.webm');
+
+                            // check if test concluded correctly then add the reaction times from sessionStorage
+
+                            formData.append('reactionTimeBase', sessionStorage.getItem('reactionTimeBase'));
+                            formData.append('reactionTimeDistractors', sessionStorage.getItem('reactionTimeDistractors'));
+
+                            const response = await fetch('/video-configuration/', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            Awaiting = !Awaiting;
+
+                            if (response.status === 200) {
+                                const data = await response.json();
+                                const message = data.message;
+                                console.log("Test complete, proceed to next test " + message);
+
+                            } else {
+                                if (response.status === 201) {
+                                    console.error('Cant locate face/eyes, try moving closer to the screen, brighten or dampen the light in the room');
+                                    instructions.textContent = "Cant locate face/eyes, try moving closer to the screen, lighten or dampen the light in the room and try again";
+
+                                }
+                                else {
+                                    console.error('Video upload failed');
+                                }
+                            }
+                            location.href = '{% url 'vocal' %}'
+                        }
+
+                    } catch (error) {
+                        console.error('Error uploading video:', error);
+                    }
+
+
+                }
+            }
+
+            function startRecording() {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                    .then(stream => {
+                        webcamElem.srcObject = stream;
+                        mediaRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+
+                        mediaRecorder.ondataavailable = function (event) {
+                            if (event.data.size > 0) {
+                                recordedChunks.push(event.data);
+                            }
+                        };
+
+                        mediaRecorder.onstop = function () {
+                            const blob = new Blob(recordedChunks, { type: "video/webm" });
+                            handleRecordingStop(blob);
+                        };
+
+                        mediaRecorder.start();
+                        title.remove();
+                        instructions.remove();
+                        instructions1.remove();
+                        // nextTestButton.style.display = "none";
+
+                        if (!initialCheck) {
+                            testRunning = true;
+                            startTest();
+                        } else {
+                            startCalibration();
+                        }
+
+                    })
+                    .catch(error => {
+                        console.error("Error accessing webcam: ", error);
+                    });
+            }
+
+            // Function to stop recording
+            function stopRecording() {
+                mediaRecorder.stop();
+                restoreElements();
+                if (!initialCheck) {
+                    endTest();
+                }
+                else {
+                    endCalibration();
+                }
+            }
+
+            // Event listener for the start/stop button
+            startStopButton.addEventListener('click', () => {
+                if (!Awaiting) {
+                    if (!isRecording) {
+                        startRecording();
+                        startStopButton.textContent = translations[currentLanguage]["stop_recording"];
+                    } else {
+                        stopRecording();
+                        startStopButton.textContent = translations[currentLanguage]["record"];
+                    }
+                    isRecording = !isRecording;
+                }
+            });
+
+            // Function to restore elements
+            function restoreElements() {
+                document.querySelector('.hero').insertBefore(titleClone, document.querySelector('.hero').firstChild);
+                document.querySelector('.hero').insertBefore(instructionsClone, document.querySelector('video'));
+                document.querySelector('.hero').insertBefore(instructions1Clone, document.querySelector('video'));
+                title = document.getElementById("title");
+                instructions = document.getElementById("instructions");
+                instructions1 = document.getElementById("instructions-1");
+            }
+
+            function setupTest() {
+                if (currentLanguage === 'en') {
+                    instructions.innerHTML = "<strong>Test</strong> - focus on the center dot, don't look at the distractions.";
+                    instructions1.innerHTML = 'Press the mouse button when you see the <strong>"press"</strong> text appear on the center dot.';
+                } else {
+                    instructions.innerHTML = "<strong>בדיקה</strong> - התמקד בנקודה האמצעית, אל תסתכל על ההסחות.";
+                    instructions1.innerHTML = 'לחץ על כפתור העכבר כאשר אתה רואה את הטקסט <strong>"press"</strong> מופיע על הנקודה האמצעית.';
+                }
+            }
+
+            function testConclude() {
+                isRecording = !isRecording;
+                startStopButton.textContent = translations[currentLanguage]["record"];
+                instructions1.remove();
+                startStopButton.remove();
+                mediaRecorder.stop();
+                restoreElements();
+
+                // test concluded successfully
+                // show the option of moving forward to the next test and the option to retake the test
+                // nextTestButton.style.display = 'block';
+            }
+
+            document.addEventListener('endTest', testConclude);
+
+        </script>
+    </section>
+    <footer class="footer">
+        <div style="text-align: center; align-items: center; padding: 20px;">
+            <h3 data-translate="learn_more">Learn more about ADHD</h3>
+            <p><a href="https://applications.emro.who.int/docs/EMRPUB_leaflet_2019_mnh_214_en.pdf" target="_blank" data-translate="who_adhd">World Health
+                    Organization - ADHD</a></p>
+            <p><a href="https://www.cdc.gov/adhd/index.html" target="_blank" data-translate="cdc_adhd">CDC.gov - ADHD</a></p>
+        </div>
+        <div style="padding: 20px;">
+            <h3 data-translate="contact_us">Contact Us</h3>
+            <p>Safwan.Halabi@e.braude.ac.il</p>
+            <p>Bishara.Bisharat@e.braude.ac.il</p>
+        </div>
+        <div style="padding: 20px; display: flex; align-items: center; justify-content: center; flex-direction: row;">
+            <h2><strong style="font-size: 30px;" data-translate="nodus">NODUS</strong></h2>
+            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px"
+                style="width: 70px;">
+        </div>
+    </footer>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                nodus: "NODUS",
+                home: "Home",
+                start_test: "Start Test",
+                faq: "FAQ",
+                eye_test: "Eye Test",
+                eye_test_instructions: "<strong>Configuration</strong> - press \"<strong>Record</strong>\", keep looking at the red circle that will appear, wait 10 seconds then press stop recording.<br> further instructions will soon follow.",
+                record: "Record",
+                stop_recording: "Stop Recording",
+                start_test_button: "Start Test",
+                learn_more: "Learn more about ADHD",
+                who_adhd: "World Health Organization - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "Contact Us"
+            },
+            he: {
+                nodus: "נודוס",
+                home: "דף הבית",
+                start_test: "התחל בדיקה",
+                faq: "שאלות נפוצות",
+                eye_test: "בדיקת עיניים",
+                eye_test_instructions: "<strong>הגדרה</strong> - לחץ על \"<strong>הקלט</strong>\", המשך להסתכל על העיגול האדום שיופיע, המתן 10 שניות ואז לחץ על עצור הקלטה.<br> הוראות נוספות יופיעו בקרוב.",
+                record: "הקלט",
+                stop_recording: "עצור הקלטה",
+                start_test_button: "התחל בדיקה",
+                learn_more: "למד עוד על ADHD",
+                who_adhd: "ארגון הבריאות העולמי - ADHD",
+                cdc_adhd: "CDC.gov - ADHD",
+                contact_us: "צור קשר"
+            }
+        };
+
+        // Current selected language (default to English or get from localStorage)
+        let currentLanguage = 'he';
+
+        // Change language function
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update language buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.language-btn[data-lang="${lang}"]`).classList.add('active');
+            
+            // Update text direction and font
+            document.documentElement.lang = lang;
+																		 
+            
+            // Remove any previous language classes
+            document.body.classList.remove('rtl', 'he');
+            
+            if (lang === 'he') {
+                document.body.classList.add('rtl', 'he');
+            }
+            
+            // Update all translated elements
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+            
+            // Update the start/stop button text based on its current state
+            if (startStopButton) {
+                if (isRecording) {
+                    startStopButton.textContent = translations[lang]["stop_recording"];
+                } else {
+                    startStopButton.textContent = translations[lang]["record"];
+                }
+            }
+            
+            // Update test instructions if test setup has been completed
+            if (!initialCheck) {
+                setupTest();
+            }
+            
+            // Save language preference
+            localStorage.setItem('language', lang);
+        }
+
+        async function cleanUp() {
+            const response1 = await fetch('/done/', {
+                method: 'GET',
+                body: null
+            });
+
+            if (response1.ok) {
+                // Redirect to the new page
+                console.log("flushed files from backend")
+            } else {
+                const data = await response1.json();
+                const message = data.message;
+                alert(message + ", try running the test again to remove your files");
+            }
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Apply saved language or default to English
+            changeLanguage(currentLanguage);
+            
+            // Clean up files in backend
+            cleanUp();
+            
+            // Add listener for button text changes
+            startStopButton.addEventListener('click', () => {
+                if (!Awaiting) {
+                    setTimeout(() => {
+                        if (startStopButton) {
+                            if (isRecording) {
+                                startStopButton.textContent = translations[currentLanguage]["stop_recording"];
+                            } else {
+                                startStopButton.textContent = translations[currentLanguage]["record"];
+                            }
+                        }
+                    }, 100);
+                }
+            });
+        });
+    </script>
+</body> 
+
+</html>
