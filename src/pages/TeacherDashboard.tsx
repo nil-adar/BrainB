@@ -317,12 +317,15 @@ export default function TeacherDashboard() {
         )}
         <div className="flex items-center justify-between mb-4 mt-10">
           <h2 className="text-xl font-semibold">{t.classStudents}</h2>
-           <Button
-                className="rounded-xl shadow px-3 py-2 text-sm"
-            onClick={() => setIsAddStudentOpen(true)}
-               >
-             ➕ הוסף תלמיד חדש
-          </Button>
+ <Button
+  className={`rounded-xl shadow px-3 py-2 text-sm ${language === "he" ? "ml-6" : "mr-6"}`}
+  onClick={() => setIsAddStudentOpen(true)}
+>
+  {language === "he" ?  "הוסף תלמיד חדש  ➕" : "Add New Student  ➕"}
+</Button>
+
+
+
         </div>
         <StudentsList
           students={filteredStudents || []}

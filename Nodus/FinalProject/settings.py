@@ -30,6 +30,7 @@ DEBUG = os.environ.get('DEBUG', 'true').lower() == "true"
 
 # Set ALLOWED_HOSTS to a default list for development if not defined in the environment
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost 127.0.0.1").split()
+X_FRAME_OPTIONS = 'ALLOWALL'
 
 
 # Application definition

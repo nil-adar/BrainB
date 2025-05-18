@@ -12,6 +12,9 @@ import { Student, User } from "@/types/school";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useSearchParams } from "react-router-dom";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Check } from "lucide-react";
+
 const translations = {
   en: {
     back: "Back",
@@ -27,6 +30,15 @@ const translations = {
     externalSystemExplanation:
       "The student will be redirected to the external system to complete the assessment. After completion, results will be sent back.",
     startAssessment: "Start Assessment",
+    success: {
+      title: "Assessment Created Successfully",
+      description: "The student can start the assessment within the next 24 hours.",
+      button: "Return to Dashboard"
+    },
+    error: {
+      title: "Error",
+      description: "Failed to create assessment"
+    }
   },
   he: {
     back: "חזור",
@@ -40,8 +52,17 @@ const translations = {
     errorLoading: "שגיאה בטעינת תלמיד",
     externalSystem: "אבחון זה יתבצע במערכת חיצונית",
     externalSystemExplanation:
-      "התלמיד יועבר למערכת החיצונית כדי להשלים את האבחון. לאחר השלמתו, התוצאות יישלחו בחזרה למערכת.",
-    startAssessment: "התחל אבחון",
+      "התלמיד יקבל הרשאה לביצוע אבחון במערכת חיצונית ,לאחר השלמת האבחון התוצאות ישלחו בחזרה למערכת .הרשאה לביצוע האבחון תקפה ליום אחד בלבד באחריות האבחון לבצע את האבחון בזמן המצאים .",
+    startAssessment: "צור אבחון",
+    success: {
+      title: "האבחון נוצר בהצלחה",
+      description: "התלמיד יוכל להתחיל את האבחון במהלך 24 השעות הקרובות.",
+      button: "חזרה לדף הבית"
+    },
+    error: {
+      title: "שגיאה",
+      description: "יצירת האבחון נכשלה"
+    }
   },
 };
 
@@ -52,6 +73,7 @@ export default function CreateAssessment() {
     document.documentElement.dir === "rtl" ? "he" : "en"
   );
   const t = translations[language];
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Sync document direction
   useEffect(() => {
@@ -62,7 +84,7 @@ export default function CreateAssessment() {
   const [searchParams] = useSearchParams();
   const studentId = searchParams.get("studentId");
   const studentName = searchParams.get("studentName");
-  console.log("ID שהגיע מה-URL:", studentId); // <--- הוסף את זה
+  console.log("ID שהגיע מה-URL:", studentId);
   console.log("🔍 [CreateAssessment] studentId from URL:", studentId);
 
   // Fetch the specific student
@@ -75,9 +97,9 @@ export default function CreateAssessment() {
     enabled: !!studentId,
     queryFn: () => studentService.getStudentById(studentId!),
   });
-  console.log("סטטוס טעינה:", loadingStudent); // <--- הוסף את זה
-  console.log("שגיאה בטעינה:", studentError);  // <--- הוסף את זה
-  console.log("נתוני הסטודנט שהתקבלו:", student); // <--- הוסף את זה
+  console.log("סטטוס טעינה:", loadingStudent);
+  console.log("שגיאה בטעינה:", studentError);
+  console.log("נתוני הסטודנט שהתקבלו:", student);
 
   // Form state
   const today = new Date().toISOString().slice(0, 10);
@@ -92,7 +114,6 @@ export default function CreateAssessment() {
     { label: t.home, href: "/" },
     {
       label: studentName ?? t.loadingStudent,
-
       href: student ? `/student/${studentId}` : undefined,
     },
     { label: t.createNewAssessment },
@@ -101,19 +122,35 @@ export default function CreateAssessment() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentId) {
-      toast({ title: "Error", description: t.errorLoading, variant: "destructive" });
+      toast({
+        title: t.error.title,
+        description: "לא נמצא מזהה תלמיד",
+        variant: "destructive"
+      });
       return;
     }
+
     setLoading(true);
     try {
-      const assessment = await externalAssessmentService.startExternalAssessment(
-        studentId,
-        "behavioral"
-      );
-      navigate(`/external-assessment/${assessment.id}`);
+      await externalAssessmentService.startExternalAssessment(studentId, "behavioral");
+      
+      // הצגת הודעת הצלחה
+      toast({
+        title: t.success.title,
+        description: t.success.description,
+        variant: "default"
+      });
+      
+      // הצגת אזור הצלחה בדף
+      setIsSuccess(true);
+      
     } catch (err) {
       console.error(err);
-      toast({ title: "Error", description: "Failed to start assessment", variant: "destructive" });
+      toast({
+        title: t.error.title,
+        description: t.error.description,
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -137,59 +174,77 @@ export default function CreateAssessment() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">{t.createNewAssessment}</h1>
 
-        <Card className="p-6">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-sm font-medium mb-1">{t.studentName}</label>
-              {loadingStudent ? (
-                <p>{t.loadingStudent}</p>
-              ) : studentError || !student ? (
-                <p className="text-red-500">{t.errorLoading}</p>
-              ) : (
+        {isSuccess ? (
+          <Card className="p-6 border-green-500">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <Check className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-green-700">{t.success.title}</h3>
+              <p className="text-gray-600">{t.success.description}</p>
+              <Button 
+                onClick={() => navigate("/")}
+                className="mt-4"
+              >
+                {t.success.button}
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <Card className="p-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label className="block text-sm font-medium mb-1">{t.studentName}</label>
+                {loadingStudent ? (
+                  <p>{t.loadingStudent}</p>
+                ) : studentError || !student ? (
+                  <p className="text-red-500">{t.errorLoading}</p>
+                ) : (
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-lg"
+                    value={`${student.firstName} ${student.lastName}`}
+                    readOnly
+                  />
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">{t.date}</label>
                 <input
-                  type="text"
+                  type="date"
                   className="w-full p-2 border rounded-lg"
-                  value={`${student.firstName} ${student.lastName}`}
-                  readOnly
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
                 />
-              )}
-            </div>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">{t.date}</label>
-              <input
-                type="date"
-                className="w-full p-2 border rounded-lg"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">{t.notes}</label>
+                <textarea
+                  className="w-full p-2 border rounded-lg h-32"
+                  placeholder={t.addNotes}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">{t.notes}</label>
-              <textarea
-                className="w-full p-2 border rounded-lg h-32"
-                placeholder={t.addNotes}
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </div>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h3 className="font-semibold text-blue-800">{t.externalSystem}</h3>
+                <p className="text-blue-700 text-sm mt-2">{t.externalSystemExplanation}</p>
+              </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h3 className="font-semibold text-blue-800">{t.externalSystem}</h3>
-              <p className="text-blue-700 text-sm mt-2">{t.externalSystemExplanation}</p>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-primary text-white py-2 rounded-lg hover:opacity-90 transition-opacity"
-              disabled={loading || loadingStudent}
-            >
-              {loading ? "..." : t.startAssessment}
-            </Button>
-          </form>
-        </Card>
+              <Button
+                type="submit"
+                className="w-full bg-primary text-white py-2 rounded-lg hover:opacity-90 transition-opacity"
+                disabled={loading || loadingStudent}
+              >
+                {loading ? "..." : t.startAssessment}
+              </Button>
+            </form>
+          </Card>
+        )}
       </div>
     </div>
   );

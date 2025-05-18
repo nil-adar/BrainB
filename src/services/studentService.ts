@@ -24,20 +24,18 @@ export const studentService = {
   /**
    * משוך תלמיד בודד לפי ID
    */
- getStudentById: async (id: string): Promise<User | null> => {
-  try {
-    const res = await api.get(`/students/${id}`);
-    return res.data;
+getStudentById: async (id: string): Promise<Student> => {
+    try {
+      const res = await api.get(`/students/${id}`);
+      const user = res.data;
 
 
-    const user = res.data;
-    if (user.role !== "student") return null;
-    return user;
-  } catch (err) {
-    console.error(`Error fetching user ${id}:`, err);
-    return null;
-  }
-},
+      return user as Student;
+    } catch (err) {
+      console.error(`Error fetching student ${id}:`, err);
+      throw err;
+    }
+  },
 
 
   /**

@@ -422,7 +422,15 @@
 
         // Initialize language on page load
         document.addEventListener('DOMContentLoaded', (event) => {
-            // Apply saved language or default to English
+            // אני שומר כאן את הטוקן פרטי התלמיד בזכרון של הדפדפן 
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get("token");
+            if (token) {
+                sessionStorage.setItem("sessionToken", token);
+                console.log("🔐 טוקן נשמר ב-sessionStorage:", token);
+            } else {
+               console.warn("⚠️ טוקן לא נמצא ב-URL");
+            }
             changeLanguage(currentLanguage);
             
             // Clean up files in backend

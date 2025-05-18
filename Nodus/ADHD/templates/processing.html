@@ -400,52 +400,45 @@
                 });
             }
 
-
-            // Add functionality to save, add flag "saveData" to this request for that to happen
             async function nextPage() {
+                const token = sessionStorage.getItem("sessionToken");
 
+                if (!token) {
+                    console.error("❌ No session token in sessionStorage");
+                    customAlert("לא נמצא טוקן זיהוי. אנא חזור להתחלה ונסה שוב.");
+                    return;
+                }
+
+                const url = `/results/?token=${token}`;
                 const formData = new FormData();
                 formData.append('saveData', true);
 
-                var response1 = null;
+                try {
+                    const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
 
-                // Take this from an input you will add in the questionnaire page
-                let saveData = true;
-
-                if (saveData) {
-                    response1 = await fetch('/results/', {
-                        method: 'POST',
-                        body: formData
-                    });
-                }
-                else {
-                    response1 = await fetch('/results/', {
-                        method: 'GET',
-                        body: null
-                    });
-                }
-
-                if (response1.status == 200) {
-                    // Redirect to the new page
-                    window.location.href = response1.url;
+                if (response.ok) {
+                    window.location.href = url; // ניתוב כולל הטוקן
                 } else {
-                    const data = await response1.json();
-                    const message = data.message;
+                    const data = await response.json();
+                    const message = data.message || "אירעה שגיאה בשמירת התוצאות";
                     customAlert(message + ", " + translations[currentLanguage].redirecting_home);
                     await new Promise(r => setTimeout(r, 3000));
-                    const response = await fetch('/landing', {
-                        method: 'GET',
-                        body: null
-                    });
-                    if (response.status == 200) {
-                        // Redirect to the new page
-                        window.location.href = response.url;
-                    }
-                    else {
+
+                    const fallback = await fetch('/landing', { method: 'GET' });
+                    if (fallback.ok) {
+                        window.location.href = fallback.url;
+                    } else {
                         customAlert(translations[currentLanguage].error_routing);
                     }
-                }
-            }
+        }
+    } catch (err) {
+        console.error("❌ Network error:", err);
+        customAlert("שגיאה בתקשורת עם השרת.");
+    }
+}
 
 												  
 					   

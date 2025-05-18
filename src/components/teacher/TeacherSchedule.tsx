@@ -147,14 +147,17 @@ export const TeacherSchedule = ({ teacherId, translations: t, language }: Teache
                   )}
                 </TableBody>
               </Table>
-  
+             <div className={`mt-6 flex ${language === "he" ? "justify-end" : "justify-start"}`}>
               <Button
                 onClick={() => setShowEventModal(true)}
-                className="mt-6 bg-primary text-white"
+                className="bg-primary text-white"
               >
-                {language === "he" ? "הוסף אירוע אישי" : "Add Personal Event"}
-              </Button>
-  
+              {language === "he" ? " הוסף אירוע אישי ➕" : "Add Personal Event ➕"}
+               </Button>
+            </div>
+
+              
+                  
               <div className="mt-8 flex justify-center items-center gap-4 p-4 bg-primary/5 rounded-xl border border-primary/20">
                 <Clock className="w-6 h-6 text-primary" />
                 <div className="text-3xl font-mono font-semibold">

@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<html lang="he">
-
 {% load static %}
+<html lang="he">
 
 <head>
     <meta charset="UTF-8">
@@ -16,7 +14,7 @@
     <title>NODUS - Consent Form</title>
 
     <style>
-        body {
+        body.en {
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
@@ -89,7 +87,7 @@
             margin: 0 5px;
             cursor: pointer;
             border-radius: 4px;
-            transition: all 0.3s ease;  
+            transition: all 0.3s ease;
         }
 
         .language-btn:hover, .language-btn.active {
@@ -222,6 +220,7 @@
             width: 100%;
             height: 200px;
             background-color: white;
+            box-sizing: border-box; /* Recommended for easier width/height management */
         }
     </style>
 </head>
@@ -345,61 +344,170 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
-            // Initialize the canvas signature pad
-            const canvas = document.getElementById('signature-pad');
-            const ctx = canvas.getContext('2d');
-            let isDrawing = false;
-            let hasDrawn = false; // Flag to check if a signature has been drawn
-
-            function resizeCanvas() {
-                const containerStyle = window.getComputedStyle(canvas.parentNode);
-                const containerWidth = parseFloat(containerStyle.width);
-
-                canvas.width = containerWidth;
-                canvas.height = 200; // Fixed height
-
-                ctx.strokeStyle = "#000000"; // Set the stroke color to black
-                ctx.lineWidth = 2; // Set the line width to 2
+            // Initialize sessionStorage with token and perform cleanup first
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get("token");
+            if (token) {
+                sessionStorage.setItem("sessionToken", token);
+                console.log("🔐 טוקן נשמר ב-sessionStorage:", token);
+            } else {
+                console.warn("⚠️ טוקן לא נמצא ב-URL");
             }
 
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas(); // Initialize the canvas size
 
-            // Mouse events for drawing
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            
-            // Touch events for mobile devices
-            canvas.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousedown', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-            }, false);
-            
-            canvas.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousemove', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-            }, false);
-            
-            canvas.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                const mouseEvent = new MouseEvent('mouseup');
-                canvas.dispatchEvent(mouseEvent);
-            }, false);
 
-            function getMousePos(canvas, evt) {
-                const rect = canvas.getBoundingClientRect();
+            cleanUp(); // Call cleanUp to clear any previous session files
+
+            // Canvas and drawing related variables
+            const canvas = document.getElementById('signature-pad');
+            if (!canvas) {
+                console.error("Signature pad canvas not found!");
+                return; // Stop script if canvas is not found
+            }
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let hasDrawn = false;
+
+            // Language and translation variables
+            const translations = {
+                en: {
+                    nodus: "NODUS",
+                    home: "Home",
+                    start_test: "Start Test",
+                    faq: "FAQ",
+                    informed_consent_form: "Informed Consent Form",
+                    project_title_full: "Project Title:<br> NODUS - Detection of ADHD Symptoms Using Eye-Tracking, Vocal Analysis, and Behavioral Questionnaire",
+                    project_supervisor: "Project Supervisor:",
+                    supervisor_name: "Dr. Natali Levi",
+                    project_developers: "Project Developers:",
+                    developers_names: "Safwan Halabi & Bishara Bisharat",
+                    institution: "Institution:",
+                    institution_name: "Braude - College of Engineering",
+                    purpose_title: "Purpose of the Study",
+                    purpose_text: "The purpose of this study is to detect symptoms of ADHD using eye-tracking, vocal analysis, and a behavioral questionnaire. The data collected will be used to train a deep learning model for improved detection and analysis of ADHD symptoms.",
+                    participation_title: "Participation",
+                    participation_text: "Your participation in this study is voluntary. You will be asked to provide data through eye-tracking, vocal recordings, and answering a behavioral questionnaire. Your data will be anonymized and used solely for the purposes of this research.",
+                    procedures_title: "Procedures",
+                    procedures_text: "If you agree to participate, you will be asked to undergo the following procedures:",
+                    procedure_1: "Eye-tracking sessions to monitor your eye movements.",
+                    procedure_2: "Vocal recordings to analyze speech patterns.",
+                    procedure_3: "Completion of a behavioral questionnaire.",
+                    risks_title: "Risks and Discomforts",
+                    risks_text: "There are no known risks associated with this study beyond those encountered in daily life. Some participants may experience minor discomfort during the eye-tracking sessions.",
+                    benefits_title: "Benefits",
+                    benefits_text: "While there may be no direct benefits to you, your participation will contribute to research that may improve the understanding and detection of ADHD symptoms.",
+                    confidentiality_title: "Confidentiality",
+                    confidentiality_text: "Your data will be kept confidential. Only the research team will have access to the data. All data will be anonymized before analysis. Results of the study may be published, but they will not include any information that could identify you.",
+                    compensation_title: "Compensation",
+                    compensation_text: "There is no compensation for participation in this study.",
+                    withdraw_title: "Right to Withdraw",
+                    withdraw_text: "Your participation is voluntary, and you may withdraw from the study at any time without penalty or loss of benefits to which you are otherwise entitled. No data will be saved if you answer \"No\" to the last question in the questionnaire.",
+                    contact_title: "Contact Information",
+                    contact_text: "If you have any questions or concerns about this study, please contact the developers at",
+                    consent_title: "Consent",
+                    consent_text: "By signing below, you are indicating that you have read and understood the information provided above, and you agree to participate in this study.",
+                    full_name: "Participant's Full Name:",
+                    signature: "Participant's Signature:",
+                    save_signature: "Save Signature",
+                    clear_signature: "Clear Signature",
+                    learn_more: "Learn more about ADHD",
+                    who_adhd: "World Health Organization - ADHD",
+                    cdc_adhd: "CDC.gov - ADHD",
+                    contact_us: "Contact Us",
+                    no_signature: "No signature to save!",
+                    no_name: "No name to save!",
+                    incomplete_form: "Incomplete Form"
+                },
+                he: {
+                    nodus: "נודוס",
+                    home: "דף הבית",
+                    start_test: "התחל בדיקה",
+                    faq: "שאלות נפוצות",
+                    informed_consent_form: "טופס הסכמה מדעת",
+                    project_title_full: "כותרת הפרויקט:<br> נודוס - זיהוי תסמיני ADHD באמצעות מעקב עיניים, ניתוח קולי ושאלון התנהגותי",
+                    project_supervisor: "מנחה הפרויקט:",
+                    supervisor_name: "ד\"ר נטלי לוי",
+                    project_developers: "מפתחי הפרויקט:",
+                    developers_names: "ספוואן חלבי ובישארה בישאראת",
+                    institution: "מוסד:",
+                    institution_name: "בראודה - המכללה להנדסה",
+                    purpose_title: "מטרת המחקר",
+                    purpose_text: "מטרת מחקר זה היא לזהות תסמיני ADHD באמצעות מעקב אחר תנועות העיניים, ניתוח קולי ושאלון התנהגותי. הנתונים שייאספו ישמשו לאימון מודל למידה עמוקה לשיפור זיהוי וניתוח תסמיני ADHD.",
+                    participation_title: "השתתפות",
+                    participation_text: "השתתפותך במחקר זה היא התנדבותית. תתבקש/י לספק נתונים באמצעות מעקב אחר העיניים, הקלטות קוליות ומענה על שאלון התנהגותי. הנתונים שלך יהיו אנונימיים וישמשו אך ורק למטרות מחקר זה.",
+                    procedures_title: "הליכים",
+                    procedures_text: "אם תסכים/י להשתתף, תתבקש/י לעבור את ההליכים הבאים:",
+                    procedure_1: "מעקב אחר תנועות העיניים לניטור תנועות העיניים שלך.",
+                    procedure_2: "הקלטות קוליות לניתוח דפוסי דיבור.",
+                    procedure_3: "מילוי שאלון התנהגותי.",
+                    risks_title: "סיכונים ואי נוחות",
+                    risks_text: "אין סיכונים ידועים הקשורים למחקר זה מעבר לאלו הנפגשים בחיי היומיום. חלק מהמשתתפים עשויים לחוות אי נוחות קלה במהלך מעקב אחר העיניים.",
+                    benefits_title: "יתרונות",
+                    benefits_text: "בעוד שייתכן ולא יהיו לך יתרונות ישירים, השתתפותך תתרום למחקר שעשוי לשפר את ההבנה והזיהוי של תסמיני ADHD.",
+                    confidentiality_title: "סודיות",
+                    confidentiality_text: "הנתונים שלך יישמרו בסודיות. רק צוות המחקר יהיה בעל גישה לנתונים. כל הנתונים יהיו אנונימיים לפני הניתוח. תוצאות המחקר עשויות להתפרסם, אך הן לא יכללו מידע שיכול לזהות אותך.",
+                    compensation_title: "פיצוי",
+                    compensation_text: "אין פיצוי עבור השתתפות במחקר זה.",
+                    withdraw_title: "זכות לפרוש",
+                    withdraw_text: "השתתפותך היא התנדבותית, ואתה רשאי לפרוש מהמחקר בכל עת ללא עונש או אובדן הטבות להן אתה זכאי. לא יישמרו נתונים אם תענה \"לא\" לשאלה האחרונה בשאלון.",
+                    contact_title: "פרטי קשר",
+                    contact_text: "אם יש לך שאלות או חששות לגבי מחקר זה, אנא צור קשר עם המפתחים בכתובת",
+                    consent_title: "הסכמה",
+                    consent_text: "בחתימתך להלן, אתה מציין כי קראת והבנת את המידע המסופק לעיל, ואתה מסכים להשתתף במחקר זה.",
+                    full_name: "שם מלא של המשתתף:",
+                    signature: "חתימת המשתתף:",
+                    save_signature: "שמור חתימה",
+                    clear_signature: "נקה חתימה",
+                    learn_more: "למד עוד על ADHD",
+                    who_adhd: "ארגון הבריאות העולמי - ADHD",
+                    cdc_adhd: "CDC.gov - ADHD",
+                    contact_us: "צור קשר",
+                    no_signature: "אין חתימה לשמור!",
+                    no_name: "אין שם לשמור!",
+                    incomplete_form: "טופס לא מלא"
+                }
+            };
+            let currentLanguage = 'he'; // Default language
+
+            // --- Helper Functions ---
+            function customAlert(message) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: (translations[currentLanguage] && translations[currentLanguage].incomplete_form) ? translations[currentLanguage].incomplete_form : 'Incomplete Form',
+                    text: message,
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            async function cleanUp() {
+                try {
+                    const response1 = await fetch('/done/', { method: 'GET' });
+                    if (response1.ok) {
+                        console.log("Flushed files from backend");
+                    } else {
+                        const data = await response1.json(); // Corrected to response1
+                        const message = data.message || "Error during cleanup";
+                        customAlert(message + ", try running the test again to remove your files");
+                    }
+                } catch (error) {
+                    console.error("Error in cleanUp:", error);
+                    customAlert("An error occurred during cleanup.");
+                }
+            }
+
+            // --- Canvas Functions ---
+            function resizeCanvas() {
+                if (!canvas) return;
+                const containerStyle = window.getComputedStyle(canvas.parentNode);
+                const containerWidth = parseFloat(containerStyle.width);
+                canvas.width = containerWidth;
+                canvas.height = 200;
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+            }
+
+            function getMousePos(canvasEl, evt) {
+                const rect = canvasEl.getBoundingClientRect();
                 return {
                     x: evt.clientX - rect.left,
                     y: evt.clientY - rect.top
@@ -418,7 +526,7 @@
                 const pos = getMousePos(canvas, e);
                 ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
-                hasDrawn = true; // Set the flag to true when drawing occurs
+                hasDrawn = true;
             }
 
             function stopDrawing() {
@@ -426,23 +534,28 @@
                 ctx.closePath();
             }
 
-            document.getElementById('save-signature').addEventListener('click', saveSignature);
+            function clearSignature() {
+                if (!canvas) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                hasDrawn = false;
+            }
 
             async function saveSignature() {
                 if (!hasDrawn) {
                     customAlert(translations[currentLanguage].no_signature || 'No signature to save!');
                     return;
                 }
-
-                const fullName = document.getElementById('name-field').value;
+                const fullNameInput = document.getElementById('name-field');
+                if (!fullNameInput) {
+                    customAlert("Name field not found!"); return;
+                }
+                const fullName = fullNameInput.value;
                 if (!fullName) {
                     customAlert(translations[currentLanguage].no_name || 'No name to save!');
                     return;
                 }
 
                 const dataURL = canvas.toDataURL('image/png');
-
-                // Convert dataURL to Blob
                 function dataURLToBlob(dataURL) {
                     const binary = atob(dataURL.split(',')[1]);
                     const array = [];
@@ -451,9 +564,7 @@
                     }
                     return new Blob([new Uint8Array(array)], { type: 'image/png' });
                 }
-
                 const blob = dataURLToBlob(dataURL);
-
                 const formData = new FormData();
                 formData.append('signature', blob, 'signature.png');
                 formData.append('full-name', fullName);
@@ -463,205 +574,106 @@
                         method: 'POST',
                         body: formData,
                     });
-
                     if (response.ok) {
                         console.log("Signature uploaded successfully.");
-                        // Move to next page
-                        const instructions = await fetch('/instructions', {
-                            method: 'GET',
-                            body: null,
-                        });
-
-                        if (instructions.status === 200) {
+                        const instructions = await fetch('/instructions', { method: 'GET' });
+                        if (instructions.ok) {
                             window.location.href = instructions.url;
+                        } else {
+                            console.error('Failed to fetch instructions page. Status:', instructions.status);
+                            customAlert('Failed to proceed. Please try again.');
                         }
                     } else {
+                        console.error('Signature upload failed. Status:', response.status);
+                         // The 201 check might need review based on your API's actual error responses
                         if (response.status === 201) {
-                            console.error('Error - couldnt upload details');
-                        } else {
-                            console.error('Signature upload failed');
+                            console.error('Error (201) - couldnt upload details. API might consider this an error.');
                         }
+                        customAlert('Error uploading signature. Please try again.');
                     }
                 } catch (error) {
                     console.error('Error uploading signature:', error);
+                    customAlert('An error occurred during signature upload.');
                 }
             }
 
-            document.getElementById('clear-signature').addEventListener('click', clearSignature);
+            // --- Language Function ---
+            function changeLanguage(lang) {
+                currentLanguage = lang;
+                document.querySelectorAll('.language-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const activeBtn = document.querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`);
+                if (activeBtn) activeBtn.classList.add('active');
 
-            function clearSignature() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                hasDrawn = false; // Reset the flag when the canvas is cleared
-            }
-            
-            // Initialize language to English
-            changeLanguage('he');
-        });
-        
-        // Language translations
-        const translations = {
-            en: {
-                nodus: "NODUS",
-                home: "Home",
-                start_test: "Start Test",
-                faq: "FAQ",
-                informed_consent_form: "Informed Consent Form",
-                project_title_full: "Project Title:<br> NODUS - Detection of ADHD Symptoms Using Eye-Tracking, Vocal Analysis, and Behavioral Questionnaire",
-                project_supervisor: "Project Supervisor:",
-                supervisor_name: "Dr. Natali Levi",
-                project_developers: "Project Developers:",
-                developers_names: "Safwan Halabi & Bishara Bisharat",
-                institution: "Institution:",
-                institution_name: "Braude - College of Engineering",
-                purpose_title: "Purpose of the Study",
-                purpose_text: "The purpose of this study is to detect symptoms of ADHD using eye-tracking, vocal analysis, and a behavioral questionnaire. The data collected will be used to train a deep learning model for improved detection and analysis of ADHD symptoms.",
-                participation_title: "Participation",
-                participation_text: "Your participation in this study is voluntary. You will be asked to provide data through eye-tracking, vocal recordings, and answering a behavioral questionnaire. Your data will be anonymized and used solely for the purposes of this research.",
-                procedures_title: "Procedures",
-                procedures_text: "If you agree to participate, you will be asked to undergo the following procedures:",
-                procedure_1: "Eye-tracking sessions to monitor your eye movements.",
-                procedure_2: "Vocal recordings to analyze speech patterns.",
-                procedure_3: "Completion of a behavioral questionnaire.",
-                risks_title: "Risks and Discomforts",
-                risks_text: "There are no known risks associated with this study beyond those encountered in daily life. Some participants may experience minor discomfort during the eye-tracking sessions.",
-                benefits_title: "Benefits",
-                benefits_text: "While there may be no direct benefits to you, your participation will contribute to research that may improve the understanding and detection of ADHD symptoms.",
-                confidentiality_title: "Confidentiality",
-                confidentiality_text: "Your data will be kept confidential. Only the research team will have access to the data. All data will be anonymized before analysis. Results of the study may be published, but they will not include any information that could identify you.",
-                compensation_title: "Compensation",
-                compensation_text: "There is no compensation for participation in this study.",
-                withdraw_title: "Right to Withdraw",
-                withdraw_text: "Your participation is voluntary, and you may withdraw from the study at any time without penalty or loss of benefits to which you are otherwise entitled. No data will be saved if you answer \"No\" to the last question in the questionnaire.",
-                contact_title: "Contact Information",
-                contact_text: "If you have any questions or concerns about this study, please contact the developers at",
-                consent_title: "Consent",
-                consent_text: "By signing below, you are indicating that you have read and understood the information provided above, and you agree to participate in this study.",
-                full_name: "Participant's Full Name:",
-                signature: "Participant's Signature:",
-                save_signature: "Save Signature",
-                clear_signature: "Clear Signature",
-                learn_more: "Learn more about ADHD",
-                who_adhd: "World Health Organization - ADHD",
-                cdc_adhd: "CDC.gov - ADHD",
-                contact_us: "Contact Us",
-                no_signature: "No signature to save!",
-                no_name: "No name to save!",
-                incomplete_form: "Incomplete Form"
-                
-                
-            },
-            he: {
-                nodus: "נודוס",
-                home: "דף הבית",
-                start_test: "התחל בדיקה",
-                faq: "שאלות נפוצות",
-                informed_consent_form: "טופס הסכמה מדעת",
-                project_title_full: "כותרת הפרויקט:<br> נודוס - זיהוי תסמיני ADHD באמצעות מעקב עיניים, ניתוח קולי ושאלון התנהגותי",
-                project_supervisor: "מנחה הפרויקט:",
-                supervisor_name: "ד\"ר נטלי לוי",
-                project_developers: "מפתחי הפרויקט:",
-                developers_names: "ספוואן חלבי ובישארה בישאראת",
-                institution: "מוסד:",
-                institution_name: "בראודה - המכללה להנדסה",
-                purpose_title: "מטרת המחקר",
-                purpose_text: "מטרת מחקר זה היא לזהות תסמיני ADHD באמצעות מעקב אחר תנועות העיניים, ניתוח קולי ושאלון התנהגותי. הנתונים שייאספו ישמשו לאימון מודל למידה עמוקה לשיפור זיהוי וניתוח תסמיני ADHD.",
-                participation_title: "השתתפות",
-                participation_text: "השתתפותך במחקר זה היא התנדבותית. תתבקש/י לספק נתונים באמצעות מעקב אחר העיניים, הקלטות קוליות ומענה על שאלון התנהגותי. הנתונים שלך יהיו אנונימיים וישמשו אך ורק למטרות מחקר זה.",
-                procedures_title: "הליכים",
-                procedures_text: "אם תסכים/י להשתתף, תתבקש/י לעבור את ההליכים הבאים:",
-                procedure_1: "מעקב אחר תנועות העיניים לניטור תנועות העיניים שלך.",
-                procedure_2: "הקלטות קוליות לניתוח דפוסי דיבור.",
-                procedure_3: "מילוי שאלון התנהגותי.",
-                risks_title: "סיכונים ואי נוחות",
-                risks_text: "אין סיכונים ידועים הקשורים למחקר זה מעבר לאלו הנפגשים בחיי היומיום. חלק מהמשתתפים עשויים לחוות אי נוחות קלה במהלך מעקב אחר העיניים.",
-                benefits_title: "יתרונות",
-                benefits_text: "בעוד שייתכן ולא יהיו לך יתרונות ישירים, השתתפותך תתרום למחקר שעשוי לשפר את ההבנה והזיהוי של תסמיני ADHD.",
-                confidentiality_title: "סודיות",
-                confidentiality_text: "הנתונים שלך יישמרו בסודיות. רק צוות המחקר יהיה בעל גישה לנתונים. כל הנתונים יהיו אנונימיים לפני הניתוח. תוצאות המחקר עשויות להתפרסם, אך הן לא יכללו מידע שיכול לזהות אותך.",
-                compensation_title: "פיצוי",
-                compensation_text: "אין פיצוי עבור השתתפות במחקר זה.",
-                withdraw_title: "זכות לפרוש",
-                withdraw_text: "השתתפותך היא התנדבותית, ואתה רשאי לפרוש מהמחקר בכל עת ללא עונש או אובדן הטבות להן אתה זכאי. לא יישמרו נתונים אם תענה \"לא\" לשאלה האחרונה בשאלון.",
-                contact_title: "פרטי קשר",
-                contact_text: "אם יש לך שאלות או חששות לגבי מחקר זה, אנא צור קשר עם המפתחים בכתובת",
-                consent_title: "הסכמה",
-                consent_text: "בחתימתך להלן, אתה מציין כי קראת והבנת את המידע המסופק לעיל, ואתה מסכים להשתתף במחקר זה.",
-                full_name: "שם מלא של המשתתף:",
-                signature: "חתימת המשתתף:",
-                save_signature: "שמור חתימה",
-                clear_signature: "נקה חתימה",
-                learn_more: "למד עוד על ADHD",
-                who_adhd: "ארגון הבריאות העולמי - ADHD",
-                cdc_adhd: "CDC.gov - ADHD",
-                contact_us: "צור קשר",
-                no_signature: "אין חתימה לשמור!",
-                no_name: "אין שם לשמור!",
-                incomplete_form: "טופס לא מלא"
+                document.documentElement.lang = lang;
+                document.body.classList.remove('rtl', 'he'); // Clear previous lang classes
+                if (lang === 'he') {
+                    document.body.classList.add('rtl');
+                    document.body.classList.add('he'); // Add 'he' for specific font
+                }
+                // For other languages, ensure 'he' and 'rtl' are removed if they were there
+
+                document.querySelectorAll('[data-translate]').forEach(element => {
+                    const key = element.getAttribute('data-translate');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.innerHTML = translations[lang][key];
+                    }
+                });
             }
 
-        };
+            // --- Initializations and Event Listeners ---
+            if (canvas) {
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas(); // Initialize canvas size
 
-        // Current selected language
-        let currentLanguage = 'he';
+                // Mouse events
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mouseout', stopDrawing);
 
-        // Change language function
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            
-            // Update language buttons
+                // Touch events
+                canvas.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // Prevent scrolling on touch
+                    if (e.touches.length > 0) {
+                        const touch = e.touches[0];
+                        const mouseEvent = new MouseEvent('mousedown', { clientX: touch.clientX, clientY: touch.clientY });
+                        canvas.dispatchEvent(mouseEvent);
+                    }
+                }, { passive: false }); // Use passive: false if preventDefault is needed
+
+                canvas.addEventListener('touchmove', function(e) {
+                    e.preventDefault(); // Prevent scrolling on touch
+                     if (e.touches.length > 0) {
+                        const touch = e.touches[0];
+                        const mouseEvent = new MouseEvent('mousemove', { clientX: touch.clientX, clientY: touch.clientY });
+                        canvas.dispatchEvent(mouseEvent);
+                    }
+                }, { passive: false });
+
+                canvas.addEventListener('touchend', function(e) {
+                    // e.preventDefault(); // Often not needed for touchend if mousedown/move are handled
+                    const mouseEvent = new MouseEvent('mouseup', {});
+                    canvas.dispatchEvent(mouseEvent);
+                }, false);
+            }
+
+            const saveBtn = document.getElementById('save-signature');
+            if (saveBtn) saveBtn.addEventListener('click', saveSignature);
+
+            const clearBtn = document.getElementById('clear-signature');
+            if (clearBtn) clearBtn.addEventListener('click', clearSignature);
+
+            // Setup language buttons (assuming they exist)
             document.querySelectorAll('.language-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`).classList.add('active');
-            
-            // Update text direction and font
-            document.documentElement.lang = lang;
-            
-            // Remove any previous language classes
-            document.body.classList.remove('rtl', 'he');
-            
-            if (lang === 'he') {
-                document.body.classList.add('rtl');
-                document.body.classList.add(lang);
-            }
-            
-            // Update all translated elements
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[lang][key]) {
-                    element.innerHTML = translations[lang][key];
+                const lang = btn.innerText === 'EN' ? 'en' : (btn.innerText === 'עב' ? 'he' : null);
+                if (lang) {
+                    btn.onclick = () => changeLanguage(lang); // Re-assign onclick to ensure it uses the scoped changeLanguage
                 }
             });
-        }
 
-        async function cleanUp() {
-            const response1 = await fetch('/done/', {
-                method: 'GET',
-                body: null
-            });
-
-            if (response1.ok) {
-                // Redirect to the new page
-                console.log("flushed files from backend")
-            } else {
-                const data = await response.json();
-                const message = data.message;
-                customAlert(message + ", try running the test again to remove your files");
-            }
-        }
-
-        function customAlert(message) {
-            Swal.fire({
-                icon: 'warning',
-                title: translations[currentLanguage].incomplete_form || 'Incomplete Form',
-                text: message,
-                confirmButtonText: 'OK'
-            });
-        }
-
-        // Clean up files in backend
-        document.addEventListener('DOMContentLoaded', (event) => {
-            cleanUp();
+            changeLanguage('he'); // Set initial language
         });
     </script>
 </body>

@@ -335,6 +335,29 @@ interface ChildrenProgressSectionProps {
                   className="rounded-lg bg-white shadow"
                     dir={language === "he" ? "rtl" : "ltr"} // Added direction based on language
                 />
+
+
+                <div className="mt-6 bg-blue-50 rounded-xl p-4">
+  <h3 className="font-semibold mb-2">{t.upcomingEvents}</h3>
+  {[
+    { date: new Date(2025, 4, 20), title: "יום הורים" },
+    { date: new Date(2025, 4, 25), title: "מפגש הורים ומורים" },
+    { date: new Date(2025, 5, 30), title: "יום   לימודים אחרון לשנת הלימודים   " },
+  ].map((event, index) => (
+    <div
+      key={index}
+      className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mb-2"
+    >
+      <div className="font-bold text-yellow-700">{event.title}</div>
+      <div className="text-sm text-gray-600">
+        {format(event.date, "d MMMM yyyy", {
+          locale: language === "he" ? he : enUS,
+        })}
+      </div>
+    </div>
+  ))}
+</div>
+
               </CardContent>
             </Card>
           </aside>

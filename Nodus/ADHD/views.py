@@ -20,7 +20,9 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder
 from bson.binary import Binary
-
+from .token_verification import verify_token
+import requests
+from datetime import datetime
 
 ### MODEL ###
 
@@ -111,11 +113,16 @@ model_pred.load_weights(weight_path)
 
 # A function that loads the conesnt form page
 def consentForm(request):
+    # שלב 1 – אימות טוקן
+    if not verify_token(request):
+        return HttpResponse("Invalid or expired token", status=403)
 
+    # שלב 2 – יצירת סשן 
     if not request.session.session_key:
         request.session.create()
     session_id = request.session.session_key
 
+    # שלב 3 – החזרת התבנית
     template = loader.get_template('consent-form-page.html')
     return HttpResponse(template.render())
 
@@ -400,8 +407,36 @@ def results(request):
     else:
         questions = tuple(map(int, questionnaire.split(',')))
 
-
     percentages = model(eye_analysis, base, dist, voice_analysis, questions)
+    dominant_subtype = getLabel(questionnaire)
+    session_token = request.GET.get("token")
+    print("📦 Token received in final results page:", session_token)
+
+    if session_token:
+        try:
+            data_to_send = {
+                "sessionToken": session_token,
+                "percentages": [float(round(p, 4)) for p in percentages],
+                "dominantSubtype": dominant_subtype,
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            print("📡 Sending results to BrainBridge:", data_to_send)
+
+            response = requests.post("http://localhost:5000/api/diagnostic/results", json=data_to_send)
+
+            print("✅ Server response status:", response.status_code)
+            print("📄 Server response body:", response.text)
+
+            if response.status_code == 200:
+              print("✅ Results sent successfully to BrainBridge.")
+            else:
+              print("⚠️ Failed to send results to BrainBridge:", response.status_code, response.text)
+        except Exception as e:
+            print("❌ Error sending results to BrainBridge:", str(e))
+    else:
+     print("❌ No session token found in request!")
+
+
     lang_param = request.GET.get('lang', 'he')
     user_lang = lang_param if lang_param in ['en', 'he'] else 'he'
     tips_he = get_tips(percentages, lang='he')
@@ -416,8 +451,10 @@ def results(request):
         'vocal_analysis': voice_analysis,
         'questionnaire': questionnaire,
         'reaction_time': reaction.split('\n')
-    } 
+    }
+
     return HttpResponse(template.render(context=context))
+
 
 # A helper function that calculates what the user's subtype is
 def getLabel(questionnaire):

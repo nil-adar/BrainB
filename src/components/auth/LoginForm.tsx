@@ -38,7 +38,9 @@ export const LoginForm = ({ translations: t, isRTL }: LoginFormProps) => {
         // Store user data in localStorage for persistence
         localStorage.setItem('user', JSON.stringify(data.user));
         console.log("🧠 התחברות הצליחה, role:", data.user.role);
-
+      if (data.user.role === 'student') {
+        localStorage.setItem('studentId', data.user._id); // ✅ התיקון
+      }
         toast.success(isRTL ? `ברוך הבא, ${data.user.name}!` : `Welcome, ${data.user.name}!`, {
           className: isRTL ? "rtl" : "ltr"
         });
