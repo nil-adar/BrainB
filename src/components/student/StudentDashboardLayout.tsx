@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 
 interface StudentDashboardLayoutProps {
@@ -12,10 +11,11 @@ export const StudentDashboardLayout = ({
   mainContent, 
   rightSidebar 
 }: StudentDashboardLayoutProps) => {
+  // הקטנו את ה-padding והגדלים כדי שיתאימו יותר לתמונה שהועלתה
   return (
-    <div className="container mx-auto p-4 md:p-8">
-      <div className="grid grid-cols-1 md:grid-cols-[300px,1fr,300px] gap-6 md:gap-8">
-        <aside className="space-y-6 order-2 md:order-1">
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-1 md:grid-cols-[250px,1fr,300px] gap-4 md:gap-6">
+        <aside className="space-y-4 order-2 md:order-1">
           {leftSidebar}
         </aside>
 
@@ -23,7 +23,7 @@ export const StudentDashboardLayout = ({
           {mainContent}
         </section>
 
-        <aside className="space-y-6 order-3">
+        <aside className="space-y-4 order-3">
           {rightSidebar}
         </aside>
       </div>

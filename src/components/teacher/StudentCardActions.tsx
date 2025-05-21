@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 interface StudentCardActionsProps {
   studentId: string;
   studentName: string;
+  teacherId: string;
+  classId: string;   
   translations: {
     createAssessment: string;
     viewPreAssessments: string;
@@ -28,12 +30,22 @@ export const StudentCardActions = ({
 }: StudentCardActionsProps) => {
   const navigate = useNavigate();
   const [textDirection, setTextDirection] = useState<"text-right" | "text-left">("text-right");
-  
+
+  const teacherId = localStorage.getItem("teacherId");
+  const classId = localStorage.getItem("classId");
+
   useEffect(() => {
-    // Check document direction (RTL for Hebrew, LTR for English)
     const direction = document.documentElement.dir === "rtl" ? "text-right" : "text-left";
     setTextDirection(direction);
   }, []);
+
+  const handleNavigateToTasks = () => {
+    if (!teacherId || !classId) {
+      console.warn("❌ חסר teacherId או classId");
+      return;
+    }
+    navigate(`/daily-tasks/${teacherId}/${classId}`);
+  };
 
   return (
     <div className="mt-4 space-y-2">
@@ -50,7 +62,7 @@ export const StudentCardActions = ({
       </Button>
       
       <Button 
-        variant="secondary" 
+        variant="secondary"   
         size="sm"
         className={`w-full justify-between ${textDirection} bg-secondary-foreground/10 hover:bg-secondary-foreground/20 text-foreground`}
         onClick={() => navigate("/statistics")}
@@ -63,7 +75,8 @@ export const StudentCardActions = ({
         variant="secondary" 
         size="sm"
         className={`w-full justify-between ${textDirection} bg-secondary-foreground/10 hover:bg-secondary-foreground/20 text-foreground`}
-        onClick={() => navigate("/daily-tasks")}
+        onClick={() => navigate(`/daily-tasks/${teacherId}/${classId}`)}
+
       >
         <ClipboardList className="w-4 h-4" />
         {t.dailyTaskUpdate}

@@ -1,309 +1,329 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { toast } from "sonner";
-import { ArrowLeft, Plus, Edit, Trash2, Save, Check } from "lucide-react";
+
 import { studentService } from "@/services/studentService";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Breadcrumbs } from "@/components/ui/breadcrumb";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertTitle } from "@/components/ui/alert";
-
-const dailyTasksTranslations = {
-  en: {
-    back: "Back",
-    home: "Home",
-    updateDailyTasks: "Update Daily Tasks",
-    student: "Student",
-    selectStudent: "Select a student",
-    select: "Please select a student or enable 'assign to all'",
-    date: "Date",
-    saving: "Saving...",
-    success: "Tasks saved successfully",
-    error: "An error occurred while saving tasks",
-    noTasks: "No tasks found",
-    saveChanges: "Save Changes",
-    tasks: "Tasks"
-  },
-  he: {
-    back: "חזור",
-    home: "דף הבית",
-    updateDailyTasks: "עדכון משימות יומיות",
-    student: "תלמיד",
-    selectStudent: "בחר תלמיד",
-    select: "יש לבחור תלמיד או לבחור 'שייך לכל התלמידים'",
-    date: "תאריך",
-    saving: "שומר...",
-    success: "המשימות נשמרו בהצלחה",
-    error: "אירעה שגיאה בשמירת המשימות",
-    noTasks: "לא נמצאו משימות",
-    saveChanges: "שמור שינויים",
-    tasks: "משימות"
-  }
-};
-
+import { Switch } from "@/components/ui/switch";
+import { Plus, Clock, Star, Palette } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export interface Task {
   id: string;
   title: string;
   notes?: string;
   completed?: boolean;
+  color: string;
+  minutes: number;
+  stars: number;
 }
 
-const DailyTasks = () => {
-  const navigate = useNavigate();
-  const language = document.documentElement.dir === "rtl" ? "he" : "en";
-  const t = dailyTasksTranslations[language];
+export default function DailyTasks() {
+  const { teacherId, classId } = useParams();
 
-  const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
-  const [selectedStudent, setSelectedStudent] = useState<string>("");
-  const [assignToAll, setAssignToAll] = useState<boolean>(false);
+  if (!teacherId || !classId) {
+    return <div>⚠️ כתובת URL שגויה – חסרים מזהים</div>;
+  }
+
+  const [assignToAll, setAssignToAll] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingTasks, setIsLoadingTasks] = useState<boolean>(false);
-  const [newTaskTitle, setNewTaskTitle] = useState<string>("");
-  const [newTaskNotes, setNewTaskNotes] = useState<string>("");
-  const [editingTask, setEditingTask] = useState<string | null>(null);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskNotes, setNewTaskNotes] = useState("");
+  const [newTaskColor, setNewTaskColor] = useState("blue");
+  const [newTaskMinutes, setNewTaskMinutes] = useState(5);
+  const [newTaskStars, setNewTaskStars] = useState(2);
 
-  const { data: students, isLoading: isLoadingStudents } = useQuery({
-    queryKey: ['students'],
-    queryFn: studentService.getAllStudents
-  });
+  
 
-  const breadcrumbItems = [
-    { label: t.home, href: "/" },
-    { label: selectedStudent ? students?.find(s => s.id === selectedStudent)?.firstName || "" : "", href: selectedStudent ? `/student/${selectedStudent}` : "" },
-    { label: t.tasks },
-  ];
+  const colors = ["red", "orange", "yellow", "green", "blue", "purple"];
+  const starsOptions = [1, 2, 3];
+  
+  const { data: students = [], isLoading } = useQuery({
+  queryKey: ["students", teacherId],
+  queryFn: async () => {
+    const result = await studentService.getTeacherStudents(teacherId);
+    console.log("🧪 students loaded:", result); // ← פה נראה את כל השמות וה־_id
+    return result;
+  },
+  enabled: !!teacherId,
+});
 
-  useEffect(() => {
-    if (selectedStudent && selectedDate) {
-      loadTasksForDate();
-    } else {
-      setTasks([]);
-    }
-  }, [selectedStudent, selectedDate]);
 
-  const loadTasksForDate = async () => {
-    if (!selectedStudent && !assignToAll) {
-      toast.error(t.select);
-      return;
-    }
-    setIsLoadingTasks(true);
-    try {
-      if (selectedStudent) {
-        const studentTasks = await dailyTasksService.getStudentTasks(selectedStudent, selectedDate);
-        setTasks(studentTasks);
-        if (studentTasks.length === 0) toast.info(t.noTasks);
-      } else {
-        setTasks([]);
-      }
-    } catch (error) {
-      toast.error(t.error);
-    } finally {
-      setIsLoadingTasks(false);
-    }
-  };
+ const handleAddTask = async () => {
+  if (!newTaskTitle.trim()) return;
 
-  const handleSave = async () => {
-    if (!selectedDate) return toast.error(t.selectDate);
-    if (!selectedStudent && !assignToAll) return toast.error(t.select);
-    setIsLoading(true);
-    toast.loading(t.saving);
+  if (!teacherId || !classId) {
+    alert("Missing teacher or class identifier");
+    return;
+  }
 
-    try {
-      let success = false;
-      if (assignToAll) {
-        success = await dailyTasksService.saveTasksForClass(tasks.map(task => ({
-          ...task,
-          date: selectedDate
-        })), "class-1", selectedDate);
-      } else {
-        success = await dailyTasksService.saveTasks(tasks.map(task => ({
-          ...task,
-          studentId: selectedStudent,
-          date: selectedDate
-        })), selectedDate);
-      }
-      success ? toast.success(t.success) : toast.error(t.error);
-    } catch (error) {
-      toast.error(t.error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (!selectedStudent && !assignToAll) {
+    alert("בחר תלמיד לשיוך המשימה");
+    return;
+  }
 
-  const handleStudentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const studentId = e.target.value;
-    setSelectedStudent(studentId);
-    if (studentId && assignToAll) setAssignToAll(false);
-  };
+  let tasksToSave;
+  console.log("📌 selectedStudent:", selectedStudent);
+  const matched = students.find(s => s.id === selectedStudent);
+  console.log("📌 matched student object:", matched);
 
-  const handleAssignToAllToggle = (checked: boolean) => {
-    setAssignToAll(checked);
-    if (checked && selectedStudent) setSelectedStudent("");
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
-
-  const handleAddTask = () => {
-    if (!newTaskTitle.trim()) return;
-    const newTask: Task = {
-      id: `task-${Date.now()}`,
+  if (assignToAll) {
+    tasksToSave = students.map(student => ({
       title: newTaskTitle,
       notes: newTaskNotes,
-      completed: false
-    };
-    setTasks([...tasks, newTask]);
+      studentId: student.id,
+      createdBy: teacherId,
+      classId: classId,
+      color: newTaskColor,
+      minutes: newTaskMinutes,
+      stars: newTaskStars,
+      completed: false,
+      date: new Date()
+    }));
+  } else {
+    tasksToSave = [{
+      title: newTaskTitle,
+      notes: newTaskNotes,
+      studentId: selectedStudent, // כבר נבחר כ־_id מה־<select>
+      createdBy: teacherId,
+      classId: classId,
+      color: newTaskColor,
+      minutes: newTaskMinutes,
+      stars: newTaskStars,
+      completed: false,
+      date: new Date()
+    }];
+  }
+
+  try {
+    console.log("📤 Sending tasksToSave:", tasksToSave);
+    const res = await axios.post("/api/tasks", tasksToSave);
+    console.log("✅ Task(s) saved:", res.data);
+    alert("המשימה נשמרה בהצלחה!");
     setNewTaskTitle("");
     setNewTaskNotes("");
-  };
+    setTasks([]);
+  } catch (err) {
+    console.error("❌ Error saving task:", err);
+    alert("שגיאה בשמירת המשימה");
+    console.log("🧪 selectedStudent:", selectedStudent);
 
-  const handleTaskChange = (updatedTask: Task) => {
-    const updatedTasks = tasks.map(task => task.id === updatedTask.id ? updatedTask : task);
-    setTasks(updatedTasks);
-    setEditingTask(null);
-  };
+  }
+};
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
-  };
 
-  const handleEditTask = (taskId: string) => {
-    setEditingTask(taskId);
-  };
-
-  const taskLocale = {
-    title: language === "he" ? "כותרת המשימה..." : "Task title...",
-    notes: language === "he" ? "הערות..." : "Notes...",
-    completed: language === "he" ? "הושלם" : "Completed",
-    save: language === "he" ? "שמור" : "Save",
-    cancel: language === "he" ? "ביטול" : "Cancel"
+  const handleMinutesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    setNewTaskMinutes(isNaN(value) || value < 0 ? 0 : value);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="mb-6">
-        <Breadcrumbs items={breadcrumbItems} />
-      </div>
+    <div className="space-y-8 max-w-5xl mx-auto py-8">
+      <Card className="shadow-md border-slate-200">
+        <CardHeader className="bg-slate-50 rounded-t-lg border-b p-8">
+          <CardTitle className="text-2xl font-medium text-slate-800">הגדרות שיוך</CardTitle>
+        </CardHeader>
+        <CardContent className="p-10">
+          <div className="flex items-center justify-between pb-8 mb-8 border-b border-slate-100">
+            <Label htmlFor="assignAll" className="text-xl font-medium text-slate-700">שייך לכל התלמידים בכיתה</Label>
+            <Switch id="assignAll" checked={assignToAll} onCheckedChange={setAssignToAll} />
+          </div>
 
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 mb-6 hover:bg-gray-100 p-2 rounded-lg">
-        <ArrowLeft className="w-5 h-5" />
-        <span>{t.back}</span>
-      </button>
+          {!assignToAll && (
+            <div className="space-y-4">
+              <Label htmlFor="studentSelect" className="block text-xl font-medium text-slate-700">בחר תלמיד</Label>
+  <select
+  value={selectedStudent}
+  onChange={(e) => {
+    console.log("🧪 onChange raw value:", e.target.value); // ← צריך להדפיס ObjectId
+    setSelectedStudent(e.target.value);
+  }}
+>
+  <option value="">בחר תלמיד</option>
+  {students.map((s) => (
+    <option key={s.id} value={s.id}>
+      {s.firstName} {s.lastName}
+    </option>
+  ))}
+</select>
 
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">{t.updateDailyTasks}</h1>
 
-        <div className="space-y-6">
-          <Card className="p-4 space-y-4">
-            <div className="flex items-center space-x-2 rtl:space-x-reverse mb-2">
-              <Switch id="assign-all" checked={assignToAll} onCheckedChange={handleAssignToAllToggle} />
-              <Label htmlFor="assign-all" className="font-medium">
-                {language === "he" ? "שייך לכל התלמידים בכיתה" : "Assign to all students in class"}
-              </Label>
             </div>
+          )}
+        </CardContent>
+      </Card>
+      <Card className="shadow-md border-slate-200">
+        <CardHeader className="bg-slate-50 rounded-t-lg border-b p-8">
+          <CardTitle className="text-2xl font-medium text-slate-800">הוספת משימה חדשה</CardTitle>
+        </CardHeader>
+        <CardContent className="p-10 space-y-8">
+          <div>
+            <Label htmlFor="taskTitle" className="block text-xl font-medium text-slate-700 mb-3">כותרת המשימה</Label>
+            <Input 
+              id="taskTitle"
+              value={newTaskTitle} 
+              onChange={(e) => setNewTaskTitle(e.target.value)} 
+              placeholder="כותרת המשימה..."
+              className="border-slate-300 focus:border-cyan-500 text-xl p-6 h-16"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="taskNotes" className="block text-xl font-medium text-slate-700 mb-3">הערות</Label>
+            <Textarea 
+              id="taskNotes"
+              value={newTaskNotes} 
+              onChange={(e) => setNewTaskNotes(e.target.value)} 
+              placeholder="הערות למשימה..."
+              className="border-slate-300 focus:border-cyan-500 min-h-[180px] text-lg p-5"
+            />
+          </div>
 
-            {!assignToAll && (
-              <div>
-                <label className="block text-sm font-medium mb-1">{t.student}</label>
-                <select
-                  className="w-full p-2 border rounded-lg"
-                  value={selectedStudent}
-                  onChange={handleStudentChange}
-                  disabled={isLoadingStudents || assignToAll}
-                >
-                  <option value="">{isLoadingStudents ? (language === "he" ? "טוען תלמידים..." : "Loading students...") : t.selectStudent}</option>
-                  {students?.map(student => (
-                    <option key={student.id} value={student.id}>
-                      {student.firstName} {student.lastName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </Card>
+          <div className="grid grid-cols-3 gap-10 mt-8">
+            <div className="space-y-3">
+              <Label htmlFor="taskColor" className="block text-xl font-medium text-slate-700 mb-3 flex items-center">
+                <Palette className="h-6 w-6 mr-2 text-slate-500" />
+                צבע
+              </Label>
+              <select 
+                id="taskColor"
+                className="w-full p-5 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                value={newTaskColor} 
+                onChange={(e) => setNewTaskColor(e.target.value)}
+              >
+                {colors.map(c => (
+                  <option key={c} value={c} className="capitalize">{c}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="space-y-3">
+              <Label htmlFor="taskDuration" className="block text-xl font-medium text-slate-700 mb-3 flex items-center">
+                <Clock className="h-6 w-6 mr-2 text-slate-500" />
+                זמן (דקות)
+              </Label>
+              <Input
+                id="taskDuration"
+                type="number"
+                min="1"
+                value={newTaskMinutes}
+                onChange={handleMinutesChange}
+                className="w-full p-5 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent h-16"
+                placeholder="הזן מספר דקות..."
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <Label htmlFor="taskStars" className="block text-xl font-medium text-slate-700 mb-3 flex items-center">
+                <Star className="h-6 w-6 mr-2 text-slate-500" />
+                כוכבים
+              </Label>
+              <select
+                id="taskStars"
+                className="w-full p-5 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                value={newTaskStars}
+                onChange={(e) => setNewTaskStars(Number(e.target.value))}
+              >
+                {starsOptions.map(s => (
+                  <option key={s} value={s}>
+                    {"★".repeat(s)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="p-10 pt-2">
+          <Button 
+            onClick={handleAddTask} 
+            disabled={!newTaskTitle.trim()} 
+            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-medium text-xl py-10"
+            size="lg"
+          >
+            <Plus className="mr-2 h-7 w-7" /> הוסף משימה
+          </Button>
+        </CardFooter>
+      </Card>
 
-          <Card className="p-6">
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-              <div>
-                <label className="block text-sm font-medium mb-1">{t.date}</label>
-                <input type="date" className="w-full p-2 border rounded-lg" value={selectedDate} onChange={handleDateChange} />
-              </div>
-
-              <Card className="p-4">
-                <h3 className="text-md font-medium mb-3">{language === "he" ? "הוסף משימה חדשה" : "Add New Task"}</h3>
-                <div className="space-y-4">
-                  <Input value={newTaskTitle} onChange={(e) => setNewTaskTitle(e.target.value)} placeholder={taskLocale.title} />
-                  <Textarea value={newTaskNotes} onChange={(e) => setNewTaskNotes(e.target.value)} placeholder={taskLocale.notes} rows={3} />
-                  <Button onClick={handleAddTask} disabled={!newTaskTitle.trim()} className="w-full">
-                    <Plus className="mr-2 h-4 w-4" /> {language === "he" ? "הוסף משימה" : "Add Task"}
-                  </Button>
+      {tasks.length > 0 && (
+        <Card className="shadow-md border-slate-200">
+          <CardHeader className="bg-slate-50 rounded-t-lg border-b p-8">
+            <CardTitle className="text-2xl font-medium text-slate-800">משימות שנוספו ({tasks.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-10 space-y-6">
+            {tasks.map(task => (
+              <div key={task.id} className={`p-8 rounded-md bg-${task.color}-50 border border-${task.color}-200 flex justify-between`}>
+                <div>
+                  <h4 className="font-medium text-xl">{task.title}</h4>
+                  {task.notes && <p className="text-lg text-slate-600 mt-3">{task.notes}</p>}
                 </div>
-              </Card>
-
-              <div>
-                {tasks.length === 0 ? (
-                  <div className="py-8 text-center text-muted-foreground border border-dashed rounded-lg">
-                    {language === "he" ? "אין משימות עדיין." : "No tasks added yet."}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {tasks.map(task => (
-                      <Card key={task.id} className="p-4 border rounded-lg">
-                        {editingTask === task.id ? (
-                          <div>
-                            <Input type="text" value={task.title} onChange={(e) => handleTaskChange({ ...task, title: e.target.value })} />
-                            <Textarea value={task.notes} onChange={(e) => handleTaskChange({ ...task, notes: e.target.value })} />
-                            <div className="flex justify-end gap-2 mt-2">
-                              <Button variant="outline" onClick={() => setEditingTask(null)}>{taskLocale.cancel}</Button>
-                              <Button variant="default" onClick={() => setEditingTask(null)}><Check className="h-4 w-4 mr-1" /> {taskLocale.save}</Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h3 className="font-medium">{task.title}</h3>
-                              {task.notes && <p className="text-sm text-gray-600">{task.notes}</p>}
-                            </div>
-                            <div className="flex gap-2">
-                              <Button variant="ghost" onClick={() => handleEditTask(task.id)}><Edit className="h-4 w-4" /></Button>
-                              <Button variant="ghost" onClick={() => handleDeleteTask(task.id)}><Trash2 className="h-4 w-4" /></Button>
-                            </div>
-                          </div>
-                        )}
-                      </Card>
-                    ))}
-                  </div>
-                )}
+                <div className="flex items-center gap-6">
+                  <span className="text-lg text-slate-600 flex items-center">
+                    <Clock className="h-5 w-5 mr-2" /> {task.minutes} דקות
+                  </span>
+                  <span className="text-amber-500 text-2xl">{"★".repeat(task.stars)}</span>
+                </div>
               </div>
-
-              <Button type="submit" className="w-full bg-primary text-white py-2 rounded-lg hover:opacity-90" disabled={isLoading || isLoadingTasks || (!selectedStudent && !assignToAll)}>
-                {isLoading ? (
-                  <>
-                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent" />
-                    {t.saving}
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" /> {t.saveChanges}
-                  </>
-                )}
-              </Button>
-            </form>
-          </Card>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+      
+      <div className="flex gap-6 flex-wrap">
+        <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 flex-1 min-w-[250px]">
+          <h2 className="text-xl font-bold mb-4">מקרא צבעים</h2>
+          <div className="space-y-3">
+            <div className="flex items-center">
+              <span className="w-6 h-6 rounded-full bg-red-500 mr-3"></span>
+              <span className="text-lg">אדום - משימה דחופה / חשובה מאוד</span>
+            </div>
+            <div className="flex items-center">
+              <span className="w-6 h-6 rounded-full bg-orange-500 mr-3"></span>
+              <span className="text-lg">כתום - קשה / מאתגרת</span>
+            </div>
+            <div className="flex items-center">
+              <span className="w-6 h-6 rounded-full bg-yellow-500 mr-3"></span>
+              <span className="text-lg">צהוב - משימה רגילה / ניטרלית</span>
+            </div>
+            <div className="flex items-center">
+              <span className="w-6 h-6 rounded-full bg-green-500 mr-3"></span>
+              <span className="text-lg">ירוק - קלה / מהנה / בוסט</span>
+            </div>
+            <div className="flex items-center">
+              <span className="w-6 h-6 rounded-full bg-blue-500 mr-3"></span>
+              <span className="text-lg">כחול - למידה עצמאית / רגועה</span>
+            </div>
+            <div className="flex items-center">
+              <span className="w-6 h-6 rounded-full bg-purple-500 mr-3"></span>
+              <span className="text-lg">סגול - יצירתיות / ביטוי עצמי</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 flex-1 min-w-[250px]">
+          <h2 className="text-xl font-bold mb-4">מקרא כוכבים</h2>
+          <div className="space-y-3">
+            <div className="flex items-center">
+              <span className="text-amber-500 text-2xl mr-3">★</span>
+              <span className="text-lg">משימה בסיסית / פשוטה</span>
+            </div>
+            <div className="flex items-center">
+              <span className="text-amber-500 text-2xl mr-3">★★</span>
+              <span className="text-lg">משימה בינונית / סטנדרטית</span>
+            </div>
+            <div className="flex items-center">
+              <span className="text-amber-500 text-2xl mr-3">★★★</span>
+              <span className="text-lg">משימה מאתגרת / מתגמלת</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default DailyTasks;
+}

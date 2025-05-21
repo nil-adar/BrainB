@@ -1,19 +1,30 @@
+import { QrCode } from "lucide-react";
 
 export const translations = {
   en: {
     currentTask: "Current Task",
     tasks: "Tasks",
+    startTask: "Starting task",
+    minutesLeft: "Minutes left",
+    taskDeleted: "Task deleted successfully",
+    allTasksCompleted: "All tasks completed! Great job!",
+    today: "Today",
+    
     viewRecommendations: "View recommendations",
     newAssessment: "Do a new assessment",
     myAssessments: "My assessments",
     helpSupport: "Help/support",
     feeling: "How am I feeling today?",
+    noTaskSelected: "Please select a task first",
     search: "Search",
+    minutes: "minutes",
     tasksList: {
       task1: "math homework Q1,2,3,4,8",
       task2: "Read & summarize a chapter from the book you are reading",
       task3: "Draw or paint a picture of your favorite scene from the book you are reading",
       task4: "Enjoy a healthy snack and hydrate",
+    
+
       task5: "Watch a fun educational video related to this week's science topic",
       task6: "Write down three interesting facts you learned"
     }
@@ -21,7 +32,16 @@ export const translations = {
   he: {
     currentTask: "משימה נוכחית",
     tasks: "משימות",
+    allTasksCompleted: "כל המשימות הושלמו! כל הכבוד!",
     viewRecommendations: "צפה בהמלצות",
+    today: "היום",
+    taskDeleted: "המשימה נמחקה בהצלחה",
+    alday: "היום",
+    
+    startTask: "מתחיל משימה",
+    noTaskSelected: "אנא בחר משימה",
+    minutesLeft: "דקות נותרו",
+    minutes: "דקות",
     newAssessment: "בצע הערכה חדשה",
     myAssessments: "ההערכות שלי",
     helpSupport: "עזרה ותמיכה",
@@ -47,13 +67,8 @@ export interface ScheduleItem {
 }
 
 export const scheduleItems: ScheduleItem[] = [
-  {
-    time: "11:35",
-    subject: "Mathematics",
-    chapter: "Chapter 1: Introduction",
-    room: "Room S-205",
-    teacher: "Benjamin Wilkerson"
-  },
+ 
+
   {
     time: "13:15",
     subject: "Biology",
@@ -69,3 +84,33 @@ export const scheduleItems: ScheduleItem[] = [
     teacher: "Jenny Alexander"
   }
 ];
+export const colorfulTasks = [
+  {
+    id: 1,
+    title: "משחק שמיעה",
+    minutes: 1,
+    color: "#FBBF24", // yellow
+    completed: false,
+    stars: 2,
+     category: "listening"
+  },
+  {
+    id: 2,
+    title: "סיכום פרק",
+    minutes: 3,
+    color: "#60A5FA", // blue
+    completed: false,
+    stars: 3,
+    category: "listening"
+  },
+  {
+    id: 3,
+    title: "תרגול מתמטי",
+    minutes: 5,
+    color: "#34D399", // green
+    completed: false,
+    stars: 1,
+    category: "listening"
+  }
+];
+

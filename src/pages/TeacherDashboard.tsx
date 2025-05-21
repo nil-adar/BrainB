@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useTeacherNotifications } from "@/hooks/useTeacherNotifications";
 
+
+
 function getUserIdFromToken(): string | null {
   const token = localStorage.getItem('token');
   if (!token) return null;
@@ -36,11 +38,15 @@ function getUserIdFromToken(): string | null {
   }
 }
 
+
 export default function TeacherDashboard() {
   const navigate = useNavigate();
   const handleViewProgress = (studentId: string) => {
     navigate(`/statistics?studentId=${studentId}`);
   };
+
+
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [language, setLanguage] = useState<"en" | "he">("he");
@@ -67,6 +73,8 @@ export default function TeacherDashboard() {
       isRead: false,
       timestamp: new Date().toISOString(),
     };
+
+    
   
     try {
       await axios.post("/api/messages", newMessage); // ← שליחה לשרת
@@ -150,6 +158,17 @@ export default function TeacherDashboard() {
     queryFn: () => userProfileService.getUserProfile(teacherId!),
     enabled: !!teacherId,
   });
+
+  useEffect(() => {
+  if (teacherData?._id) {
+    localStorage.setItem("teacherId", teacherData._id);
+  }
+
+  if (currentClass?.classId) {
+    localStorage.setItem("classId", currentClass.classId);
+  }
+}, [teacherData, currentClass]);
+
   console.log("👨‍🏫 teacherProfile:", teacherProfile);
   useEffect(() => {
     if (teacherProfile?.assignedClasses?.length) {

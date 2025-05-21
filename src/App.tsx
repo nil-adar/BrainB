@@ -66,7 +66,10 @@ function App() {
             <Route path="/nutritional-recommendations" element={<NutritionalRecommendations />} />
             <Route path="/physical-recommendations" element={<PhysicalRecommendations />} />
             <Route path="/create-assessment" element={<CreateAssessment />} />
-            <Route path="/daily-tasks" element={<DailyTasks />} />
+            <Route path="/daily-tasks/:teacherId/:classId" element={<DailyTasks />} />
+
+
+
             <Route path="/statistics" element={<Statistics />} />
             <Route path="/student/:id" element={<StudentDetails />} />
             <Route path="/settings" element={<Settings />} />

@@ -15,7 +15,7 @@ import { UserProfileModel } from './models/UserProfile';
 import { router as scheduleRouter } from './routes/schedule.routes';
 import studentRoutes from './routes/student.routes';
 import diagnosticRoutes from "./routes/diagnostic.routes";
-
+import taskRoutes from "./routes/task.routes";
 
 const app = express();
 
@@ -36,8 +36,9 @@ app.use('/api/schedule', scheduleRouter);
 app.use("/api/students", studentRoutes);
 app.use('/api/messages', messageRouter);
 app.use("/api/diagnostic", diagnosticRoutes);
-
-
+app.use('/api/students', studentRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api', taskRoutes);
 
 
 

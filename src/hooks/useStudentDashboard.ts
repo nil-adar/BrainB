@@ -8,6 +8,7 @@ interface Task {
   id: number;
   title: string;
   duration: string;
+  durationInSeconds: number;
   status: string;
   stars: number;
   color: string;
@@ -15,12 +16,33 @@ interface Task {
   success: boolean;
 }
 
+
 export const useStudentDashboard = (initialTasks: Task[]) => {
   const [language, setLanguage] = useState<"en" | "he">("he");
   const [tasks, setTasks] = useState(initialTasks);
   const [showAssessment, setShowAssessment] = useState(false);
   const [hasActiveAssessment, setHasActiveAssessment] = useState(false);
   const [assessmentToken, setAssessmentToken] = useState<string | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null); // ✅ נוסף כאן
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const totalTime = currentTask?.durationInSeconds ?? 0;
+
+
+  const handleTaskSelect = (task: Task) => {
+  setCurrentTask(task);
+  if (task.title === "משחק שמיעה") {
+    setTimeLeft(60); // 1 דקה קבועה
+  } else {
+    setTimeLeft(task.durationInSeconds || null);
+  }
+};
+
+const calculateProgress = () => {
+  if (!tasks || tasks.length === 0) return 0;
+  return (tasks.filter(t => t.completed).length / tasks.length) * 100;
+};
+
 
 useEffect(() => {
   const studentId = localStorage.getItem("studentId");
@@ -79,16 +101,25 @@ useEffect(() => {
     });
     setShowAssessment(true);
   };
+return {
+  language,
+  tasks,
+  showAssessment,
+  toggleLanguage,
+  handleTaskCompletion,
+  handleStartAssessment,
+  setShowAssessment,
+  hasActiveAssessment,
+  assessmentToken, 
+  selectedMood,
+  setSelectedMood,
+  timeLeft,
+  setTimeLeft,
+  currentTask,
+  setCurrentTask,
+  handleTaskSelect,
+  calculateProgress,
+  totalTime,
+};
 
-  return {
-    language,
-    tasks,
-    showAssessment,
-    toggleLanguage,
-    handleTaskCompletion,
-    handleStartAssessment,
-    setShowAssessment,
-    hasActiveAssessment,
-    assessmentToken // ⬅️ נחזיר את זה
-  };
 };

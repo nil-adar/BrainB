@@ -6,7 +6,6 @@ interface Task {
   id: number;
   title: string;
   duration: string;
-  durationInSeconds: number;
   status: string;
   stars: number;
   color: string;
@@ -31,7 +30,17 @@ export const TasksList = ({
 }: TasksListProps) => {
   return (
     <Card className="p-4 bg-card text-card-foreground">
- 
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">{currentTaskLabel}</h2>
+        <Card className="p-8 bg-white">
+          <div className="flex justify-between items-center mb-4">
+            <span>20:00</span>
+          </div>
+          <div className="w-40 h-40 mx-auto">
+            <AnalogClock />
+          </div>
+        </Card>
+      </div>
 
       <div>
         <h2 className="text-xl font-semibold mb-4">{tasksLabel}</h2>
@@ -71,3 +80,5 @@ export const TasksList = ({
     </Card>
   );
 };
+
+import { AnalogClock } from "@/components/AnalogClock";

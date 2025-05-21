@@ -2,8 +2,9 @@
 import api from "./api";           // זה יכול להיות axios.create({ baseURL: ... })
 import { Student } from "@/types/school";
 import { User } from "@/types/school";
+import axios from "axios";
 
-const STUDENTS_API = "/api/students";
+const STUDENTS_API = "students";
 
 export const studentService = {
   /**
@@ -75,5 +76,17 @@ getStudentById: async (id: string): Promise<Student> => {
       console.error(`Error deleting student ${studentId}:`, err);
       return false;
     }
+  },
+
+  getStudentsByClass: async (classId: string): Promise<Student[]> => {
+  try {
+    const res = await api.get<Student[]>(`${STUDENTS_API}/by-class/${classId}`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching students by class:", err);
+    return [];
   }
+}
+
+
 };

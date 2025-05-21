@@ -1,37 +1,35 @@
 
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import React from 'react';
 
 interface MoodSelectorProps {
-  feeling: string;
+  selectedMood: string | null;
+  onMoodSelect: (mood: string) => void;
 }
 
-export const MoodSelector = ({ feeling }: MoodSelectorProps) => {
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+const MoodSelector: React.FC<MoodSelectorProps> = ({ selectedMood, onMoodSelect }) => {
+  const moods = [
+    { emoji: "😔", id: "sad" },
+    { emoji: "😐", id: "neutral" },
+    { emoji: "😊", id: "happy" },
+  ];
 
   return (
-    <Card className="p-4 bg-card text-card-foreground">
-      <h2 className="font-semibold mb-4">{feeling}</h2>
-      <div className="flex gap-4 justify-center">
-        <button
-          onClick={() => setSelectedMood("sad")}
-          className={`text-4xl transition-opacity ${selectedMood === "sad" ? "opacity-100" : "opacity-50"}`}
-        >
-          😔
-        </button>
-        <button
-          onClick={() => setSelectedMood("neutral")}
-          className={`text-4xl transition-opacity ${selectedMood === "neutral" ? "opacity-100" : "opacity-50"}`}
-        >
-          😐
-        </button>
-        <button
-          onClick={() => setSelectedMood("happy")}
-          className={`text-4xl transition-opacity ${selectedMood === "happy" ? "opacity-100" : "opacity-50"}`}
-        >
-          😊
-        </button>
+    <div className="mb-3 text-center">
+      <div className="flex space-x-1 justify-center">
+        {moods.map((mood) => (
+          <button
+            key={mood.id}
+            onClick={() => onMoodSelect(mood.id)}
+            className={`h-7 w-7 text-base flex items-center justify-center rounded-full ${
+              selectedMood === mood.id ? 'bg-cyan-100 ring-1 ring-cyan-400' : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+          >
+            {mood.emoji}
+          </button>
+        ))}
       </div>
-    </Card>
+    </div>
   );
 };
+
+export default MoodSelector;
