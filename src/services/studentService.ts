@@ -3,6 +3,7 @@ import api from "./api";           // זה יכול להיות axios.create({ ba
 import { Student } from "@/types/school";
 import { User } from "@/types/school";
 import axios from "axios";
+import { Task } from "@/types/task";
 
 const STUDENTS_API = "students";
 
@@ -37,6 +38,19 @@ getStudentById: async (id: string): Promise<Student> => {
       throw err;
     }
   },
+
+  getStudentTasks: async (studentId: string, date: string): Promise<Task[]> => {
+  try {
+    const res = await api.get<Task[]>(`/tasks/${studentId}`, {
+    
+      params: { date }
+    });
+    return res.data;
+  } catch (err) {
+    console.error(`Error fetching tasks for student ${studentId}:`, err);
+    return [];
+  }
+},
 
 
   /**
@@ -86,7 +100,27 @@ getStudentById: async (id: string): Promise<Student> => {
     console.error("Error fetching students by class:", err);
     return [];
   }
-}
+},
+updateTask: async (taskId: string, updates: Partial<Task>): Promise<Task | null> => {
+  try {
+    const res = await api.put<Task>(`/tasks/${taskId}`, updates);
+    return res.data;
+  } catch (err) {
+    console.error(`Error updating task ${taskId}:`, err);
+    return null;
+  }
+},
+
+deleteTask: async (taskId: string): Promise<boolean> => {
+  try {
+    await api.delete(`/tasks/${taskId}`);
+    return true;
+  } catch (err) {
+    console.error(`Error deleting task ${taskId}:`, err);
+    return false;
+  }
+},
+
 
 
 };

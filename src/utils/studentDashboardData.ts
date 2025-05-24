@@ -9,7 +9,7 @@ export const translations = {
     taskDeleted: "Task deleted successfully",
     allTasksCompleted: "All tasks completed! Great job!",
     today: "Today",
-    
+    howAreYouFeeling: "How are you feeling today?",
     viewRecommendations: "View recommendations",
     newAssessment: "Do a new assessment",
     myAssessments: "My assessments",
@@ -37,7 +37,7 @@ export const translations = {
     today: "היום",
     taskDeleted: "המשימה נמחקה בהצלחה",
     alday: "היום",
-    
+    howAreYouFeeling: "איך אתה מרגיש היום?",
     startTask: "מתחיל משימה",
     noTaskSelected: "אנא בחר משימה",
     minutesLeft: "דקות נותרו",

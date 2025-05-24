@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   duration: string;
   durationInSeconds: number;
@@ -19,7 +19,7 @@ interface TasksListProps {
   tasksLabel: string;
   currentTaskLabel: string;
   getTaskTitle: (taskKey: string) => string;
-  onTaskCompletion: (taskId: number) => void;
+  onTaskCompletion: (taskId: string) => void;
 }
 
 export const TasksList = ({
@@ -43,7 +43,8 @@ export const TasksList = ({
                   <Checkbox
                     id={`task-${task.id}`}
                     checked={task.completed}
-                    onCheckedChange={() => onTaskCompletion(task.id)}
+                    onCheckedChange={() => onTaskCompletion(String(task.id))}
+
                   />
                   <div>
                     <h3 className={`font-medium ${task.completed ? 'line-through' : ''}`}>

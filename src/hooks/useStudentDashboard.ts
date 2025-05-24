@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   duration: string;
   durationInSeconds: number;
@@ -81,7 +81,7 @@ useEffect(() => {
     document.documentElement.dir = language === "en" ? "rtl" : "ltr";
   };
 
-  const handleTaskCompletion = (taskId: number) => {
+  const handleTaskCompletion = (taskId: string) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task

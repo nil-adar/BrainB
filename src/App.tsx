@@ -19,6 +19,7 @@ import PhysicalRecommendations from "./pages/PhysicalRecommendations";
 import { ThemeToggle } from "./components/ThemeToggle";
 import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
+
 import axios from 'axios';
 
 

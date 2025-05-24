@@ -1,11 +1,12 @@
 // 📍 routes/task.routes.ts
 
 import express, { Request, Response } from "express";
+import mongoose from "mongoose";
 import { DailyTaskModel } from "../models/DailyTaskModel";
 
 const router = express.Router();
 
-// POST /api/tasks - שמירת משימות לתלמיד/כיתה
+// POST /api/tasks
 router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
   const tasks = req.body;
 
@@ -26,10 +27,10 @@ router.post("/tasks", async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// GET /api/tasks/:studentId?date=YYYY-MM-DD - קבלת משימות לתלמיד לפי תאריך
+// ✅ GET /api/tasks/:studentId
 router.get("/tasks/:studentId", async (req: Request, res: Response): Promise<void> => {
   const { studentId } = req.params;
-  const { date } = req.query;
+  const { date, classId } = req.query;
 
   if (!studentId || !date) {
     res.status(400).json({ error: "Missing studentId or date" });
@@ -38,21 +39,50 @@ router.get("/tasks/:studentId", async (req: Request, res: Response): Promise<voi
 
   try {
     const parsedDate = new Date(date as string);
-    console.log(`🔍 Fetching tasks for student ${studentId} on date ${parsedDate.toISOString()}`);
+    parsedDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(parsedDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const studentObjectId = new mongoose.Types.ObjectId(studentId);
+
+    console.log(`🔍 Fetching tasks for student ${studentId} on ${parsedDate.toISOString()} - ${endDate.toISOString()}`);
 
     const tasks = await DailyTaskModel.find({
+      date: { $gte: parsedDate, $lte: endDate },
       $or: [
-        { studentId },
-        { studentId: null, classId: req.query.classId } // Include classId if given
-      ],
-      date: parsedDate
+        { studentId: studentObjectId },
+        { studentId: null, classId }
+      ]
     });
 
+    console.log(`✅ Found ${tasks.length} tasks`);
     res.json(tasks);
   } catch (err) {
     console.error("❌ Failed to fetch tasks:", err);
     res.status(500).json({ error: "Failed to fetch tasks" });
   }
 });
+router.put("/tasks/:id", async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  try {
+    const updated = await DailyTaskModel.findByIdAndUpdate(id, updates, { new: true });
+    if (!updated) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+    res.json(updated);
+  } catch (err) {
+    console.error("❌ Failed to update task:", err);
+    res.status(500).json({ error: "Failed to update task" });
+  }
+});
+
+
+
+
+
 
 export default router;

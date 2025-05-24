@@ -3,29 +3,22 @@ import React from 'react';
 
 interface ProgressBarProps {
   progress: number;
-  height?: string;
-  color?: string;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ 
-  progress, 
-  height = 'h-3',
-  color = 'bg-purple-600'
-}) => {
-  // Ensure progress is within bounds
-  const boundedProgress = Math.min(Math.max(progress, 0), 100);
+const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
+  const clampedProgress = Math.min(100, Math.max(0, progress));
   
-  // הגדלת גובה סרגל ההתקדמות
   return (
     <div className="w-full">
-      <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full ${height === 'h-3' ? 'h-4' : height}`}>
-        <div
-          className={`${color} rounded-full transition-all duration-500 ease-out ${height === 'h-3' ? 'h-4' : height}`}
-          style={{ width: `${boundedProgress}%` }}
-        />
+      <div className="flex justify-between mb-2 text-sm text-slate-600 dark:text-slate-400">
+        <span>Progress</span>
+        {/* Percentage number removed as requested */}
       </div>
-      <div className="mt-3 text-center text-base font-medium text-gray-600 dark:text-gray-300">
-        {Math.round(boundedProgress)}% הושלם
+      <div className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out"
+          style={{ width: `${clampedProgress}%` }}
+        />
       </div>
     </div>
   );
