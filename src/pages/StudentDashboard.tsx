@@ -1,6 +1,7 @@
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
 import { translations } from "@/utils/studentDashboardData";
 
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Settings, LogOut, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,9 @@ import DateDisplay from "@/components/student/DateDisplay";
 import { useQuery } from "@tanstack/react-query";
 import { studentService } from "@/services/studentService";
 import { Task } from "@/types/task";
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentDashboard() {
   const {
@@ -28,8 +31,7 @@ export default function StudentDashboard() {
     showAssessment,
     toggleLanguage,
     handleTaskCompletion,
-    handleStartAssessment,
-    setShowAssessment,
+  
     hasActiveAssessment,
     assessmentToken,
     selectedMood,
@@ -38,6 +40,16 @@ export default function StudentDashboard() {
   } = useStudentDashboard([]);
 
 const studentId = localStorage.getItem("studentId") ?? "";
+const {
+  data: student,
+  isLoading: isStudentLoading,
+  isError: isStudentError,
+} = useQuery({
+  queryKey: ["student", studentId],
+  queryFn: () => studentService.getStudentById(studentId),
+  enabled: !!studentId,
+});
+
 const today = new Date().toISOString().split("T")[0];
 const [hasCompletedToastShown, setHasCompletedToastShown] = useState(false);
 
@@ -64,6 +76,9 @@ const {
   const [totalTime, setTotalTime] = useState<number>(0);
   const allowedCategories: string[] = ["red", "green", "orange", "blue", "yellow", "purple"];
   const taskTitle = currentTask?.title || "No task selected";
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const handleOpenHelpSupport = () => setShowHelpModal(true);
+  const handleCloseHelpSupport = () => setShowHelpModal(false);
 
   const t = translations[language];
 
@@ -155,6 +170,24 @@ const handleToggleComplete = async (taskId: string): Promise<void> => {
     }
   }, []);
 
+  const [helpMessage, setHelpMessage] = useState("");
+
+const handleSendHelpMessage = async () => {
+  try {
+    await fetch("/api/support/contact-teacher", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentId, message: helpMessage }),
+    });
+    toast.success("ההודעה נשלחה למורה");
+    setHelpMessage("");
+    setShowHelpModal(false);
+  } catch (err) {
+    toast.error("שגיאה בשליחת ההודעה");
+  }
+};
+
+
   useEffect(() => {
     if (timeLeft === null || timeLeft <= 0) return;
     const timer = setInterval(() => {
@@ -174,10 +207,49 @@ const handleToggleComplete = async (taskId: string): Promise<void> => {
     };
   }, [currentTask]);
 
-  const greeting = language === 'he' ? 'בוקר טוב, רוני' : 'Good morning, Roni';
+const navigate = useNavigate();
+const handleStartAssessment = () => {
+  navigate("/start-assessment"); // או הנתיב המתאים אצלך
+};
 
+const handleRedirectToAssessment = () => {
+  const studentId = localStorage.getItem("studentId");
+  
+  if (assessmentToken && studentId) {
+    const url = `http://127.0.0.1:8000/?token=${assessmentToken}&studentId=${studentId}`;
+    window.open(url, "_blank"); // פותח בטאב חדש
+  } else {
+    toast.error("     אין אבחון זמין כרגע.אנא פנה למורה שלך  ");
+  }
+};
+
+
+
+const fullName = student ? `${student.firstName ?? ""} ${student.lastName ?? ""}`.trim() : "";
+const greeting = language === 'he'
+  ? `בוקר טוב${fullName ? `, ${fullName}` : ""}`
+  : `Good morning${fullName ? `, ${fullName}` : ""}`;
+
+  console.log("👤 student:", student);
   return (
     <SidebarProvider>
+      <Dialog open={showHelpModal} onOpenChange={setShowHelpModal}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>עזרה ותמיכה</DialogTitle>
+        </DialogHeader>
+        <p>כתוב את ההודעה שלך כאן בכל נושא שתבחר  </p>
+        <Textarea
+          placeholder="מה תרצה לשאול או לשתף?"
+          value={helpMessage}
+          onChange={(e) => setHelpMessage(e.target.value)}
+        />
+        <DialogFooter>
+          <Button variant="ghost" onClick={handleCloseHelpSupport}>ביטול</Button>
+          <Button onClick={handleSendHelpMessage}>שלח</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
       <div
         className="min-h-screen flex flex-col w-full bg-background relative overflow-hidden"
         dir={language === 'he' ? 'rtl' : 'ltr'}
@@ -222,13 +294,20 @@ const handleToggleComplete = async (taskId: string): Promise<void> => {
               <DateDisplay />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_400px] gap-6 max-w-6xl mx-auto">
-              <ActionButtons
-                viewRecommendationsText={t.viewRecommendations}
-                newAssessmentText={t.newAssessment}
-                myAssessmentsText={t.myAssessments || "My Assessments"}
-                helpSupportText={t.helpSupport || "Help & Support"}
-                onStartAssessment={handleStartAssessment}
-              />
+<ActionButtons
+  viewRecommendationsText={t['viewRecommendations']}
+  newAssessmentText={t['newAssessment']}
+  myAssessmentsText={t['myAssessments']}
+  helpSupportText={t['helpSupport']}
+ studentFormText={t.fillForm}
+
+  onStartAssessment={handleStartAssessment}
+  onHelpSupportClick={handleOpenHelpSupport}
+
+  onStudentFormClick={() => navigate(`/student/${studentId}/assessment`)} 
+/>
+
+
               <TimerSection
                 showTimer={showTimer}
                 currentTask={currentTask}
@@ -260,11 +339,7 @@ const handleToggleComplete = async (taskId: string): Promise<void> => {
           />
         </DashboardBackground>
       </div>
-      <ExternalAssessmentFrame
-        open={showAssessment}
-        onClose={() => setShowAssessment(false)}
-        url={`http://127.0.0.1:8000?token=${assessmentToken}`}
-      />
+    
     </SidebarProvider>
   );
 }

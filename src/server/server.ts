@@ -16,6 +16,8 @@ import { router as scheduleRouter } from './routes/schedule.routes';
 import studentRoutes from './routes/student.routes';
 import diagnosticRoutes from "./routes/diagnostic.routes";
 import taskRoutes from "./routes/task.routes";
+import formRouter from "./routes/form.routes";
+
 
 const app = express();
 
@@ -39,6 +41,8 @@ app.use("/api/diagnostic", diagnosticRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api', taskRoutes);
+app.use("/api/forms", formRouter);
+
 
 
 

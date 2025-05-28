@@ -2,7 +2,7 @@
 import TaskItem from "@/components/student/TaskItem";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   minutes: number;
   color: string;

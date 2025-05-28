@@ -19,6 +19,7 @@ import PhysicalRecommendations from "./pages/PhysicalRecommendations";
 import { ThemeToggle } from "./components/ThemeToggle";
 import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
+import StudentFormPage from "@/pages/StudentFormPage";
 
 import axios from 'axios';
 
@@ -68,6 +69,7 @@ function App() {
             <Route path="/physical-recommendations" element={<PhysicalRecommendations />} />
             <Route path="/create-assessment" element={<CreateAssessment />} />
             <Route path="/daily-tasks/:teacherId/:classId" element={<DailyTasks />} />
+            <Route path="/student/:studentId/assessment" element={<StudentFormPage />} />
 
 
 

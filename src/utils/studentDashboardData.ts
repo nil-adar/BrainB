@@ -4,6 +4,7 @@ export const translations = {
   en: {
     currentTask: "Current Task",
     tasks: "Tasks",
+    fillForm: "Form for Student",
     startTask: "Starting task",
     minutesLeft: "Minutes left",
     taskDeleted: "Task deleted successfully",
@@ -18,35 +19,88 @@ export const translations = {
     noTaskSelected: "Please select a task first",
     search: "Search",
     minutes: "minutes",
+    name: "Name",
+    date: "Date",
+    submit: "Submit",
+
+    child: {
+      title: "Student Questionnaire",
+      focus: "How well do you focus in class?",
+      tired: "How tired do you feel during the day?",
+      seat: "Does your seat help you focus?",
+      food: "How do you feel about the school food?",
+      physicalActivity: "Does physical activity help you feel better?"
+    },
+
+    none: "Not at all",
+    little: "A little bit",
+    sometimes: "Sometimes",
+    most: "Most of the time",
+    always: "All the time",
+    moreDistracted: "No, I get distracted more",
+    noDifference: "It makes no difference",
+    helpsLittle: "It helps a little",
+    helpsMuch: "It helps a lot",
+    dislikeAll: "I don't like them at all",
+    likeSome: "I like some of them",
+    likeMost: "I like most of them",
+    enjoyAll: "I enjoy them a lot",
+
     tasksList: {
       task1: "math homework Q1,2,3,4,8",
       task2: "Read & summarize a chapter from the book you are reading",
       task3: "Draw or paint a picture of your favorite scene from the book you are reading",
       task4: "Enjoy a healthy snack and hydrate",
-    
-
       task5: "Watch a fun educational video related to this week's science topic",
       task6: "Write down three interesting facts you learned"
     }
   },
+
   he: {
     currentTask: "משימה נוכחית",
     tasks: "משימות",
-    allTasksCompleted: "כל המשימות הושלמו! כל הכבוד!",
-    viewRecommendations: "צפה בהמלצות",
-    today: "היום",
-    taskDeleted: "המשימה נמחקה בהצלחה",
-    alday: "היום",
-    howAreYouFeeling: "איך אתה מרגיש היום?",
+    fillForm: "שאלון לתלמיד",
     startTask: "מתחיל משימה",
-    noTaskSelected: "אנא בחר משימה",
     minutesLeft: "דקות נותרו",
-    minutes: "דקות",
+    taskDeleted: "המשימה נמחקה בהצלחה",
+    allTasksCompleted: "כל המשימות הושלמו! כל הכבוד!",
+    today: "היום",
+    howAreYouFeeling: "איך אתה מרגיש היום?",
+    viewRecommendations: "צפה בהמלצות",
     newAssessment: "בצע הערכה חדשה",
     myAssessments: "ההערכות שלי",
     helpSupport: "עזרה ותמיכה",
     feeling: "איך אני מרגיש היום?",
+    noTaskSelected: "אנא בחר משימה",
     search: "חיפוש",
+    minutes: "דקות",
+    name: "שם",
+    date: "תאריך",
+    submit: "שלח",
+
+    child: {
+      title: "שאלון תלמיד",
+      focus: "כמה אתה מצליח להתרכז בכיתה?",
+      tired: "כמה אתה מרגיש עייף במהלך היום?",
+      seat: "האם המקום שבו אתה יושב עוזר לך להתרכז?",
+      food: "מה התחושה שלך לגבי האוכל בבית הספר?",
+      physicalActivity: "עד כמה פעילות גופנית עוזרת לך להרגיש טוב יותר?"
+    },
+
+    none: "בכלל לא",
+    little: "קצת",
+    sometimes: "לפעמים",
+    most: "רוב הזמן",
+    always: "כל הזמן",
+    moreDistracted: "לא, אני מוסח/ת יותר",
+    noDifference: "זה לא משנה",
+    helpsLittle: "זה עוזר קצת",
+    helpsMuch: "זה עוזר הרבה",
+    dislikeAll: "אני לא אוהב/ת אותם בכלל",
+    likeSome: "אני אוהב/ת חלק מהם",
+    likeMost: "אני אוהב/ת את רובם",
+    enjoyAll: "אני נהנה/ית מהם מאוד",
+
     tasksList: {
       task1: "שיעורי בית במתמטיקה שאלות 1,2,3,4,8",
       task2: "קרא וסכם פרק מהספר שאתה קורא",
@@ -67,8 +121,6 @@ export interface ScheduleItem {
 }
 
 export const scheduleItems: ScheduleItem[] = [
- 
-
   {
     time: "13:15",
     subject: "Biology",
@@ -84,21 +136,22 @@ export const scheduleItems: ScheduleItem[] = [
     teacher: "Jenny Alexander"
   }
 ];
+
 export const colorfulTasks = [
   {
     id: 1,
     title: "משחק שמיעה",
     minutes: 1,
-    color: "#FBBF24", // yellow
+    color: "#FBBF24",
     completed: false,
     stars: 2,
-     category: "listening"
+    category: "listening"
   },
   {
     id: 2,
     title: "סיכום פרק",
     minutes: 3,
-    color: "#60A5FA", // blue
+    color: "#60A5FA",
     completed: false,
     stars: 3,
     category: "listening"
@@ -107,10 +160,9 @@ export const colorfulTasks = [
     id: 3,
     title: "תרגול מתמטי",
     minutes: 5,
-    color: "#34D399", // green
+    color: "#34D399",
     completed: false,
     stars: 1,
     category: "listening"
   }
 ];
-

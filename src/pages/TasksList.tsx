@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   duration: string;
   status: string;
@@ -18,7 +18,7 @@ interface TasksListProps {
   tasksLabel: string;
   currentTaskLabel: string;
   getTaskTitle: (taskKey: string) => string;
-  onTaskCompletion: (taskId: number) => void;
+  onTaskCompletion: (taskId: string) => void;
 }
 
 export const TasksList = ({

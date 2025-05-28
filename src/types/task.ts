@@ -1,7 +1,7 @@
 // src/types/task.ts
 
 export interface Task {
-  id: number;
+  id: string;
   title: string;
   minutes: number;
   color: string;

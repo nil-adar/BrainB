@@ -62,7 +62,7 @@ useEffect(() => {
 
       if (res.data.valid && res.data.sessionToken) {
         setHasActiveAssessment(true);
-        setAssessmentToken(res.data.sessionToken); // ת 
+        setAssessmentToken(res.data.sessionToken); 
       } else {
         setHasActiveAssessment(false);
         setAssessmentToken(null);
@@ -107,8 +107,8 @@ return {
   showAssessment,
   toggleLanguage,
   handleTaskCompletion,
-  handleStartAssessment,
-  setShowAssessment,
+
+
   hasActiveAssessment,
   assessmentToken, 
   selectedMood,
