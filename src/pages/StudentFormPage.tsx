@@ -142,7 +142,7 @@ const StudentFormPage = () => {
 {renderQuestion("seatHelpsWithFocus", t.child?.seat || "האם המקום שבו אתה יושב עוזר לך להתרכז?", [t.moreDistracted, t.noDifference, t.helpsLittle, t.helpsMuch])}
 {renderQuestion("feelingAboutFood", t.child?.food || "מה התחושה שלך לגבי האוכל בבית הספר?", [t.dislikeAll, t.likeSome, t.likeMost, t.enjoyAll])}
 {renderQuestion("physicalActivityHelps", t.child?.physicalActivity || "עד כמה פעילות גופנית עוזרת לך להרגיש טוב יותר?", [t.none, t.little, t.sometimes, t.most, t.always])}
-
+                    
 
                 <div className="pt-6">
                   <Button type="submit" className="w-full">{t["submit"]}</Button>

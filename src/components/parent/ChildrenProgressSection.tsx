@@ -5,16 +5,16 @@ import { Student } from "@/types/school"; // ודא שהטיפוס Student מי�
 
 // הגדרת ה-Props שהקומפוננטה מקבלת
 interface ChildrenProgressSectionProps {
-  students: Student[]; // מערך של אובייקטי תלמידים
-  // פונקציה שתופעל בלחיצה על כפתור יצירת קשר
+  students: Student[]; 
   // מקבלת: ID של המורה, ID של התלמיד, שם מלא של התלמיד
   onContactTeacher: (teacherId: string, studentId: string, studentName: string) => void;
   // אובייקט עם מחרוזות התרגום הנדרשות
   translations: {
-    childProgress: string; // כותרת הסעיף
-    contactTeacher: string; // טקסט לכפתור
-    noChildren?: string; // אופציונלי: הודעה כשאין ילדים
-    classLabel?: string; // אופציונלי: התווית לפני מספר הכיתה
+    childProgress: string; 
+    contactTeacher: string; 
+    noChildren?: string; // אופ
+    classLabel?: string; // אופ
+     fillStudentForm?: string; 
   };
 }
 
@@ -50,30 +50,31 @@ export const ChildrenProgressSection = ({
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            {/* כפתור יצירת קשר */}
-            <Button
-              variant="outline"
-              className="w-full"
-              // הפעלת הפונקציה onContactTeacher עם הפרמטרים הנכונים בלחיצה
-              onClick={() => {
-                  // ודא שגם teacherId וגם _id קיימים לפני הקריאה
-                  if (child.teacherId && child._id) {
-                      onContactTeacher(child.teacherId, child._id, `${child.firstName} ${child.lastName}`);
-                  } else {
-                      // אם אחד מהם חסר, הדפס אזהרה ולא קרא לפונקציה
-                      console.warn(`Cannot contact teacher: Missing teacherId (${child.teacherId}) or studentId (${child._id}) for ${child.firstName} ${child.lastName}`);
-                  }
-              }}
-              // השבתת הכפתור אם teacherId או _id (studentId) חסרים
-              disabled={!child.teacherId || !child._id}
-            >
-              {/* אייקון של הודעה */}
-              <MessageCircle className="w-4 h-4 mr-2" />
-              {/* טקסט הכפתור מהתרגום */}
-              {t.contactTeacher}
-            </Button>
-          </CardContent>
+          <CardContent className="p-4 pt-2 space-y-2">
+  <Button
+    variant="outline"
+    className="w-full border-primary text-primary hover:bg-primary/10"
+    onClick={() =>
+      child.teacherId
+        ? onContactTeacher(child.teacherId, `${child.firstName} ${child.lastName}`, child.id)
+        : console.warn(`Teacher ID missing for student ${child.id}`)
+    }
+    disabled={!child.teacherId}
+  >
+    <MessageCircle className="w-4 h-4 ml-2" />
+    {t.contactTeacher}
+  </Button>
+
+  {/* כפתור שאלון */}
+  <Button
+    variant="secondary"
+    className="w-full text-indigo-700 hover:underline hover:bg-indigo-50"
+      onClick={() => window.location.href = `/parent/${child.id}/form`}
+  >
+    📋 עבור אל שאלון של {child.firstName} {child.lastName}
+  </Button>
+</CardContent>
+
         </Card>
       ))}
     </section>

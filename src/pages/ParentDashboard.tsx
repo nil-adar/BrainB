@@ -9,6 +9,7 @@ import { parentService } from "@/services/parentService";
 import { dashboardTranslations } from "@/utils/dashboardTranslations";
 import { useParentNotifications } from "@/hooks/useParentNotifications";
 import { ParentNotification } from "@/hooks/useParentNotifications";
+import { Link } from "react-router-dom";
 
 import { Message, Student } from "@/types/school";
 import { format } from "date-fns";
@@ -18,6 +19,13 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+import { ChildrenProgressSection } from "@/components/parent/ChildrenProgressSection";
+
+
+
+
 
 
 const useLoggedInUser = () => {
@@ -26,61 +34,9 @@ const useLoggedInUser = () => {
     queryFn: parentService.getLoggedInUser,
   });
 };
-interface ChildrenProgressSectionProps {
-  students: Student[];
-  onContactTeacher: (teacherId: string, studentName: string, studentId: string) => void;
-  translations: {
-    childProgress: string;
-    contactTeacher: string;
-  };
-}
 
-  interface Props {
-    students: Student[];
-    onContactTeacher: (teacherId: string, studentName: string) => void;
-    translations: {
-      childProgress: string;
-      contactTeacher: string;
-    };
-  }
-  export const ChildrenProgressSection = ({
-    students,
-    onContactTeacher,
-    translations: t,
-  }: ChildrenProgressSectionProps) => {
-    return (
-      <section className="mt-8">
-        <h2 className="text-xl font-bold mb-4">{t.childProgress}</h2>
-        {students.length === 0 && <p>אין נתוני ילדים להצגה.</p>}
-        {students.map((child) => (
-          <Card key={child._id} className="bg-teal-50 mb-4 shadow-sm">
-            <CardHeader className="pb-2 pt-4 px-4">
-              <CardTitle className="flex justify-between items-center text-base">
-                <span>{child.firstName} {child.lastName}</span>
-                <span className="text-sm text-gray-600">כיתה {child.classId}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-2">
-              <Button
-                variant="outline"
-                className="w-full border-primary text-primary hover:bg-primary/10"
-                onClick={() =>
-                  child.teacherId
-                    ?onContactTeacher(child.teacherId, `${child.firstName} ${child.lastName}`, child.id)
 
-                    : console.warn(`Teacher ID missing for student ${child.id}`)
-                }
-                disabled={!child.teacherId}
-              >
-                <MessageCircle className="w-4 h-4 ml-2" />
-                {t.contactTeacher}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-    );
-  };
+
   
   const translations = {
     en: {
@@ -90,6 +46,8 @@ interface ChildrenProgressSectionProps {
       settings:         "Settings",
       notifications:    "Notifications",
       noNotifications:  "No new notifications",
+      fillStudentForm: "Student Form",
+      
       messageToTeacher: "Message to Teacher",
       writeMessage:     "Write your message here...",
       sendMessage:      "Send Message",
@@ -108,6 +66,8 @@ interface ChildrenProgressSectionProps {
       contactTeacher:   "צור קשר עם המורה",
       notifications:    "התראות",
       settings:         "הגדרות",
+      fillStudentForm: "שאלון תלמיד  ",
+
       noNotifications:  "אין התראות חדשות",
       messageToTeacher: "הודעה למורה",
       writeMessage:     "כתוב את ההודעה שלך כאן...",
@@ -141,6 +101,7 @@ interface ChildrenProgressSectionProps {
     const [messages, setMessages] = useState<Message[]>([]);
     const [students, setStudents] = useState<Student[]>([]);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+    const navigate = useNavigate();
   
 
 
@@ -275,6 +236,8 @@ interface ChildrenProgressSectionProps {
                 <p className="text-sm text-gray-600">{t.welcome}</p>
               </div>
             )}
+
+
             {/* End of Greeting Logic */}
     
             {/* Notifications Dropdown - Should be inside the flex container */}
@@ -311,12 +274,21 @@ interface ChildrenProgressSectionProps {
             translations={{
               childProgress: t.childProgress,
               contactTeacher: t.contactTeacher,
+             fillStudentForm: t.fillStudentForm,
               // Add missing keys if needed by the component, e.g.:
               // noChildren: t.noChildren,
               // classLabel: t.classLabel,
             }}
           />
-    
+          <section className="mt-4">
+  <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
+  {students.map((child) => (
+    <div key={child.id || child._id} className="mb-2">
+   
+    </div>
+  ))}
+</section>
+
           {/* Calendar Section */}
           <aside className="mt-10">
             <Card className="bg-gradient-to-br from-indigo-100 via-blue-50 to-teal-50 shadow-xl mb-6 rounded-2xl border-2 border-indigo-200">
@@ -326,39 +298,41 @@ interface ChildrenProgressSectionProps {
                   {t.calendar}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  locale={language === "he" ? he : enUS}
-                  className="rounded-lg bg-white shadow"
-                    dir={language === "he" ? "rtl" : "ltr"} // Added direction based on language
-                />
+            <CardContent className="p-4 pt-0">
+  <Calendar
+    mode="single"
+    selected={selectedDate}
+    onSelect={setSelectedDate}
+    locale={language === "he" ? he : enUS}
+    className="rounded-lg bg-white shadow"
+    dir={language === "he" ? "rtl" : "ltr"}
+  />
 
-
-                <div className="mt-6 bg-blue-50 rounded-xl p-4">
-  <h3 className="font-semibold mb-2">{t.upcomingEvents}</h3>
-  {[
-    { date: new Date(2025, 4, 20), title: "יום הורים" },
-    { date: new Date(2025, 4, 25), title: "מפגש הורים ומורים" },
-    { date: new Date(2025, 5, 30), title: "יום   לימודים אחרון לשנת הלימודים   " },
-  ].map((event, index) => (
-    <div
-      key={index}
-      className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mb-2"
-    >
-      <div className="font-bold text-yellow-700">{event.title}</div>
-      <div className="text-sm text-gray-600">
-        {format(event.date, "d MMMM yyyy", {
-          locale: language === "he" ? he : enUS,
-        })}
+  <div className="mt-6 bg-blue-50 rounded-xl p-4">
+    <h3 className="font-semibold mb-2">{t.upcomingEvents}</h3>
+    {[
+      { date: new Date(2025, 4, 20), title: "יום הורים" },
+      { date: new Date(2025, 4, 25), title: "מפגש הורים ומורים" },
+      { date: new Date(2025, 5, 30), title: "יום לימודים אחרון לשנת הלימודים" },
+    ].map((event, index) => (
+      <div
+        key={index}
+        className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mb-2"
+      >
+        <div className="font-bold text-yellow-700">{event.title}</div>
+        <div className="text-sm text-gray-600">
+          {format(event.date, "d MMMM yyyy", {
+            locale: language === "he" ? he : enUS,
+          })}
+        </div>
       </div>
-    </div>
-  ))}
-</div>
+    ))}
+  </div>
+</CardContent>
 
-              </CardContent>
+
+
+
             </Card>
           </aside>
         </main>

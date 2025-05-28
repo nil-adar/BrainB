@@ -20,6 +20,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
 import StudentFormPage from "@/pages/StudentFormPage";
+import ParentFormPage from "@/pages/ParentFormPage";
 
 import axios from 'axios';
 
@@ -70,7 +71,7 @@ function App() {
             <Route path="/create-assessment" element={<CreateAssessment />} />
             <Route path="/daily-tasks/:teacherId/:classId" element={<DailyTasks />} />
             <Route path="/student/:studentId/assessment" element={<StudentFormPage />} />
-
+            <Route path="/parent/:studentId/form" element={<ParentFormPage />} />
 
 
             <Route path="/statistics" element={<Statistics />} />
