@@ -21,7 +21,7 @@ import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
 import StudentFormPage from "@/pages/StudentFormPage";
 import ParentFormPage from "@/pages/ParentFormPage";
-
+import TeacherFormPage from "@/pages/TeacherFormPage";
 import axios from 'axios';
 
 
@@ -72,6 +72,7 @@ function App() {
             <Route path="/daily-tasks/:teacherId/:classId" element={<DailyTasks />} />
             <Route path="/student/:studentId/assessment" element={<StudentFormPage />} />
             <Route path="/parent/:studentId/form" element={<ParentFormPage />} />
+            <Route path="/teacher-form" element={<TeacherFormPage />} />
 
 
             <Route path="/statistics" element={<Statistics />} />

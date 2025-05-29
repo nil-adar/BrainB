@@ -52,7 +52,9 @@ const translations = {
     errorLoading: "שגיאה בטעינת תלמיד",
     externalSystem: "אבחון זה יתבצע במערכת חיצונית",
     externalSystemExplanation:
-      "התלמיד יקבל הרשאה לביצוע אבחון במערכת חיצונית ,לאחר השלמת האבחון התוצאות ישלחו בחזרה למערכת .הרשאה לביצוע האבחון תקפה ליום אחד בלבד באחריות האבחון לבצע את האבחון בזמן המצאים .",
+  "התלמיד יקבל הרשאה לביצוע אבחון במערכת חיצונית, לאחר השלמת האבחון התוצאות ישלחו בחזרה למערכת. הרשאה לביצוע האבחון תקפה ליום אחד בלבד.\n\nלפני יצירת אבחון חדש, בבקשה למלא שאלון מורה.",
+
+      
     startAssessment: "צור אבחון",
     success: {
       title: "האבחון נוצר בהצלחה",
@@ -242,6 +244,25 @@ export default function CreateAssessment() {
               >
                 {loading ? "..." : t.startAssessment}
               </Button>
+<Button
+  className="w-full bg-blue-200 text-blue-900 py-2 rounded-lg hover:bg-blue-300 transition-opacity"
+  onClick={() => {
+    if (studentId) {
+      navigate(`/teacher-form?studentId=${studentId}`);
+    } else {
+      toast({
+        title: "שגיאה",
+        description: "לא נמצא מזהה תלמיד",
+        variant: "destructive"
+      });
+    }
+  }}
+>
+  מלא שאלון מורה
+</Button>
+
+
+
             </form>
           </Card>
         )}
