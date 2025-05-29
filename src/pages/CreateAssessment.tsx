@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Check } from "lucide-react"; // Combined Check import
+import { useNavigate, useSearchParams } from "react-router-dom"; // Removed unused useParams
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+
 import { externalAssessmentService } from "@/services/externalAssessmentService";
 import { Button } from "@/components/ui/button";
 import { studentService } from "@/services/studentService";
-import { parentService as authService } from "@/services/parentService";
-import { Student, User } from "@/types/school";
+// import { parentService as authService } from "@/services/parentService"; // Removed unused authService
+import { Student } from "@/types/school"; // Removed unused User type
 import { useQuery } from "@tanstack/react-query";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { useSearchParams } from "react-router-dom";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Check } from "lucide-react";
+// import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"; // Removed unused Alert components
 
 const translations = {
   en: {
@@ -53,8 +52,6 @@ const translations = {
     externalSystem: "אבחון זה יתבצע במערכת חיצונית",
     externalSystemExplanation:
   "התלמיד יקבל הרשאה לביצוע אבחון במערכת חיצונית, לאחר השלמת האבחון התוצאות ישלחו בחזרה למערכת. הרשאה לביצוע האבחון תקפה ליום אחד בלבד.\n\nלפני יצירת אבחון חדש, בבקשה למלא שאלון מורה.",
-
-      
     startAssessment: "צור אבחון",
     success: {
       title: "האבחון נוצר בהצלחה",
@@ -70,26 +67,23 @@ const translations = {
 
 export default function CreateAssessment() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  
   const [language, setLanguage] = useState<"en" | "he">(
     document.documentElement.dir === "rtl" ? "he" : "en"
   );
   const t = translations[language];
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Sync document direction
   useEffect(() => {
     document.documentElement.dir = language === "he" ? "rtl" : "ltr";
   }, [language]);
 
-  // Get studentId from URL
   const [searchParams] = useSearchParams();
   const studentId = searchParams.get("studentId");
   const studentName = searchParams.get("studentName");
   console.log("ID שהגיע מה-URL:", studentId);
   console.log("🔍 [CreateAssessment] studentId from URL:", studentId);
 
-  // Fetch the specific student
   const {
     data: student,
     isLoading: loadingStudent,
@@ -103,7 +97,6 @@ export default function CreateAssessment() {
   console.log("שגיאה בטעינה:", studentError);
   console.log("נתוני הסטודנט שהתקבלו:", student);
 
-  // Form state
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState<string>(today);
   const [notes, setNotes] = useState<string>("");
@@ -111,52 +104,68 @@ export default function CreateAssessment() {
 
   const toggleLanguage = () => setLanguage((prev) => (prev === "he" ? "en" : "he"));
 
-  // Breadcrumbs
   const breadcrumbItems = [
     { label: t.home, href: "/" },
     {
-      label: studentName ?? t.loadingStudent,
+      label: studentName ?? (loadingStudent ? t.loadingStudent : t.errorLoading), // Improved label for loading/error
       href: student ? `/student/${studentId}` : undefined,
     },
     { label: t.createNewAssessment },
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("📍 נלחץ כפתור צור אבחון");
+
     if (!studentId) {
-      toast({
-        title: t.error.title,
+      console.log("❌ חסר studentId");
+      toast.error("שגיאה", {
         description: "לא נמצא מזהה תלמיד",
-        variant: "destructive"
       });
       return;
     }
 
+    try {
+      console.log("🧪 בודק האם מולא שאלון מורה...");
+      const { hasTeacherForm } = await studentService.checkFormStatus(studentId);
+      console.log("✔️ תוצאת בדיקה: hasTeacherForm =", hasTeacherForm);
+
+      if (!hasTeacherForm) {
+        toast.error("נדרש שאלון מורה", {
+          description: "לפני יצירת אבחון, יש להשלים את שאלון המורה עבור תלמיד זה.",
+        });
+        return;
+      }
+    } catch (err) {
+      console.error("❌ שגיאה בבדיקת סטטוס שאלון:", err);
+      toast.error("שגיאה", {
+        description: "לא ניתן לבדוק סטטוס השאלון. נסה שוב מאוחר יותר.",
+      });
+      return;
+    }
+
+    console.log("✅ בדיקה עברה, מתחיל יצירת אבחון...");
     setLoading(true);
+
     try {
       await externalAssessmentService.startExternalAssessment(studentId, "behavioral");
-      
-      // הצגת הודעת הצלחה
-      toast({
-        title: t.success.title,
+      console.log("✅ האבחון נוצר בהצלחה");
+
+      toast.success(t.success.title, {
         description: t.success.description,
-        variant: "default"
       });
-      
-      // הצגת אזור הצלחה בדף
+
       setIsSuccess(true);
-      
     } catch (err) {
-      console.error(err);
-      toast({
-        title: t.error.title,
+      console.error("❌ שגיאה ביצירת אבחון:", err);
+      toast.error(t.error.title, {
         description: t.error.description,
-        variant: "destructive"
       });
     } finally {
       setLoading(false);
+      console.log("🔚 סיום תהליך יצירת האבחון");
     }
-  };
+  }; // <<< Added closing brace and semicolon for the handleSubmit function definition
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -240,29 +249,26 @@ export default function CreateAssessment() {
               <Button
                 type="submit"
                 className="w-full bg-primary text-white py-2 rounded-lg hover:opacity-90 transition-opacity"
-                disabled={loading || loadingStudent}
+                disabled={loading || loadingStudent || !student} // Added !student to disabled condition
               >
                 {loading ? "..." : t.startAssessment}
               </Button>
-<Button
-  className="w-full bg-blue-200 text-blue-900 py-2 rounded-lg hover:bg-blue-300 transition-opacity"
-  onClick={() => {
-    if (studentId) {
-      navigate(`/teacher-form?studentId=${studentId}`);
-    } else {
-      toast({
-        title: "שגיאה",
-        description: "לא נמצא מזהה תלמיד",
-        variant: "destructive"
-      });
-    }
-  }}
->
-  מלא שאלון מורה
-</Button>
-
-
-
+              <Button
+                type="button" // Added type="button" to prevent form submission
+                className="w-full bg-blue-200 text-blue-900 py-2 rounded-lg hover:bg-blue-300 transition-opacity"
+                onClick={() => {
+                  if (studentId) {
+                    navigate(`/teacher-form?studentId=${studentId}`);
+                  } else {
+                    toast.error("שגיאה", {
+                      description: "לא נמצא מזהה תלמיד",
+                    });
+                  }
+                }}
+                disabled={!studentId} // Disable if no studentId
+              >
+                מלא שאלון מורה
+              </Button>
             </form>
           </Card>
         )}

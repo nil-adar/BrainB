@@ -10,7 +10,7 @@ import { dashboardTranslations } from "@/utils/dashboardTranslations";
 import { useParentNotifications } from "@/hooks/useParentNotifications";
 import { ParentNotification } from "@/hooks/useParentNotifications";
 import { Link } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import { Message, Student } from "@/types/school";
 import { format } from "date-fns";
 import { he, enUS } from "date-fns/locale";

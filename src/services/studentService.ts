@@ -121,6 +121,16 @@ deleteTask: async (taskId: string): Promise<boolean> => {
   }
 },
 
+checkFormStatus: async (studentId: string): Promise<{ hasTeacherForm: boolean }> => {
+  try {
+    const res = await api.get(`/forms/check-status/${studentId}`);
+    return res.data;
+  } catch (err) {
+    console.error(`Error checking form status for student ${studentId}:`, err);
+    return { hasTeacherForm: false }; //      יש שגיאה
+  }
+},
+
 
 
 
