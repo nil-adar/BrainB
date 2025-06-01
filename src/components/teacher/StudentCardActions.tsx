@@ -86,7 +86,7 @@ export const StudentCardActions = ({
         variant="secondary" 
         size="sm"
         className={`w-full justify-between ${textDirection} bg-secondary-foreground/10 hover:bg-secondary-foreground/20 text-foreground`}
-        onClick={() => navigate(`/student/${studentId}`)}
+        onClick={() => navigate(`/recommendations?studentId=${studentId}`)}
       >
         <FileText className="w-4 h-4" />
         {t.viewRecommendations}

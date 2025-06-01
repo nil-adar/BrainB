@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 
 interface ActionButtonsProps {
   viewRecommendationsText: string;
-  newAssessmentText: string;
+  newAssessmentText: string
   myAssessmentsText: string;
   helpSupportText: string;
   studentFormText: string;
   onStartAssessment: () => void;
   onHelpSupportClick: () => void;
   onStudentFormClick: () => void;
+   studentId: string;
 }
 
 const ActionButtons = ({
@@ -21,16 +22,18 @@ const ActionButtons = ({
   onStartAssessment,
   onHelpSupportClick,
   onStudentFormClick,
+  studentId,
 }: ActionButtonsProps) => {
   return (
     <div className="flex flex-col items-center md:items-start gap-3 order-3 md:order-1">
 
       <Link
-        to="/recommendations"
-        className="w-full max-w-[200px] py-2 px-4 rounded-full text-sm bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 dark:from-blue-900 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-700 text-blue-700 dark:text-blue-200 transition-all duration-300 shadow-sm text-center backdrop-blur-sm"
-      >
-        {viewRecommendationsText}
-      </Link>
+  to={`/recommendations?studentId=${studentId}`} // ✅ שינוי חשוב
+  className="w-full max-w-[200px] py-2 px-4 rounded-full text-sm bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 dark:from-blue-900 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-700 text-blue-700 dark:text-blue-200 transition-all duration-300 shadow-sm text-center backdrop-blur-sm"
+>
+  {viewRecommendationsText}
+</Link>
+
 
       <Button
         className="w-full max-w-[200px] py-2 px-4 rounded-full text-sm bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md"

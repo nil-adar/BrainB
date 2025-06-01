@@ -76,7 +76,7 @@ function App() {
 
 
             <Route path="/statistics" element={<Statistics />} />
-            <Route path="/student/:id" element={<StudentDetails />} />
+          
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -10,17 +10,18 @@ interface StudentCardProps {
 }
 
 const actionTranslations = {
-  en: [
-    { text: "Create new assessment", path: "/create-assessment" },
-    { text: "View Pre-Assessments", path: "/statistics" },
-    { text: "Daily Task Update", path: "/daily-tasks" },
-    { text: "View recommendations", path: (id: string) => `/student/${id}` }, 
-  ],
+en: [
+  { text: "Create new assessment", path: "/create-assessment" },
+  { text: "View Pre-Assessments", path: "/statistics" },
+  { text: "Daily Task Update", path: "/daily-tasks" },
+{ text: "View recommendations", path: (id: string) => `/recommendations?studentId=${id}` }, // 
+
+],
   he: [
     { text: " צור אבחון חדש ", path: "/create-assessment" },
     { text: "צפה בהערכות", path: "/statistics" },
     { text: "עדכון משימות יומי", path: "/daily-tasks" },
-    { text: "צפה בהמלצות", path: (id: string) => `/student/${id}` },
+    { text: "צפה בהמלצות", path: (id: string) => `/recommendations?studentId=${id}` },
   ]
 };
 
@@ -74,7 +75,8 @@ export const StudentCard = ({
       <div className="flex items-start justify-between">
         <div 
           className="flex items-center gap-2 md:gap-3 cursor-pointer"
-          onClick={() => navigate(`/student/${student.id}`)}
+          onClick={() => navigate(`/recommendations?studentId=${student.id}`)}
+
         >
           <img
             src={student.avatar}

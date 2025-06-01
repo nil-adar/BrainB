@@ -73,6 +73,14 @@ export const ChildrenProgressSection = ({
   >
     📋 עבור אל שאלון של {child.firstName} {child.lastName}
   </Button>
+  <Button
+  variant="ghost"
+  className="w-full text-emerald-700 hover:underline hover:bg-emerald-50"
+  onClick={() => window.location.href = `http://localhost:8080/recommendations?studentId=${child.id}`}
+>
+   צפייה בהמלצות של {child.firstName} {child.lastName}
+</Button>
+
 </CardContent>
 
         </Card>
