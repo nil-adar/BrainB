@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, School } from "lucide-react";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -19,7 +19,12 @@ interface ClassSwitcherProps {
   classOptions: AssignedClass[];
 }
 
-export const ClassSwitcher = ({ teacherId, language, onClassChange, classOptions }: ClassSwitcherProps) => {
+export const ClassSwitcher = ({
+  teacherId,
+  language,
+  onClassChange,
+  classOptions
+}: ClassSwitcherProps) => {
   console.log("📦 classOptions המלא:", classOptions);
 
   const translations = {
@@ -36,7 +41,6 @@ export const ClassSwitcher = ({ teacherId, language, onClassChange, classOptions
   };
 
   const [selectedClassValue, setSelectedClassValue] = useState<string | undefined>(undefined);
-
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
@@ -50,25 +54,28 @@ export const ClassSwitcher = ({ teacherId, language, onClassChange, classOptions
       }
     }
   }, [classOptions, onClassChange, initialized]);
-  
+
   const handleClassChange = (value: string) => {
-    setSelectedClassValue(value); // ✅ עדכון state להצגת הבחירה
-  
+    setSelectedClassValue(value);
+
     const [schoolId, classId] = value.split('|');
     const selectedClass = classOptions.find(
       cls => cls.schoolId === schoolId && cls.classId === classId
     );
-  
+
     if (selectedClass) {
       onClassChange(selectedClass);
-      toast.success(
-        language === "he"
-          ? `עברת לכיתה ${selectedClass.className} בבית ספר ${selectedClass.schoolName}`
-          : `Switched to class ${selectedClass.className} in ${selectedClass.schoolName}`
-      );
+
+      const message = language === "he"
+        ? `עברת לכיתה ${selectedClass.className} בבית ספר ${selectedClass.schoolName}`
+        : `Switched to class ${selectedClass.className} in ${selectedClass.schoolName}`;
+
+      toast.success(message, {
+        duration: 2500, // משך הופעת ההודעה במילישניות
+      });
     }
   };
-  
+
   const t = translations[language];
 
   const activeClass = classOptions.find(cls => cls.isActive);

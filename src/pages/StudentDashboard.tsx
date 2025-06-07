@@ -299,7 +299,8 @@ const greeting = language === 'he'
   newAssessmentText={t['newAssessment']}
   myAssessmentsText={t['myAssessments']}
   helpSupportText={t['helpSupport']}
- studentFormText={t.fillForm}
+  studentFormText={t.fillForm}
+  studentId={studentId} //
 
   onStartAssessment={handleStartAssessment}
   onHelpSupportClick={handleOpenHelpSupport}

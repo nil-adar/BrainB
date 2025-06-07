@@ -44,9 +44,11 @@ interface RegisterFormProps {
   isRTL: boolean;
   language: "en" | "he";
 }
-
 export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -56,7 +58,6 @@ export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormP
     uniqueId: "",
     role: "student" as "student" | "parent" | "teacher" | "admin",
   });
-
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,19 +75,36 @@ export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormP
     }));
   };
 
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateRegistrationForm(formData, t.errors)) {
-      return;
+
+    setEmailError("");
+    setPhoneError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^05\d-?\d{7}$/;
+
+    let isValid = true;
+
+    if (!emailRegex.test(formData.email)) {
+      setEmailError("האימייל לא תקין. לדוגמה: user@school.com");
+      isValid = false;
     }
+
+    if (!phoneRegex.test(formData.phone)) {
+      setPhoneError("מספר טלפון לא תקין. לדוגמה: 05X-XXXXXXX");
+      isValid = false;
+    }
+
+    if (!isValid) return;
 
     setIsLoading(true);
     try {
       const { confirmPassword, ...userData } = formData;
-      
+
       const response = await authService.registerUser(userData);
-      
+
       if (response.error) {
         toast.error(response.error);
       } else {
@@ -98,14 +116,15 @@ export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormP
       }
     } catch (error) {
       toast.error(
-        language === "he" 
-          ? "אירעה שגיאה בתהליך ההרשמה. נסה שוב מאוחר יותר" 
+        language === "he"
+          ? "אירעה שגיאה בתהליך ההרשמה. נסה שוב מאוחר יותר"
           : "An error occurred during registration. Please try again later"
       );
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -132,22 +151,28 @@ export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormP
       <FormField
         type="email"
         name="email"
-        placeholder={t.email}
+        placeholder="user@school.com"
         value={formData.email}
         onChange={handleInputChange}
         dir={isRTL ? "rtl" : "ltr"}
         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-right"
       />
+      {emailError && (
+        <p className="text-red-500 text-sm mt-1 text-right">{emailError}</p>
+      )}
 
       <FormField
         type="tel"
         name="phone"
-        placeholder={t.phone}
+        placeholder="05X-XXXXXXX"
         value={formData.phone}
         onChange={handleInputChange}
         dir={isRTL ? "rtl" : "ltr"}
         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-right"
       />
+      {phoneError && (
+        <p className="text-red-500 text-sm mt-1 text-right">{phoneError}</p>
+      )}
 
       <RoleSelector
         value={formData.role}

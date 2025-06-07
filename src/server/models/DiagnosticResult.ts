@@ -2,8 +2,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IDiagnosticResult extends Document {
   studentId: mongoose.Types.ObjectId; // מזהה תלמיד ממסד הנתונים
-  sessionToken: string;               // טוקן סשן שאומת
-  percentages: number[];             // מערך באורך 4 – התוצאות הגולמיות
+  sessionToken: string;               //   
+  percentages: number[];             // מערך  4 התוצאות הגולמיות
   dominantSubtype: 'Combined' | 'Hyperactivity' | 'Inattentive' | 'No ADHD';
   createdAt: Date;
 }

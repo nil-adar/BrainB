@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 const translations = {
   en: {
     title: "Recommendations",
@@ -33,16 +34,68 @@ const translations = {
 };
 
 export default function Recommendations() {
+  interface RecommendationStatus {
+  studentFormCompleted: boolean;
+  parentFormCompleted: boolean;
+  teacherFormCompleted: boolean;
+  diagnosisCompleted: boolean;
+}
+
+const [status, setStatus] = useState<RecommendationStatus | null>(null);
   const language = document.documentElement.dir === "rtl" ? "he" : "en";
   const t = translations[language];
   const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const studentId = params.get("studentId");
 
-  const breadcrumbItems = [
-    { label: t.home, href: "/dashboard" },
-    { label: "מיה פרץ", href: "/student/123" },
-    { label: t.title },
-  ];
+ const [studentName, setStudentName] = useState<string>("");
+
+useEffect(() => {
+  if (!studentId) return;
+
+  // טען סטטוס טפסים
+  fetch(`/api/forms/check-status/${studentId}`)
+    .then((res) => res.json())
+    .then((data) => {
+      setStatus(data);
+    })
+    .catch((err) => {
+      console.error("❌ Failed to load recommendation status:", err);
+    });
+
+  // טען שם תלמיד
+ fetch(`/api/users/${studentId}`)
+  .then((res) => res.json())
+  .then((res) => {
+    console.log("📦 student data:", res);
+
+    const user = res.data;
+
+    if (user.firstName && user.lastName) {
+      setStudentName(`${user.firstName} ${user.lastName}`);
+    } else if (user.name) {
+      setStudentName(user.name);
+    } else {
+      setStudentName("תלמיד");
+    }
+  })
+  .catch((err) => {
+    console.error("❌ Failed to load student name:", err);
+    setStudentName("תלמיד");
+  });
+
+}, [studentId]);
+
+
+
+const breadcrumbItems = [
+  { label: t.home, href: "/dashboard" },
+  { label: studentName || "תלמיד", href: `/student/${studentId}` },
+  { label: t.title },
+];
+
 
   const handleNutritionClick = () => {
     document.documentElement.dir = "rtl";
@@ -93,9 +146,35 @@ export default function Recommendations() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{`${t.greeting}, שרה`}</h1>
+<h1 className="text-3xl font-bold mb-2">
+  {`${t.greeting}${studentName ? ` ${studentName}` : ""}`}
+</h1>
+
+
+
           <h2 className="text-2xl font-semibold text-gray-700">{t.title}</h2>
         </div>
+          {status && (
+  (!status.studentFormCompleted ||
+    !status.parentFormCompleted ||
+    !status.teacherFormCompleted ||
+    !status.diagnosisCompleted) && (
+    <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-6">
+      <p className="font-semibold mb-2">
+        כדי להציג את ההמלצות המלאות, יש להשלים את:
+      </p>
+      <ul className="list-disc list-inside">
+        {!status.studentFormCompleted && <li>שאלון תלמיד</li>}
+        {!status.parentFormCompleted && <li>שאלון הורה</li>}
+        {!status.teacherFormCompleted && <li>שאלון מורה</li>}
+        {!status.diagnosisCompleted && <li>אבחון נודוס</li>}
+      </ul>
+    </div>
+  )
+)}
+
+          
+
 
         {/* Recommendation Type Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

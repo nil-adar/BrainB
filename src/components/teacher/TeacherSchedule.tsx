@@ -81,14 +81,19 @@ export const TeacherSchedule = ({ teacherId, translations: t, language }: Teache
             </div>
   
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={goToPreviousDay}
-                title={language === "he" ? "היום הקודם" : "Previous day"}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+             <Button
+  variant="outline"
+  size="icon"
+  onClick={goToPreviousDay}
+  title={language === "he" ? "היום הקודם" : "Previous day"}
+>
+  {language === "he" ? (
+    <ChevronRight className="h-4 w-4" />
+  ) : (
+    <ChevronLeft className="h-4 w-4" />
+  )}
+</Button>
+
   
               <Button
                 variant="secondary"
@@ -99,14 +104,19 @@ export const TeacherSchedule = ({ teacherId, translations: t, language }: Teache
                 {language === "he" ? "היום" : "Today"}
               </Button>
   
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={goToNextDay}
-                title={language === "he" ? "היום הבא" : "Next day"}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+           <Button
+  variant="outline"
+  size="icon"
+  onClick={goToNextDay}
+  title={language === "he" ? "היום הבא" : "Next day"}
+>
+  {language === "he" ? (
+    <ChevronLeft className="h-4 w-4" />
+  ) : (
+    <ChevronRight className="h-4 w-4" />
+  )}
+</Button>
+
             </div>
           </div>
         </CardHeader>

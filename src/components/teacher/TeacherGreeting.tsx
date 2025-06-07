@@ -1,5 +1,5 @@
 
-import { AnalogClock } from "@/components/AnalogClock";
+
 import { Clock } from "lucide-react";
 
 interface TeacherGreetingProps {
@@ -45,8 +45,8 @@ export const TeacherGreeting = ({
         
         <div className="flex flex-col items-center">
           <div className="w-32 h-32 relative border border-primary/40 rounded-full p-2 flex items-center justify-center mb-4 bg-white/60 shadow-sm">
-            <Clock className="absolute text-primary/30 w-8 h-8" />
-            <AnalogClock />
+           
+            
           </div>
           {classSwitcher && (
             <div className="w-full">

@@ -38,6 +38,11 @@ export default function DailyTasks() {
   const [newTaskColor, setNewTaskColor] = useState("blue");
   const [newTaskMinutes, setNewTaskMinutes] = useState(5);
   const [newTaskStars, setNewTaskStars] = useState(2);
+  const [newTaskDate, setNewTaskDate] = useState(() => {
+  const today = new Date().toISOString().split("T")[0];
+  return today;
+});
+
 
   
 
@@ -84,7 +89,8 @@ export default function DailyTasks() {
       minutes: newTaskMinutes,
       stars: newTaskStars,
       completed: false,
-      date: new Date()
+      date: new Date(newTaskDate)
+
     }));
   } else {
     tasksToSave = [{
@@ -97,7 +103,7 @@ export default function DailyTasks() {
       minutes: newTaskMinutes,
       stars: newTaskStars,
       completed: false,
-      date: new Date()
+      date: new Date(newTaskDate)
     }];
   }
 
@@ -184,8 +190,22 @@ export default function DailyTasks() {
               className="border-slate-300 focus:border-cyan-500 min-h-[180px] text-lg p-5"
             />
           </div>
+          <div>
+  <Label htmlFor="taskDate" className="block text-xl font-medium text-slate-700 mb-3">
+    תאריך המשימה
+  </Label>
+  <Input
+    id="taskDate"
+    type="date"
+    value={newTaskDate}
+    onChange={(e) => setNewTaskDate(e.target.value)}
+    className="border-slate-300 focus:border-cyan-500 text-xl p-6 h-16"
+    min={new Date().toISOString().split("T")[0]} // מונע בחירה של תאריך עבר
+  />
+</div>
 
-          <div className="grid grid-cols-3 gap-10 mt-8">
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-8 items-end">
             <div className="space-y-3">
               <Label htmlFor="taskColor" className="block text-xl font-medium text-slate-700 mb-3 flex items-center">
                 <Palette className="h-6 w-6 mr-2 text-slate-500" />
@@ -193,7 +213,7 @@ export default function DailyTasks() {
               </Label>
               <select 
                 id="taskColor"
-                className="w-full p-5 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full p-4 h-16 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 value={newTaskColor} 
                 onChange={(e) => setNewTaskColor(e.target.value)}
               >
@@ -214,7 +234,7 @@ export default function DailyTasks() {
                 min="1"
                 value={newTaskMinutes}
                 onChange={handleMinutesChange}
-                className="w-full p-5 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent h-16"
+                className="w-full p-4 h-16 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="הזן מספר דקות..."
               />
             </div>
@@ -226,7 +246,7 @@ export default function DailyTasks() {
               </Label>
               <select
                 id="taskStars"
-                className="w-full p-5 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full p-4 h-16 text-lg bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 value={newTaskStars}
                 onChange={(e) => setNewTaskStars(Number(e.target.value))}
               >
