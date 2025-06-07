@@ -5,11 +5,14 @@ import path from "path";
 
 export default defineConfig(() => ({
   server: {
-    host: "::",
+    host: "0.0.0.0", // ← תקן את זה
     port: 8080,
     proxy: {
-      //  כל מה שמתחיל ב- /api יופנה אוטומטית ל פורט 5000
-      "/api": "http://localhost:5000",
+      "/api": {
+        target: "http://localhost:5000",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
   plugins: [react()],
