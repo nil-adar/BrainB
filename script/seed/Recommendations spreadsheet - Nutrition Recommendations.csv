@@ -1,0 +1,300 @@
+category_en,category_he,diagnosis_type_en,diagnosis_type_he,difficulty_description_en,difficulty_description_he,difficulty_tags_en,recommendation_en,recommendation_he,explanation_en,explanation_he,example_en,example_he,contribution_en,contribution_he,source,-,example_is_array
+Nutrition,תזונה,Combined,משולב,"Behavioral and emotional issues,
+Difficulty concentrating, restlessness, forgetfulness
+","קשיים התנהגותיים ורגשיים, מצבי רוח משתנים, התפרצויות,
+קושי בריכוז, חוסר שקט, שכחנות","emotional_irritability_mgD, child_daytime_fatigue, child_memory_support_needed, focus_morning","Magnesium plus vitamin D supplementation reduced behavioral and emotional problems in children with ADHD.
+ or Vitamin D alone","תוסף מגנזיום יחד עם ויטמין D הפחית קשיים התנהגותיים ורגשיים בילדים עם ADHD.
+או ויטמין D לבדו","Magnesium
+6 mg/kg/day magnesium
+
+**The dosage and effects were studied in children with ADHD; however, the article does not provide precise details regarding the participants’ age or weight. The dosage was fixed for all participants, without adjustment for age or weight. Therefore, caution should be exercised when generalizing these findings to other populations.**
+
+","מגנזיום 
+6 מ""ג/לק""ג/ליום מגנזיום
+
+**המינון וההשפעה נבדקו בילדים עם ADHD, אך המאמר אינו מספק פרטים מדויקים על גילם או משקלם של המשתתפים. המינון היה קבוע לכל המשתתפים, ללא התאמה לגיל או משקל. לפיכך, יש לנקוט זהירות בהכללת הממצאים לאוכלוסיות אחרות.**","Almonds, cashews, pumpkin seeds, sunflower seeds, spinach, Swiss chard, black beans, lentils, quinoa, oats, banana, avocado, tofu, whole grain bread, peas, hazelnuts, soybeans, mackerel, salmon, dark chocolate (over 70%), plain yogurt.","שקדים, אגוזי קשיו, גרעיני דלעת, גרעיני חמנייה, תרד, מנגולד, שעועית שחורה, עדשים, קינואה, שיבולת שועל, בננה, אבוקדו, טופו, דגנים מלאים (כמו לחם מחיטה מלאה), אפונה, אגוזי לוז, פולי סויה, דג מקרל, סלמון, שוקולד מריר (מעל 70%), יוגורט טבעי.","Reduces behavioral outbursts, improves mood, and stabilizes emotional regulation.","מפחית התפרצויות, משפר מצב רוח ומייצב ויסות רגשי.","Lange et al., 2023","טבלה של תוספים למגנזיום 
+ויטמין D ",array
+Nutrition,תזונה,Combined,משולב,"Behavioral and emotional issues,
+Difficulty concentrating, restlessness, forgetfulness
+","קשיים התנהגותיים ורגשיים, מצבי רוח משתנים, התפרצויות,
+קושי בריכוז, חוסר שקט, שכחנות","emotional_irritability_mgD, child_daytime_fatigue, child_memory_support_needed, focus_morning","Magnesium plus vitamin D supplementation reduced behavioral and emotional problems in children with ADHD.
+ or Vitamin D alone","תוסף מגנזיום יחד עם ויטמין D הפחית קשיים התנהגותיים ורגשיים בילדים עם ADHD.
+או ויטמין D לבדו"," Vitamin D
+50,000 IU/week Vitamin D
+
+**The dosage and effects were studied in children with ADHD; however, the article does not provide precise details regarding the participants’ age or weight. The dosage was fixed for all participants, without adjustment for age or weight. Therefore, caution should be exercised when generalizing these findings to other populations.**
+
+"," ויטמין D 
+ 50,000 יח""ל/שבוע ויטמין D
+
+**המינון וההשפעה נבדקו בילדים עם ADHD, אך המאמר אינו מספק פרטים מדויקים על גילם או משקלם של המשתתפים. המינון היה קבוע לכל המשתתפים, ללא התאמה לגיל או משקל. לפיכך, יש לנקוט זהירות בהכללת הממצאים לאוכלוסיות אחרות.**","
+Salmon, mackerel, tuna, sardines, cod, cod liver oil, egg yolk, vitamin D-fortified milk, fortified yogurt, fortified soy milk, fortified almond milk, sun-exposed mushrooms (such as portobello/shiitake), chicken liver, mozzarella cheese, cottage cheese.
+Sun-exposed mushrooms, fortified soy milk, fortified almond milk, vitamin D-fortified breakfast cereals, fortified oat milk.
+
+","
+סלמון, מקרל, טונה, סרדינים, דג בקלה, שמן כבד דגים, חלמון ביצה, חלב מועשר בוויטמין D, יוגורט מועשר, משקה סויה מועשר, משקה שקדים מועשר, פטריות שחשפו אותן לשמש (כגון פורטובלו/שיטאקי), כבד עוף, גבינת מוצרלה, גבינת קוטג'.
+פטריות שחשפו אותן לאור שמש, חלב סויה מועשר, חלב שקדים מועשר, דגני בוקר מועשרים בוויטמין D, משקה שיבולת שועל מועשר.","Reduces behavioral outbursts, improves mood, and stabilizes emotional regulation.","מפחית התפרצויות, משפר מצב רוח ומייצב ויסות רגשי.","Lange et al., 2023","טבלה של תוספים למגנזיום 
+ויטמין D ",array
+Nutrition,תזונה,"Hyperactivity,  impulsivity","היפראקטיביות , אימפולסיביות ","
+Hyperactivity – restlessness and difficulty staying seated, the child is constantly moving, has trouble with quiet activities, and talks excessively.
+Impulsivity – struggles to wait their turn, answers before questions are finished, tends to interrupt conversations or activities, and often acts without considering the consequences.","היפראקטיביות – תזוזתיות וקושי להישאר במקום, הילד כל הזמן נע, מתקשה להשתתף בפעילויות שקטות ומדבר הרבה.
+אימפולסיביות – מתקשה לחכות לתורו, עונה לפני סיום השאלה, נוטה להתפרץ לשיחות או פעילויות ולעיתים פועל מבלי לחשוב על התוצאה.","child_daytime_fatigue, focus_morning","Zinc supplementation, alone or with medication, improved ADHD total score.","תוסף אבץ, לבד או בנוסף לטיפול תרופתי, שיפר את ציון ה-ADHD הכללי.","
+Zinc:
+10–40 mg/day, for 6–12 weeks
+
+The dosage and effects were studied in children with ADHD; however, the article does not provide precise details regarding the participants’ age or weight. The dosage was fixed for all participants, without adjustment for age or weight. Therefore, caution should be exercised when generalizing these findings to other populations.
+
+","אבץ: 
+10–40 מ""ג/יום, למשך 6–12 שבועות
+
+**המינון וההשפעה נבדקו בילדים עם ADHD, אך המאמר אינו מספק פרטים מדויקים על גילם או משקלם של המשתתפים. המינון היה קבוע לכל המשתתפים, ללא התאמה לגיל או משקל. לפיכך, יש לנקוט זהירות בהכללת הממצאים לאוכלוסיות אחרות.**","
+Salmon, mackerel, tuna, sardines, cod, cod liver oil, egg yolk, vitamin D-fortified milk, fortified yogurt, fortified soy milk, fortified almond milk, sun-exposed mushrooms (such as portobello/shiitake), chicken liver, mozzarella cheese, cottage cheese, vitamin D-fortified breakfast cereals, fortified oat milk.
+
+","
+סלמון, מקרל, טונה, סרדינים, דג בקלה, שמן כבד דגים, חלמון ביצה, חלב מועשר בוויטמין D, יוגורט מועשר, משקה סויה מועשר, משקה שקדים מועשר, פטריות שחשפו אותן לשמש (כגון פורטובלו/שיטאקי), כבד עוף, גבינת מוצרלה, גבינת קוטג', דגני בוקר מועשרים בוויטמין D, משקה שיבולת שועל מועשר.","Zinc supplementation may reduce hyperactivity and impulsivity symptoms, especially in children with low zinc levels.
+","לקיחת אבץ עשויה להפחית תסמיני היפראקטיביות ואימפולסיביות, במיוחד אצל ילדים עם רמות אבץ נמוכות.","Lange et al., 2023",טבלת תוספים אבץ ,array
+Nutrition,תזונה,Inattention,חוסר קשב,"Difficulty maintaining attention, frequent distractibility and forgetfulness, and trouble following instructions or completing tasks.
+","קושי להתרכז לאורך זמן, מוסחות ושכחה תכופה, קושי לעקוב אחר הוראות או לסיים משימות.","low_energy, child_daytime_fatigue, focus_morning, focus_morning","Iron supplement. 
+Infant iron deficiency linked to later ADHD – nutritional monitoring recommended.","תוסף ברזל, מחסור בברזל בגיל הינקות קשור ל-ADHD בגיל מאוחר יותר – מומלץ לנטר ולתמוך תזונתית.","Iron: 
+Not specified","ברזל: 
+לא צוין מינון","
+Beef, chicken, turkey, eggs, liver, sardines, tuna, salmon, lentils, chickpeas, beans (kidney/black/white), peas, tofu, tempeh, pumpkin seeds, sunflower seeds, quinoa, spinach, kale, Swiss chard, broccoli, whole wheat bread, oats, fortified breakfast cereals, dried apricots, raisins.
+
+","
+בקר, עוף, הודו, ביצים, כבד, סרדינים, טונה, סלמון, עדשים, חומוס, שעועית (אדומה/שחורה/לבנה), אפונה, טופו, טמפה, גרעיני דלעת, גרעיני חמנייה, קינואה, תרד, קייל, מנגולד, ברוקולי, לחם מחיטה מלאה, שיבולת שועל, דגני בוקר מועשרים, משמשים מיובשים, צימוקים.
+","Iron supplementation may improve concentration, reduce distractibility, and help the child complete tasks.","לקיחת ברזל עשויה לשפר ריכוז, להפחית מוסחות ולעזור לילד להשלים משימות.","Lange et al., 2023",טבלת תוספים ברזל,array
+Nutrition,תזונה,Inattention,חוסר קשב,"The child struggles to sustain focus, is easily distracted by environmental stimuli, forgets instructions, switches tasks frequently or fails to complete them. While some impulsive or hyperactive behaviors may occur, the primary challenge lies in maintaining attention and task persistence.
+
+","הילד מתקשה להתמקד לאורך זמן, מוסח בקלות מגירויים סביבתיים, שוכח הוראות, מדלג בין משימות או מתקשה לסיים אותן. לעיתים מתלווה לכך תנועתיות או תגובות אימפולסיביות, אך עיקר הקושי הוא בשמירה על ריכוז והתמדה.","low_energy, child_memory_support_needed",Omega 3/6 fatty acids may benefit subgroups with deficiency.,חומצות שומן מסוג אומגה 3/6 עשויות להועיל לתת-קבוצות עם מחסור.,"Omega 3/6:
+Variable dosage; 3–6 months
+
+**The dosage and effects were studied in children with ADHD; however, the article does not provide precise details regarding the participants’ age or weight. The dosage was fixed for all participants, without adjustment for age or weight. Therefore, caution should be exercised when generalizing these findings to other populations.**
+
+","אומגה 3/6: 
+מינון משתנה; 3–6 חודשים
+
+**המינון וההשפעה נבדקו בילדים עם ADHD, אך המאמר אינו מספק פרטים מדויקים על גילם או משקלם של המשתתפים. המינון היה קבוע לכל המשתתפים, ללא התאמה לגיל או משקל. לפיכך, יש לנקוט זהירות בהכללת הממצאים לאוכלוסיות אחרות.**","
+Salmon, mackerel, sardines, herring, anchovies, tuna, walnuts, canola oil, soybean oil, omega-3-enriched eggs, fish oil supplements.
+Flaxseeds, chia seeds, hemp seeds, tofu, edamame, algae oil supplements.
+
+","סלמון, מקרל, סרדינים, הרינג, אנשובי, טונה, אגוזי מלך, שמן קנולה, שמן סויה, ביצים מועשרות באומגה 3, תוספי שמן דגים
+זרעי פשתן, זרעי צ'יה, זרעי קנבוס, טופו, אדממה, תוספי שמן אצות
+","Reduces hyperactivity and impulsivity, supports cognitive and behavioral control.",מפחית היפראקטיביות ואימפולסיביות ותורם לשליטה קוגניטיבית והתנהגותית.,"Lange et al., 2023",טבלת תוספים פרוביוטיקה,array
+Nutrition,תזונה,"Hyperactivity,  impulsivity","היפראקטיביות , אימפולסיביות ","restlessness, impulsivity, emotional outbursts, and challenges with emotional regulation—typically seen in children who are constantly moving, have trouble calming down, react intensely, and act without thinking. Occasionally, especially during periods of stress or anxiety, physical complaints such as stomach aches may also occur, though these are not core symptoms of ADHD.
+Attention difficulties, decreased memory, challenges with emotional regulation, anxiety","חוסר שקט, אימפולסיביות, התפרצויות רגשיות וקשיים בוויסות רגשי — המתבטאים בילדים שמרבים לזוז, מתקשים להירגע, מגיבים בעוצמה רגשית ופועלים ללא מחשבה. לעיתים, במיוחד במצבי לחץ או חרדה, עשויים להופיע גם תלונות גופניות כגון כאבי בטן, אך אלו אינם תסמין מרכזי של ADHD.
+קשיי קשב, ירידה בזיכרון, קושי בוויסות רגשי, חרדה",emotional_dysregulation_relax,"multi-strain probiotic supplement may be considered for 8–12 weeks as supportive therapy for children with ADHD, particularly when restlessness, impulsivity, and difficulties with emotional regulation are prominent. Consultation with a physician is recommended before starting supplementation","ניתן לשקול מתן תוסף פרוביוטיקה רב-זנית לתקופה של 8–12 שבועות כטיפול תומך בילדים עם ADHD, במיוחד כאשר בולטים חוסר שקט, אימפולסיביות וקשיים בוויסות רגשי. מומלץ להתייעץ עם רופא לפני תחילת השימוש","Probiotic:
+3 months
+
+**The dosage and effects were studied in children with ADHD; however, the article does not provide precise details regarding the participants’ age or weight. The dosage was fixed for all participants, without adjustment for age or weight. Therefore, caution should be exercised when generalizing these findings to other populations.**
+
+","פרוביוטיקה 
+3 חודשים
+
+**המינון וההשפעה נבדקו בילדים עם ADHD, אך המאמר אינו מספק פרטים מדויקים על גילם או משקלם של המשתתפים. המינון היה קבוע לכל המשתתפים, ללא התאמה לגיל או משקל. לפיכך, יש לנקוט זהירות בהכללת הממצאים לאוכלוסיות אחרות.**","
+Yogurt with live cultures, kefir, aged cheeses, fermented pickles, sauerkraut, kimchi, kombucha, fortified probiotic drinks, probiotic supplements, tempeh, miso, fermented tofu.","
+יוגורט עם חיידקים פעילים, קפיר, גבינות בשלות, חמוצים מותססים טבעית, כרוב כבוש, קימצ'י, קומבוצ'ה, משקאות פרוביוטיים מועשרים, תוספי פרוביוטיקה, טמפה, מיסו, טופו מותסס.","Probiotics may reduce restlessness, temper outbursts, impulsivity, and anxiety symptoms in children with ADHD, mainly by improving gut flora, enhancing emotional regulation, and reducing inflammatory processes in the body.","פרוביוטיקה עשויה להפחית חוסר שקט, התפרצויות זעם, אימפולסיביות ותסמיני חרדה בילדים עם ADHD, בעיקר על ידי שיפור פלורת המעי, וויסות רגשי והפחתת תהליכים דלקתיים בגוף.","Lange et al., 2023",,array
+Nutrition,תזונה,Combined,משולב,"poor concentration and emotional dysregulation
+The child shows persistent difficulty with attention, is easily distracted, has trouble completing tasks, and tends to react impulsively or with emotional outbursts. These challenges interfere with academic progress, peer interactions, and self-esteem.
+
+
+","הילד סובל מקושי מתמשך בריכוז, מוסח בקלות, מתקשה להשלים משימות, ולצד זאת מגיב לעיתים בהתפרצויות רגשיות או התנהגות אימפולסיבית. הקושי משפיע הן על למידה שוטפת והן על יחסים חברתיים ותחושת מסוגלות עצמית.","task_completion_difficulty, environmental_distraction",Few-Foods diet improved symptoms in 60% of children.,דיאטת אלימינציה (Few-Foods) שיפרה תסמינים בקרב 60% מהילדים.,"Few-Foods Diet: 
+4 weeks + reintroduction phase","דיאטת מעט-מאכלים:
+4 שבועות + שלב החזרה הדרגתית של מאכלים","Few-Foods Diet (Elimination Diet):
+(There is no fixed list—the diet is individually tailored and based on a few “safe” foods according to the child’s tolerance. Common examples:)
+Rice, potato, chicken, lamb, pear, banana, zucchini, lettuce, water
+
+Common substitutes (according to tolerance):
+Quinoa, apple, pumpkin, broccoli, salmon, egg (if permitted), low-allergen rye bread
+","דיאטת מעט-מאכלים (Few-Foods Diet):
+(לא קיימת רשימה אחידה, כי התפריט מותאם אישית ונבנה סביב מעט מאכלים ""בטוחים"" לפי סבילות הילד. דוגמאות נפוצות:)
+אורז, תפוח אדמה, עוף, טלה, אגס, בננה, קישוא, חסה, מים
+
+תחליפים נפוצים לפי סבילות:
+קינואה, תפוח, דלעת, ברוקולי, דג סלמון, ביצה (אם מאושרת בתפריט), לחם שיפון דל אלרגנים",Reduces behavioral outbursts and improves attention in sensitive children.,מפחית התפרצויות ומשפר ריכוז בילדים רגישים.,"Lange et al., 2023",,text
+Nutrition,תזונה,Combined,משולב," hyperactivity, emotional reactivity, and inattention
+The child exhibits excessive motor activity and emotional sensitivity, struggles with self-regulation, and shows signs of inattention such as distractibility and poor task persistence. These combined symptoms affect classroom behavior, peer relationships, and daily functioning.
+
+","הילד מפגין פעילות יתר, קושי לשבת במקום, תנודות רגשיות כמו עצבנות או תסכול, ורגישות למצבים חברתיים או לימודיים. הקשיים כוללים גם בעיות קשב והסחות דעת תכופות. התמונה המשולבת פוגעת ביכולת להתארגן, לשלוט בהתנהגות, ולהשתלב חברתית.",focus_morning,"DASH diet improved behavior, social and emotional symptoms.
+
+The DASH diet (Dietary Approaches to Stop Hypertension) is a dietary plan originally developed to prevent and manage high blood pressure. It emphasizes plenty of vegetables, fruits, whole grains, low-fat dairy products, lean proteins (like fish, poultry, and legumes), nuts, and seeds, while limiting salt, sugar, processed foods, and saturated fat. DASH is recommended for overall health and especially for managing hypertension.
+","דיאטת DASH שיפרה התנהגות, סימפטומים חברתיים ורגשיים.
+
+דיאטת DASH היא תפריט מגוון ובריא, שמדגיש מזון לא מעובד, ירקות, פירות, מוצרי חלב דלי שומן, דגנים מלאים, הפחתת מלח, שומן רווי וסוכר – ומומלצת במיוחד למניעת ולשליטה בלחץ דם גבוה.","DASH diet: 
+12 weeks","דיאטת DASH 
+12 שבועות","
+Fresh vegetables, fresh fruits, whole grains (whole wheat bread/brown rice/quinoa/oats), low-fat dairy products (yogurt/white cheese/milk), fish, skinless chicken, legumes (lentils/beans/chickpeas/peas), nuts (almonds/walnuts/cashews), olive oil, avocado, fortified soy/almond/oat drink, tofu, legumes
+
+","ירקות טריים, פירות טריים, דגנים מלאים (לחם מלא/אורז מלא/קינואה/שיבולת שועל), מוצרי חלב דלי שומן (יוגורט/גבינה לבנה/חלב), דגים, עוף ללא עור, קטניות (עדשים/שעועית/חומוס/אפונה), אגוזים (שקדים/אגוזי מלך/קשיו), שמן זית, אבוקדו, משקה סויה/שקדים/שיבולת שועל מועשר, טופו, קטניות","Improves emotional regulation, reduces hyperactivity, and supports social adjustment.","משפר ויסות רגשי, מפחית היפראקטיביות ותורם להסתגלות חברתית.","Lange et al., 2023",,array
+Nutrition,תזונה,Combined,משולב,"Worsening inattention, hyperactivity, impulsivity, mood swings, and fatigue—especially in children who frequently consume processed foods, snacks, and sweets.	","החמרה בתסמיני קשב, חוסר שקט, אימפולסיביות, תנודות חדות במצבי רוח ועייפות או ירידה בריכוז, בעיקר אצל ילדים שצורכים הרבה מזון מעובד, חטיפים וממתקים.","post_snack_behavioral_change, post_meal_fatigue_focus_drop","
+Studies indicate that a diet high in junk food—meaning processed foods rich in sugar, saturated fat, and salt—may worsen ADHD symptoms. A Western dietary pattern has been linked to increased hyperactivity, impulsivity, and inattention, especially among children and adolescents. The recommendation is to minimize the consumption of processed foods and prioritize a varied, healthy diet.
+
+","מחקרים מצביעים על כך שתזונה עתירת ג'אנק פוד—כלומר מזון מעובד, עשיר בסוכר, שומן רווי, ומלח—עשויה להחמיר תסמיני ADHD. דפוס תזונה מערבי נקשר לעלייה בהיפראקטיביות, אימפולסיביות, וחוסר קשב, במיוחד אצל ילדים ובני נוער. ההמלצה היא להפחית ככל האפשר בצריכת מזון מעובד לטובת תזונה מגוונת ובריאה.","Western diet/junk food:
+Avoid or limit intake
+
+Sugar, fried food, salt:
+Limit intake
+
+**The recommendation is based on observational studies showing a correlation between a Western diet rich in processed foods, sugar, and saturated fat and a worsening of ADHD symptoms. No specific dosage was tested— the recommendation is to limit intake as much as possible.
+(Pinto et al., 2022)**","תזונת מערבית/ג'אנק פוד: 
+להימנע או להגביל צריכה .
+
+סוכר, מזון מטוגן, מלח: 
+להגביל צריכה
+
+**ההמלצה להגביל צריכת סוכר, מזון מטוגן ומלוח מבוססת על קשר שנמצא בין צריכה גבוהה של רכיבים אלו לבין החמרה בתסמיני קשב וריכוז. אין כמות יומית מומלצת – ההמלצה היא לצמצם ככל האפשר.
+(Pinto et al., 2022)**","
+Fast food (pizza/hamburger/processed schnitzel/hot dogs), salty snacks (Bamba/Bissli/chips), industrial cakes and cookies, candies, sweetened beverages, sweetened breakfast cereals, roasted salted nuts, industrial pastries, frozen processed foods (pizzas/ready-made schnitzels), fried foods (chips/schnitzel), white sugar, brown sugar, chocolates, jams, ice cream, pickled products, canned foods high in salt.
+
+","
+מזון מהיר (פיצה/המבורגר/שניצל תעשייתי/נקניקיות), חטיפים מלוחים (במבה/ביסלי/צ'יפס), עוגות ועוגיות תעשייתיות, ממתקים, משקאות ממותקים, דגני בוקר ממותקים, פיצוחים קלויים ומומלחים, מאפים תעשייתיים, מזון קפוא מתועש (פיצות/שניצלים מוכנים), מזון מטוגן (צ'יפס/שניצל), סוכר לבן, סוכר חום, שוקולדים, ריבות, גלידות, חמוצים תעשייתיים, מזון משומר עתיר מלח.","Helps prevent symptom worsening, supports better behavioral and emotional stability.
+
+Reduces hyperactivity, supports self-control, and may improve focus.","מונע החמרה בסימפטומים ותומך ביציבות התנהגותית ורגשית.
+
+מפחית היפראקטיביות, תורם לשליטה עצמית ועשוי לשפר ריכוז.","Pinto et al., 2022",,array
+Nutrition,תזונה,Inattention,חוסר קשב,"
+If your child has trouble focusing, frequently forgets instructions, doesn’t finish tasks, or often seems inattentive","הילד מתקשה להתרכז, שוכח מה אומרים לו, לא מסיים משימות או נראה לעיתים קרובות לא קשוב לסביבה ","child_memory_support_needed, focus_morning","
+Studies show that healthy dietary patterns, such as a Mediterranean diet or a balanced vegetarian diet, may reduce the risk and severity of inattention symptoms in children and adolescents.","מחקרים מצביעים על כך שדפוסי תזונה בריאים, כמו דיאטה ים-תיכונית או תפריט צמחוני מאוזן, עשויים להקטין את הסיכון להופעת תסמיני חוסר קשב (Inattention) ואף לסייע בהפחתת חומרתם בילדים ובני נוער.","Mediterranean/vegetarian diet:
+Consistent adherence to the diet
+
+**Studies indicate that a Mediterranean or balanced vegetarian dietary pattern is associated with a decreased risk and severity of ADHD symptoms. No specific dosage is defined— the recommendation is to maintain consistent adherence to such a diet.
+(Pinto et al., 2022)**","דיאטה ים תיכונית/צמחונית: 
+שמירה סדירה על התפריט
+
+**מחקרים מצביעים על כך שדפוס תזונה ים תיכונית או צמחונית מאוזנת קשור לירידה בסיכון ותסמיני ADHD. אין מינון מוגדר – ההמלצה היא להקפיד על שמירה עקבית על תפריט זה.
+(Pinto et al., 2022)**","Fresh vegetables (tomato/cucumber/lettuce/pepper/carrot), fruits (apple/pear/banana/peach/grapes/watermelon), legumes (lentils/chickpeas/beans/peas), fish (salmon/tuna/mullet), eggs, soft cheeses, yogurt, olive oil, olives, whole grains (whole wheat bread/ brown rice/oats/quinoa/buckwheat), nuts and almonds, tahini, avocado, fresh herbs (parsley/mint/basil), Tofu, soy drinks, fortified plant-based cheeses, a variety of legumes","
+ירקות טריים (עגבנייה/מלפפון/חסה/פלפל/גזר), פירות (תפוח/אגס/בננה/אפרסק/ענבים/אבטיח), קטניות (עדשים/חומוס/שעועית/אפונה), דגים (סלמון//טונה/בורי), ביצים, גבינות רכות, יוגורט, שמן זית, זיתים, דגנים מלאים (לחם מלא/אורז מלא/שיבולת שועל/קינואה/כוסמת), אגוזים ושקדים, טחינה, אבוקדו, עשבי תיבול (פטרוזיליה/נענע/בזיליקום), טופו, משקה סויה, גבינות טבעוניות מועשרות, קטניות מגוונות","These diets are rich in essential nutrients (such as omega-3 fatty acids, vitamins, antioxidants, and minerals) that support healthy brain function and cognitive regulation.
+In contrast, diets high in processed foods, saturated fats, and sugars are linked to increased inattention.
+
+","דיאטות אלו עשירות ברכיבים תזונתיים חיוניים (כגון אומגה 3, ויטמינים, נוגדי חמצון, מינרלים) התורמים לתפקוד מוחי תקין ולוויסות קוגניטיבי ורגשי.
+לעומת זאת, דפוסי תזונה עתירי מזון מעובד, שומן רווי וסוכר נקשרו להחמרת חוסר קשב.
+
+","Pinto et al., 2022",,array
+Nutrition,תזונה,Hyperactivity,היפראקטיביות,"significant hyperactivity—manifested as excessive movement, restlessness, and difficulty with self-control—that interferes with daily functioning.","היפראקטיביות משמעותית שמתבטאת בתנועתיות יתר, חוסר שקט וקושי בשליטה עצמית.",child_memory_support_needed,Flax oil with antioxidant (Vitamin C),שמן פשתן עם נוגד חמצון (ויטמין C),"200 mg ALA + 25 mg Vitamin C, twice daily for 3 months","200 מ״ג ALA + 25 מ״ג ויטמין C, פעמיים ביום למשך 3 חודשים","
+ALA sources:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, walnuts, canola oil, soybean oil, tofu, edamame
+
+Nut-free substitutes:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, canola oil, soybean oil, tofu, edamame
+
+Vitamin C sources:
+Orange, tangerine, kiwi, strawberry, guava, red bell pepper, yellow bell pepper, broccoli, Brussels sprouts, kale, mango, tomato, pineapple, papaya
+
+Citrus-free substitutes:
+Kiwi, strawberry, guava, red bell pepper, broccoli, kale, mango, pineapple, papaya
+
+","מקורות ALA:
+זרעי פשתן, שמן פשתן, זרעי צ'יה, זרעי קנבוס, אגוזי מלך, שמן קנולה, שמן סויה, טופו, אדממה
+
+מקורות ויטמין C:
+תפוז, קלמנטינה, קיווי, תות שדה, גויאבה, פלפל אדום, פלפל צהוב, ברוקולי, כרוב ניצנים, קייל, מנגו, עגבנייה, אננס, פפאיה
+
+
+","
+Studies have found that a combination of flaxseed oil (rich in the omega-3 fatty acid ALA) and vitamin C may help reduce hyperactivity symptoms in children with ADHD. These nutrients support healthy nervous system function and the regulation of neurotransmitters in the brain, leading to decreased restlessness, reduced excessive movement, and improved control over impulsive behaviors.
+In a clinical study (Joshi et al., 2006), significant improvement in hyperactivity scores was observed after 3 months of supplementation with flaxseed oil and vitamin C.","מחקרים מצאו כי שילוב של שמן פשתן (עשיר בחומצת שומן אומגה 3 מסוג ALA) עם ויטמין C עשוי להפחית תסמיני היפראקטיביות אצל ילדים עם ADHD. החומרים הללו תורמים לשיפור תפקוד מערכת העצבים ולוויסות נוירוטרנסמיטורים במוח, ובכך מסייעים להורדת חוסר השקט, הפחתת תנועתיות יתר, ושליטה טובה יותר בהתנהגות אימפולסיבית.
+במחקר שנערך (Joshi et al., 2006) נמצא שיפור משמעותי בציוני היפראקטיביות לאחר 3 חודשי טיפול בתוסף שמן פשתן וויטמין C.",,"טבלת תוספים ALA 
+ויטמין C ",text
+Nutrition,תזונה,Impulsivity,אימפולסיביות ,"When a child exhibits pronounced impulsivity—such as difficulty waiting their turn, interrupting others, or acting hastily or dangerously without prior thought—to a degree that interferes with academic, social, or home functioning.","כאשר הילד מפגין אימפולסיביות בולטת: קושי לחכות לתורו, התפרצות לדברים, פעולות חפוזות או מסוכנות ללא מחשבה מוקדמת—בדרגה שמפריעה לתפקוד הלימודי, החברתי או הביתי.",child_memory_support_needed,Flax oil with antioxidant (Vitamin C),שמן פשתן עם נוגד חמצון (ויטמין C),"200 mg ALA + 25 mg Vitamin C, twice daily for 3 months","200 מ״ג ALA + 25 מ״ג ויטמין C, פעמיים ביום למשך 3 חודשים","
+ALA sources:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, walnuts, canola oil, soybean oil, tofu, edamame
+
+Nut-free substitutes:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, canola oil, soybean oil, tofu, edamame
+
+Vitamin C sources:
+Orange, tangerine, kiwi, strawberry, guava, red bell pepper, yellow bell pepper, broccoli, Brussels sprouts, kale, mango, tomato, pineapple, papaya
+
+Citrus-free substitutes:
+Kiwi, strawberry, guava, red bell pepper, broccoli, kale, mango, pineapple, papaya
+
+","מקורות ALA:
+זרעי פשתן, שמן פשתן, זרעי צ'יה, זרעי קנבוס, אגוזי מלך, שמן קנולה, שמן סויה, טופו, אדממה
+
+מקורות ויטמין C:
+תפוז, קלמנטינה, קיווי, תות שדה, גויאבה, פלפל אדום, פלפל צהוב, ברוקולי, כרוב ניצנים, קייל, מנגו, עגבנייה, אננס, פפאיה
+
+
+","Studies show that a combination of flaxseed oil (ALA) and vitamin C may help reduce impulsive behavior in children with ADHD, likely due to their role in balancing neurotransmitters (such as dopamine and serotonin) and supporting healthy nervous system function.","מחקרים מראים כי שילוב של שמן פשתן (ALA) וויטמין C עשוי לסייע בהפחתת התנהגות אימפולסיבית בילדים עם ADHD, כנראה בזכות תרומתם לאיזון נוירוטרנסמיטורים (כמו דופמין וסרוטונין) ולתפקוד תקין של מערכת העצבים.",,"טבלת תוספים ALA 
+ויטמין C ",text
+Nutrition,תזונה,Inattention,חוסר קשב,"When a child has persistent difficulty concentrating, is highly distractible, tends to “daydream,” has trouble listening, or fails to complete tasks—to the point that it impairs their performance at school or at home.","כאשר לילד יש קושי ממושך להתרכז, מוסחות גבוהה, נטייה ""לחלום בהקיץ"", קושי להקשיב ולהשלים משימות — עד כדי פגיעה בתפקוד בלימודים או בבית.",child_memory_support_needed,Flax oil with antioxidant (Vitamin C),שמן פשתן עם נוגד חמצון (ויטמין C),"200 mg ALA + 25 mg Vitamin C, twice daily for 3 months","200 מ״ג ALA + 25 מ״ג ויטמין C, פעמיים ביום למשך 3 חודשים","
+ALA sources:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, walnuts, canola oil, soybean oil, tofu, edamame
+
+Nut-free substitutes:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, canola oil, soybean oil, tofu, edamame
+
+Vitamin C sources:
+Orange, tangerine, kiwi, strawberry, guava, red bell pepper, yellow bell pepper, broccoli, Brussels sprouts, kale, mango, tomato, pineapple, papaya
+
+Citrus-free substitutes:
+Kiwi, strawberry, guava, red bell pepper, broccoli, kale, mango, pineapple, papaya
+
+","מקורות ALA:
+זרעי פשתן, שמן פשתן, זרעי צ'יה, זרעי קנבוס, אגוזי מלך, שמן קנולה, שמן סויה, טופו, אדממה
+
+מקורות ויטמין C:
+תפוז, קלמנטינה, קיווי, תות שדה, גויאבה, פלפל אדום, פלפל צהוב, ברוקולי, כרוב ניצנים, קייל, מנגו, עגבנייה, אננס, פפאיה
+
+
+","It has been shown that supplementation with flaxseed oil and vitamin C can improve concentration and attention levels in children with ADHD, probably due to their contribution to improved nervous system function and increased brain plasticity.","הוכח כי תוספת שמן פשתן וויטמין C יכולה לשפר רמות ריכוז וקשב בקרב ילדים עם ADHD, כנראה בשל תרומתם לשיפור תפקוד מערכת העצבים והגברת פלסטיות מוחית.",,"טבלת תוספים ALA 
+ויטמין C ",text
+Nutrition,תזונה,Combined,משולב,"
+The visible difficulty is a combination of impulsive behavior (such as interrupting others, difficulty waiting their turn, acting hastily) together with inattention (trouble focusing, frequent distractibility, forgetfulness, inconsistency in completing tasks), all of which interfere with daily functioning at school, at home, and in social settings.
+
+
+
+
+
+
+
+
+","הקושי הנראה לעין הוא שילוב של התנהגות אימפולסיבית (כמו התפרצות לדברים, קושי להמתין לתור, פעולות חפוזות) יחד עם חוסר קשב (קושי להתרכז, מוסחות תכופה, שכחה של משימות, חוסר עקביות בהשלמת מטלות), אשר פוגעים בתפקוד היומיומי בלימודים, בבית ובחברה.",child_memory_support_needed,Flax oil with antioxidant (Vitamin C),"שמן פשתן עם נוגד חמצון (ויטמין C)
+","200 mg ALA + 25 mg Vitamin C, twice daily for 3 months","200 מ״ג ALA + 25 מ״ג ויטמין C, פעמיים ביום למשך 3 חודשים","
+ALA sources:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, walnuts, canola oil, soybean oil, tofu, edamame
+
+Nut-free substitutes:
+Flaxseeds, flaxseed oil, chia seeds, hemp seeds, canola oil, soybean oil, tofu, edamame
+
+Vitamin C sources:
+Orange, tangerine, kiwi, strawberry, guava, red bell pepper, yellow bell pepper, broccoli, Brussels sprouts, kale, mango, tomato, pineapple, papaya
+
+Citrus-free substitutes:
+Kiwi, strawberry, guava, red bell pepper, broccoli, kale, mango, pineapple, papaya
+
+","מקורות ALA:
+זרעי פשתן, שמן פשתן, זרעי צ'יה, זרעי קנבוס, אגוזי מלך, שמן קנולה, שמן סויה, טופו, אדממה
+
+מקורות ויטמין C:
+תפוז, קלמנטינה, קיווי, תות שדה, גויאבה, פלפל אדום, פלפל צהוב, ברוקולי, כרוב ניצנים, קייל, מנגו, עגבנייה, אננס, פפאיה
+
+
+","
+Studies have found that a combination of flaxseed oil (ALA) and vitamin C may help reduce symptoms of both impulsivity and inattention in children with ADHD. These nutrients support the balance of neurotransmitters such as dopamine, promote healthy nervous system function, and enhance brain plasticity, potentially leading to improved concentration, better behavioral control, and reduced impulsive reactions.
+
+Improves regulation, reduced self-control difficulties by 4.03 points (p < 0.001),
+Reduces psychosomatic symptoms by 1.43 points (p < 0.001),
+Reduces learning problems score by 2.4 points (p < 0.001)","מחקרים מצאו כי שילוב של שמן פשתן (ALA) וויטמין C עשוי לסייע בהפחתה של תסמיני אימפולסיביות וחוסר קשב בילדים עם ADHD. החומרים הללו תורמים לאיזון נוירוטרנסמיטורים כמו דופמין, ולתפקוד תקין של מערכת העצבים והגברת גמישות מוחית. כתוצאה מכך, ייתכן שיפור ברמות הריכוז, שליטה טובה יותר בהתנהגות והפחתה של התגובות האימפולסיביות.
+
+משפר ויסות עצמי, מפחית קשיי שליטה עצמית ב-4.03 נקודות (p < 0.001)
+מפחית סימפטומים פסיכוסומטיים ב-1.43 נקודות (p < 0.001)
+מפחית את ציון בעיות הלמידה ב-2.4 נקודות (p < 0.001)",,"טבלת תוספים ALA 
+ויטמין C ",text
+Nutrition,תזונה,Combined,משולב," presence of combined symptoms of inattention, hyperactivity, and impulsivity—that is, when a child has trouble focusing, tends to be overly active, acts impulsively, and struggles to regulate emotions and behavior. These symptoms interfere with functioning at school, at home, and socially.
+","הופעה של תסמינים משולבים של חוסר קשב, היפראקטיביות ואימפולסיביות—כלומר, הילד מתקשה להתרכז, נוטה לתזוזתיות יתר, פועל באימפולסיביות, ומתקשה לנהל את רגשותיו ואת התנהגותו. תסמינים אלה פוגעים בתפקוד בלימודים, בבית ובחברה.","sustained_attention_difficulty, general_impulsivity, attention_instruction_following ","Consumption of a diet rich in polyphenols is associated with a reduced risk of ADHD.
+A balanced Mediterranean-style diet.","שימוש בתזונה עשירה בפוליפנולים להפחתת סיכון ל-ADHD
+דיאטה מאוזנת בסגנון ים תיכוני","polyphenols - plants, fruits, vegetables, natural oils","בפוליפנולים- צמחים, פירות, ירקות, שמנים טבעיים","Blueberries, strawberries, apples, plums, cherries, grapes, pomegranate, spinach, red onion, artichoke, broccoli, kale, black olives, extra virgin olive oil, flaxseed oil, walnuts, almonds, green tea, black tea, dark chocolate, oregano, thyme, rosemary, sage, fresh herbs.","אוכמניות, תותים, תפוחים, שזיפים, דובדבנים, ענבים, רימון, תרד, בצל סגול, ארטישוק, ברוקולי, קייל, זיתים שחורים, שמן זית כתית, שמן פשתן, אגוזי מלך, שקדים, תה ירוק, תה שחור, שוקולד מריר, אורגנו, טימין, רוזמרין, מרווה, עשבי תיבול.","
+Studies show that a diet rich in polyphenols—found abundantly in fruits, vegetables, natural oils, and herbs—may reduce the risk of combined-type ADHD (involving both inattention and hyperactivity/impulsivity). The Mediterranean dietary pattern, based on these foods, has been linked to improved cognitive and emotional functioning and may help alleviate symptoms of combined-type ADHD.","מחקרים מראים כי תזונה עשירה בפוליפנולים—הנמצאים בשפע בפירות, ירקות, שמנים טבעיים וצמחי תבלין—עשויה להפחית את הסיכון להפרעת קשב משולבת (הכוללת גם חוסר קשב וגם היפראקטיביות/אימפולסיביות). דפוס תזונה ים-תיכונית, שמבוסס על מזונות אלו, נמצא כתורם לתפקוד קוגניטיבי ורגשי תקין ועשוי לשפר תסמיני ADHD משולב.","https://pmc.ncbi.nlm.nih.gov/articles/PMC10444659/#:~:text=The%20results%20of%20a%20systematic,risk%20of%20ADHD%2C%20while%20the%20%E2%80%9C",,array
+Nutrition,תזונה,Inattention,חוסר קשב,"difficulty concentrating, being easily distracted, forgetting tasks, and trouble maintaining focus.","הילד מתקשה להתרכז, מוסח בקלות, שוכח משימות ומתקשה להקשיב לאורך זמן.","vegetables_intake, child_daytime_fatigue",High vegetable consumption is associated with a reduction in symptoms of inattention.,צריכת ירקות גבוהה – קשורה בירידה בתסמיני חוסר ריכוז,"adding cut vegetables to school lunches, serving fresh vegetable salads at lunch and dinner, including cooked or steamed vegetables in main dishes, and encouraging the child to try a new vegetable each week—in order to increase vegetable consumption and help reduce symptoms of inattention.","להוסיף ירקות חתוכים לארוחת עשר, להגיש סלט ירקות טרי בארוחת הצהריים והערב, לשלב ירקות מבושלים או מאודים בתבשילים, ולהציע ירק חדש לטעימה מדי שבוע—במטרה להגביר את צריכת הירקות ולסייע בהפחתת תסמיני חוסר ריכוז.","Carrot, cucumber, cherry tomatoes, red bell pepper, yellow bell pepper, kohlrabi, lettuce, spinach, arugula, zucchini, broccoli, cauliflower, sweet potato, pumpkin, mushrooms, Swiss chard, cabbage, fennel, beet, asparagus, green peas, green beans, Brussels sprouts, baby carrots, tomato, artichoke.
+
+","גזר, מלפפון, עגבניות שרי, פלפל אדום, פלפל צהוב, קולרבי, חסה, תרד, רוקט, קישוא, זוקיני, ברוקולי, כרובית, בטטה, דלעת, פטריות, מנגולד, כרוב, שומר, סלק, אספרגוס, אפונה ירוקה, שעועית ירוקה, כרוב ניצנים, גזר גמדי, עגבנייה, ארטישוק.
+","
+Research has found that high daily vegetable consumption is associated with a reduction in symptoms of inattention in children with inattentive-type ADHD. Vegetables provide essential nutrients that support healthy nervous system and cognitive function, helping to improve focus and attentiveness.","מחקרים מצאו כי צריכה יומית גבוהה של ירקות קשורה לירידה בתסמיני חוסר ריכוז בילדים עם ADHD מסוג חוסר קשב (Inattention). הירקות מספקים רכיבים תזונתיים החיוניים לתפקוד תקין של מערכת העצבים והקוגניציה, ובכך מסייעים בשיפור הריכוז וההקשבה.","https://pmc.ncbi.nlm.nih.gov/articles/PMC10444659/#:~:text=The%20results%20of%20a%20systematic,risk%20of%20ADHD%2C%20while%20the%20%E2%80%9C",,array
+Nutrition,תזונה,Inattention,חוסר קשב,"Struggles to sustain focus, easily distracted, forgets instructions, switches tasks frequently or fails to complete them.","הילד מתקשה להתמקד לאורך זמן, מוסח בקלות, שוכח הוראות, עובר בין משימות או מתקשה לסיימן.","child_daytime_fatigue, daytime_fatigue","Check whether the child’s iron, magnesium, vitamin B9 and/or B12 levels are adequate. If deficiency is suspected, incorporate foods rich in these nutrients such as lean meat, salmon, legumes, and dark leafy greens.","בדוק האם רמות הברזל, המגנזיום, B9 ו־B12 של הילד תקינות. אם קיים חשש לחסר, ניתן לשלב בתפריט מאכלים עשירים כגון בשר רזה, סלמון, קטניות ועלים ירוקים כהים.","Consult a physician or registered dietitian for blood tests to identify deficiencies. Nutritional interventions may begin to show effects within 4–6 weeks, but full benefits often take 2–3 months.
+
+","יש להתייעץ עם רופא או דיאטנית קלינית לצורך בדיקות דם ואבחון חסרים תזונתיים. שינויים תזונתיים עשויים להתחיל להשפיע תוך 4–6 שבועות, אך לעיתים נדרשים 2–3 חודשים לתוצאה מלאה.
+
+","Lean meat, chicken liver, salmon, tuna, sardines, eggs, lentils, chickpeas, spinach, chard, kale, broccoli, fortified cereals, nutritional yeast.","בשר רזה, כבד עוף, סלמון, טונה, סרדינים, ביצים, עדשים, חומוס, תרד, מנגולד, קייל, ברוקולי, דגני בוקר מועשרים, שמרי תזונה.",Improved energy and attention span.,שיפור ברמת האנרגיה ויכולת הריכוז.,"Razavinia et al., 2024",,array
+Nutrition,תזונה,"Hyperactive, Impulsive","היפראקטביות, אימפולסיביות ","Excessive physical activity, fidgeting, impulsive behavior, and difficulty remaining seated.","תנועתיות יתר, קופצנות, אימפולסיביות, וקושי להישאר בישיבה.",child_memory_support_needed,"Evaluate levels of vitamin B6. If low, add B6-rich foods such as poultry, bananas, chickpeas, tuna, and fortified cereals.","יש לבדוק רמות של ויטמין B6. במידה ויש מחסור, יש לשלב מזונות עשירים בוויטמין זה כמו עוף, בננה, חומוס, טונה ודגני בוקר מועשרים.","Consult a physician or registered dietitian for blood tests to identify deficiencies. Nutritional interventions may begin to show effects within 4–6 weeks, but full benefits often take 2–3 months.
+
+","יש להתייעץ עם רופא או דיאטנית קלינית לצורך בדיקות דם ואבחון חסרים תזונתיים. שינויים תזונתיים עשויים להתחיל להשפיע תוך 4–6 שבועות, אך לעיתים נדרשים 2–3 חודשים לתוצאה מלאה.","Poultry, bananas, chickpeas, tuna, fortified cereals.","עוף, בננות, חומוס, טונה, דגני בוקר מועשרים.","Supports neurotransmitter function, reduces restlessness and impulsivity.","תומך בתפקוד נוירוטרנסמיטרים, מפחית תנועתיות יתר ואימפולסיביות.","Landaas et al., 2018",,array

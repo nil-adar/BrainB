@@ -32,11 +32,11 @@ const StudentFormPage = () => {
   const t = translations[language];
   const isRTL = language === "he";
 
-  const form = useForm<ChildFormValues>({
+  const form = useForm<ChildFormValues>({ //Answers in the form
     defaultValues: {
       name: "",
       date: "",
-      focusInClass: "",
+      focusInClass: "", //empty for answer
       feelingLessTired: "",
       seatHelpsWithFocus: "",
       feelingAboutFood: "",

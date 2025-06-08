@@ -216,6 +216,7 @@ export default function CreateAssessment() {
                     className="w-full p-2 border rounded-lg"
                     value={`${student.firstName} ${student.lastName}`}
                     readOnly
+                    placeholder={t.studentName}
                   />
                 )}
               </div>
@@ -228,6 +229,7 @@ export default function CreateAssessment() {
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
+                  placeholder={t.studentName}
                 />
               </div>
 

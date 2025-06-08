@@ -17,9 +17,11 @@ import studentRoutes from './routes/student.routes';
 import diagnosticRoutes from "./routes/diagnostic.routes";
 import taskRoutes from "./routes/task.routes";
 import formRouter from "./routes/form.routes";
+import recommendationRoutes from './routes/recommendation.routes';
 
 
-const app = express();
+const app = express();//sandra
+app.use('/api', recommendationRoutes);//sandra
 
 // Middleware
 app.use(cors());

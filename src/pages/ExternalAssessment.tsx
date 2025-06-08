@@ -154,6 +154,7 @@ const ExternalAssessment = () => {
         // קבלת תוצאות מהמערכת החיצונית
         if (assessment.externalSystemId) {
           const results = await externalAssessmentService.receiveExternalResults(assessment.externalSystemId);
+        
           if (results) {
             // עדכון סטטוס האבחון
             const updatedAssessment = await externalAssessmentService.getAssessmentStatus(assessmentId!);
