@@ -7,14 +7,14 @@ const router = express.Router();
 router.post("/", async (req: Request, res: Response): Promise<void> => {
 
   try {
-    const { studentId, role, formType, answers } = req.body;
-
+    const { studentId, role, questionnaireId, answers, tags } = req.body;
 
     const newForm = new FormModel({
       studentId,
       role,
-      formType,
+      questionnaireId, 
       answers,
+      tags, 
       submittedAt: new Date(),
     });
 

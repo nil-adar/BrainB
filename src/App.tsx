@@ -24,8 +24,10 @@ import ParentFormPage from "@/pages/ParentFormPage";
 import TeacherFormPage from "@/pages/TeacherFormPage";
 import axios from 'axios';
 import { useToast } from "@/hooks/use-toast";
-
-
+import React from "react";
+import QuestionnaireFormPage from "@/pages/QuestionnaireFormPage";
+import { SettingsProvider } from "@/components/SettingsContext"; 
+import SettingsToggle from "@/components/SettingsToggle";  
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,33 +58,34 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" expand={true} richColors />
-      <Router>
-      <div className="min-h-screen bg-background text-foreground">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/parent-dashboard" element={<ParentDashboard />} />
-            <Route path="/recommendations" element={<Recommendations />} />
-            <Route path="/nutritional-recommendations" element={<NutritionalRecommendations />} />
-            <Route path="/physical-recommendations" element={<PhysicalRecommendations />} />
-            <Route path="/create-assessment" element={<CreateAssessment />} />
-            <Route path="/daily-tasks/:teacherId/:classId" element={<DailyTasks />} />
-            <Route path="/student/:studentId/assessment" element={<StudentFormPage />} />
-            <Route path="/parent/:studentId/form" element={<ParentFormPage />} />
-            <Route path="/teacher-form" element={<TeacherFormPage />} />
-
-
-            <Route path="/statistics" element={<Statistics />} />
-          
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <ThemeToggle />
-        </div>
-      </Router>
+      <SettingsProvider>  
+        <Router>
+            <div className="fixed bottom-3 right-4 flex space-x-2 z-1000">
+            {/* כפתורי הגלובוס והירח/שמש */}
+            <SettingsToggle />
+            <ThemeToggle />
+            </div>
+        <div className="min-h-screen bg-background text-foreground">
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+              <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/parent-dashboard" element={<ParentDashboard />} />
+              <Route path="/recommendations" element={<Recommendations />} />
+              <Route path="/nutritional-recommendations" element={<NutritionalRecommendations />} />
+              <Route path="/physical-recommendations" element={<PhysicalRecommendations />} />
+              <Route path="/create-assessment" element={<CreateAssessment />} />
+              <Route path="/daily-tasks/:teacherId/:classId" element={<DailyTasks />} />
+              <Route path="/statistics" element={<Statistics />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/questionnaire/:role/:studentId" element={<QuestionnaireFormPage />}/* דף השאלון הגנרי *//>
+              <Route path="*" element={<NotFound />} />
+              </Routes>
+          </div>
+        </Router>
+      </SettingsProvider>
     </QueryClientProvider>
   );
 }

@@ -4,20 +4,16 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
-
 import { messageRouter } from './routes/messages';
-
 import { userRouter } from './routes/user.routes';
-
 import { authRouter } from './routes/auth.routes';
-import { profileRouter } from './routes/profiles'; // 
-import { UserProfileModel } from './models/UserProfile';
+import { profileRouter } from './routes/profiles'; 
+//import { UserProfileModel } from './models/UserProfile';
 import { router as scheduleRouter } from './routes/schedule.routes';
 import studentRoutes from './routes/student.routes';
 import diagnosticRoutes from "./routes/diagnostic.routes";
 import taskRoutes from "./routes/task.routes";
 import formRouter from "./routes/form.routes";
-
 
 const app = express();
 
@@ -43,8 +39,9 @@ app.use('/api/students', studentRoutes);
 app.use('/api', taskRoutes);
 app.use("/api/forms", formRouter);
 
-
-
+app.get('/api/status', (req, res) => {
+  res.json({ status: 'OK', time: new Date() });
+});
 
 // MongoDB connection
 // Using environment variable for MongoDB URI when available

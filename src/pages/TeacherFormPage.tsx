@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+/*import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -86,13 +86,13 @@ const onSubmit = async (data: TeacherFormValues) => {
             className="flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> {/* תמיד mr-2 */}
-            Back to Recommendations {/* תמיד באנגלית */}
-          </Link>
+         {/*  Back to Recommendations {/* תמיד באנגלית */}
+{/*</Link>
         </div>
 
         <h1 className="text-3xl font-bold mb-6 text-center">
           Teacher Progress Assessment Form {/* תמיד באנגלית */}
-        </h1>
+        /*</h1>
 
         <Card>
           <CardContent className="pt-6">
@@ -101,9 +101,9 @@ const onSubmit = async (data: TeacherFormValues) => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
                 dir="ltr" // תמיד LTR
-              >
+              >*/
                 {/* Basic Information */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/*<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="studentName"
@@ -150,7 +150,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 </h2>
 
                 {/* Task Completion */}
-                <FormField
+                {/*<FormField
                   control={form.control}
                   name="taskCompletion"
                   render={({ field }) => (
@@ -217,7 +217,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 />
 
                 {/* Focus Improvement */}
-                <FormField
+                {/*<FormField
                   control={form.control}
                   name="focusImprovement"
                   render={({ field }) => (
@@ -300,7 +300,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 />
 
                 {/* Organization Improvement */}
-                <FormField
+               {/*} <FormField
                   control={form.control}
                   name="organizationImprovement"
                   render={({ field }) => (
@@ -387,7 +387,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 </h2>
 
                 {/* Energy Level */}
-                <FormField
+                {/*<FormField
                   control={form.control}
                   name="energyLevel"
                   render={({ field }) => (
@@ -455,7 +455,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 />
 
                 {/* Alertness */}
-                <FormField
+               {/* <FormField
                   control={form.control}
                   name="alertness"
                   render={({ field }) => (
@@ -520,7 +520,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 />
 
                 {/* Seating Response */}
-                <FormField
+               {/* <FormField
                   control={form.control}
                   name="seatingResponse"
                   render={({ field }) => (
@@ -595,7 +595,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 </h2>
 
                 {/* Physical Engagement */}
-                <FormField
+               {/* <FormField
                   control={form.control}
                   name="physicalEngagement"
                   render={({ field }) => (
@@ -677,7 +677,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 />
 
                 {/* Concentration After Activity */}
-                <FormField
+               {/* <FormField
                   control={form.control}
                   name="concentrationAfterActivity"
                   render={({ field }) => (
@@ -750,7 +750,7 @@ const onSubmit = async (data: TeacherFormValues) => {
                 <div className="pt-6">
                   <Button type="submit" className="w-full">
                     Submit Assessment {/* תמיד באנגלית */}
-                  </Button>
+                {/*  </Button>
                 </div>
               </form>
             </Form>

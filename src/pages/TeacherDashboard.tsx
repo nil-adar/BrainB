@@ -387,3 +387,49 @@ export default function TeacherDashboard() {
     </div>
   );
 }
+{/* שאלונים זמינים למילוי על ידי המורה */}
+{/*<section className="mt-8">
+  <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
+  {filteredStudents?.map((student) => {
+    const id = student.id || (student as any)._id;
+    const name = `${student.firstName} ${student.lastName}`;
+    return (
+      <div
+        key={id}
+        className="mb-2 flex items-center justify-between p-3 border rounded-lg hover:shadow"
+      >
+        <span className="font-medium">{name}</span>
+        <Link
+          to={`/questionnaire/teacher/${id}`}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          למילוי שאלון
+        </Link>
+      </div>
+    );
+  })}
+
+  {/* שאלונים זמינים למילוי על ידי המורה */}
+{/*</section>
+<section className="mt-8">
+  <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
+  {filteredStudents?.map((student) => {
+    const id = student.id || (student as any)._id;
+    const name = `${student.firstName} ${student.lastName}`;
+    return (
+      <div
+        key={id}
+        className="mb-2 flex items-center justify-between p-3 border rounded-lg hover:shadow"
+      >
+        <span className="font-medium">{name}</span>
+        <Link
+          to={`/questionnaire/teacher/${id}`}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          למילוי שאלון
+        </Link>
+      </div>
+    );
+  })}
+</section>
+*/}
