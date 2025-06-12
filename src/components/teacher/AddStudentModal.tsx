@@ -12,12 +12,13 @@
     import { teacherService } from "@/services/teacherService";
 
     // סכמה לאימות נתוני התלמיד
-    const studentSchema = z.object({
-    firstName: z.string().min(2, "השם הפרטי חייב להכיל לפחות 2 תווים"),
-    lastName: z.string().min(2, "שם המשפחה חייב להכיל לפחות 2 תווים"),
-    uniqueId: z.string().min(9, "תעודת זהות חייבת להכיל לפחות 9 ספרות"),
-    classId: z.string().min(1, "יש לבחור כיתה")
-    });
+ const studentSchema = z.object({
+  firstName: z.string().min(2, "השם הפרטי חייב להכיל לפחות 2 תווים"),
+  lastName: z.string().min(2, "שם המשפחה חייב להכיל לפחות 2 תווים"),
+  uniqueId: z.string().min(9, "תעודת זהות חייבת להכיל לפחות 9 ספרות"),
+  classId: z.string().min(1, "יש לבחור כיתה"),
+  extraTime: z.enum(["none", "25", "50"]).optional(), // ← תוספת  זמן באחוזים
+});
 
     type StudentFormValues = z.infer<typeof studentSchema>;
 
@@ -51,7 +52,8 @@
         firstName: "",
         lastName: "",
         uniqueId: "",
-        classId: currentClass
+        classId: currentClass,
+        extraTime: "none", 
         }
     });
 
@@ -79,9 +81,12 @@
             parentIds: [],
             avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
             tasks: [],
-            progressReports: []
+            progressReports: [],
+            extraTime: values.extraTime === "none" ? 0 : Number(values.extraTime),
+      
           };
           
+        console.log("🧪 שליחה לשרת:", newStudent);
 
         const result = await teacherService.addNewStudent(newStudent);
 
@@ -188,6 +193,31 @@
                     </FormItem>
                 )}
                 />
+
+
+                <FormField
+  control={form.control}
+  name="extraTime"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>תוספת זמן</FormLabel>
+      <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue placeholder="בחר תוספת זמן" />
+          </SelectTrigger>
+        </FormControl>
+       <SelectContent className="bg-white">
+          <SelectItem value="none">אין</SelectItem>
+          <SelectItem value="25">25%</SelectItem>
+          <SelectItem value="50">50%</SelectItem>
+        </SelectContent>
+      </Select>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
 
                 <DialogFooter className="mt-6">
                 <Button 

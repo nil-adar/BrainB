@@ -2,9 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
   uniqueId?: string;
-  name: string;           // יכול לשמש לשם מלא או תחליף ל־firstName/lastName
-  firstName?: string;     // ← חדש
-  lastName?: string;      // ← חדש
+  name: string;           
+  firstName?: string;     // 
+  lastName?: string;      // 
   email?: string;
   phone?: string;
   role: 'admin' | 'teacher' | 'parent' | 'student';
@@ -13,14 +13,14 @@ export interface IUser extends Document {
   schoolName?: string;
   classId?: string;
   className?: string;
-  
+  extraTime?: number;
 
 
   schoolId ?:string;
   parentOf?: string[];    // 
   teacherId?: string;     //  
   parentIds?: string[];   //
-  grade?: string;         //← 
+  grade?: string;         //
   class?: string;         // 
   avatar?: string;        // 
   dateOfBirth?: Date;     //
@@ -56,6 +56,11 @@ const UserSchema: Schema<IUser> = new Schema(
     class:       { type: String },      
     avatar:      { type: String },     
     dateOfBirth: { type: Date },   
+    extraTime: {
+      type: Number,
+      enum: [0, 25, 50],
+      default: 0
+    },
     classId:   { type: String },   
     className: { type: String }, 
     specialNeeds:[{ type: String }],    
