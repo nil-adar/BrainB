@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post("/", async (req: Request, res: Response): Promise<void> => {
 
+  console.log("💾 Received form payload:", JSON.stringify(req.body, null, 2));
   try {
     const { studentId, role, questionnaireId, answers, tags } = req.body;
 

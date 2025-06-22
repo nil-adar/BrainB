@@ -3,7 +3,7 @@ import { Student } from "@/types/school";
 import { StudentsListHeader } from "@/components/teacher/StudentsListHeader";
 import { StudentsListStatus } from "@/components/teacher/StudentsListStatus";
 import { useStudentsList } from "@/hooks/useStudentsList";
-import { StudentCard } from "@/components/teacher/StudentCard";
+import { StudentCard } from "@/components/StudentCard";
 
 interface StudentsListProps {
   students: Student[];
@@ -26,6 +26,8 @@ interface StudentsListProps {
   };
   onViewProgress: (studentId: string) => void;
   onContactParent: (student: Student) => void;
+  teacherId?: string;
+  questionnaireRole?: "student"|"teacher"|"parent";
 }
 
 export const StudentsList: FC<StudentsListProps> = ({
@@ -35,7 +37,9 @@ export const StudentsList: FC<StudentsListProps> = ({
   searchTerm = "",
   translations: t,
   onViewProgress,
-  onContactParent
+  onContactParent,
+  teacherId,
+  questionnaireRole,
 }) => {
   const { displayStudents } = useStudentsList(
     students,
@@ -47,14 +51,24 @@ export const StudentsList: FC<StudentsListProps> = ({
     }
   );
 
+    // Filter by search term
+  // Normalize students to match `Student` interface (add _id, classId, className)
+const normalizedStudents: Student[] = (displayStudents as Student[]).map(s => ({
+  ...s,
+  _id: s._id ?? s.id,
+  classId: s.classId ?? s.class,
+  className: s.className ?? s.grade ?? s.class,
+}));
+
   // סינון לפי חיפוש
   const filtered = searchTerm
-    ? displayStudents.filter(s =>
+    ? normalizedStudents.filter(s =>
         (`${s.firstName} ${s.lastName}`)
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       )
-    : displayStudents;
+    : normalizedStudents;
+
 
   return (
     <>
@@ -81,19 +95,13 @@ export const StudentsList: FC<StudentsListProps> = ({
             <StudentCard
               key={student.id}
               student={student}
-              translations={{
-                mood: t.mood,
-                contactParent: t.contactParent,
-                viewProgress: t.viewProgress,
-                createAssessment: t.createAssessment,
-                viewPreAssessments: t.viewPreAssessments,
-                dailyTaskUpdate: t.dailyTaskUpdate,
-                viewRecommendations: t.viewRecommendations
-              }}
+              teacherId={teacherId}                   // Pass teacherId
+              questionnaireRole={questionnaireRole}   // Pass role
               onViewProgress={() => onViewProgress(student.id)}
-              onContactParent={() => onContactParent(student)}
+              //onContactParent={() => onContactParent(student)}
             />
           ))}
+          
         </div>
       </div>
     </>

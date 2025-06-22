@@ -45,12 +45,25 @@ export default function TeacherDashboard() {
     navigate(`/statistics?studentId=${studentId}`);
   };
 
+// the shape of what `/users/:teacherId` returns
+interface TeacherData {
+  _id: string;
+  name: string;
+  // …add any other fields you actually use…
+}
 
+// reuse the same shape for classes everywhere
+type ClassOption = {
+  schoolId: string;
+  schoolName: string;
+  classId: string;
+  className: string;
+};
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [language, setLanguage] = useState<"en" | "he">("he");
-  const [teacherData, setTeacherData] = useState<any>(null);
+  const [teacherData, setTeacherData] = useState<TeacherData | null>(null);
   const [teacherId, setTeacherId] = useState<string | null>(null)
   const {
       notifications,
@@ -146,12 +159,12 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     if (!teacherId || teacherData) return;
-    dataService.getData<any>(`/users/${teacherId}`)
+    dataService.getData<TeacherData>(`/users/${teacherId}`)
       .then(response => {
         if (response.success) setTeacherData(response.data);
       })
       .catch(console.error);
-  }, [teacherId]);
+  }, [teacherId, teacherData]);
 
   const { data: teacherProfile } = useQuery({
     queryKey: ["teacherProfile", teacherId],
@@ -195,8 +208,8 @@ export default function TeacherDashboard() {
   const filteredStudents = allStudents?.filter((s, index) => {
     console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
   
-    const normalize = (val: any) =>
-      String(val ?? "")
+    const normalize = (val: string) =>
+      (val ?? "")
         .normalize("NFKC") // Normalize composed characters
         .replace(/\s+/g, "") // Remove all whitespace
         .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
@@ -236,8 +249,6 @@ export default function TeacherDashboard() {
     handleNotificationClick(parentId, studentId); // מסמן כהודעה נקראה
     openMessageSheet(studentId, parentId, studentName); // פותח שיחה
   };
-  
-
   
 
   const toggleLanguage = () => setLanguage(prev => (prev === "en" ? "he" : "en"));
@@ -373,6 +384,8 @@ export default function TeacherDashboard() {
               `${student.firstName} ${student.lastName}`
             )
           }
+          teacherId={teacherId} 
+          questionnaireRole="teacher"
           />
 
           <AddStudentModal

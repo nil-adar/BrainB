@@ -9,6 +9,12 @@ import { useSettings } from "@/components/SettingsContext";
 export interface QuestionnaireFormProps {
   /** כל המידע על השאלון (title, questions וכו') */
   questionnaire: Questionnaire;
+
+  /*the current answers state, keyed by question.id */
+  answers: Record<string, string | string[]>;
+
+  /*called whenever any question’s value changes */
+  onChange: (id: string, value: string | string[]) => void;
   /**
    * נקרא כאשר המשתמש לוחץ "סיים"
    * @param answers אובייקט שבו המפתח הוא question.id והערך הוא מחרוזת או מערך
@@ -18,6 +24,8 @@ export interface QuestionnaireFormProps {
 
 export default function QuestionnaireForm({
   questionnaire,
+  answers,
+  onChange,
   onSubmit,
 }: QuestionnaireFormProps) {
   const { language } = useSettings();
@@ -25,22 +33,44 @@ export default function QuestionnaireForm({
 
   // Pagination state
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+  //const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isCompleted, setIsCompleted] = useState(false);
 
+  //First, filter out question dependencies:
+  const visibleQuestionsAll = questionnaire.questions.filter((q) => {
+    /*If this question is Q2-18, return true only when Q2-17 was answered opt2*/
+    if (q.id === "q2-18") {
+      return answers["q2-17"] === "opt2";
+    }
+    // q2-20…q2-29 only if q2-19 === 'yes'
+    const group = [
+      "q2-20",
+      "q2-21",
+      "q2-22",
+      "q2-23",
+      "q2-24",
+      "q2-25",
+      "q2-26",
+      "q2-27",
+      "q2-28",
+      "q2-29",
+    ];
+    if (group.includes(q.id)) {
+      return answers["q2-19"] === "yes";
+    }
+    // all other questions always show
+    return true;
+  });
+
   const questionsPerPage = 2;
-  const totalPages = Math.ceil(questionnaire.questions.length / questionsPerPage);
-  const currentQuestions = questionnaire.questions.slice(
+  const totalPages = Math.ceil(visibleQuestionsAll.length / questionsPerPage);
+  const currentQuestions = visibleQuestionsAll.slice(
     currentPageIndex * questionsPerPage,
     (currentPageIndex + 1) * questionsPerPage
   );
   const progress = ((currentPageIndex + 1) / totalPages) * 100;
 
-  const handleAnswer = (questionId: string, value: string | string[]) => {
-    setAnswers(prev => ({ ...prev, [questionId]: value }));
-  };
-
-  const canProceed = currentQuestions.every(q => {
+  const canProceed = currentQuestions.every((q) => {
     const v = answers[q.id];
     return q.type === "multiple"
       ? Array.isArray(v) && v.length > 0
@@ -49,7 +79,7 @@ export default function QuestionnaireForm({
 
   const handleNext = () => {
     if (currentPageIndex < totalPages - 1) {
-      setCurrentPageIndex(i => i + 1);
+      setCurrentPageIndex((i) => i + 1);
     } else {
       onSubmit(answers);
       setIsCompleted(true);
@@ -58,7 +88,7 @@ export default function QuestionnaireForm({
 
   const handlePrevious = () => {
     if (currentPageIndex > 0) {
-      setCurrentPageIndex(i => i - 1);
+      setCurrentPageIndex((i) => i - 1);
     }
   };
 
@@ -87,7 +117,9 @@ export default function QuestionnaireForm({
               {language === "he" ? "סיכום התשובות:" : "Answer Summary:"}
             </h3>
             {Object.entries(answers).map(([qid, ans]) => {
-              const question = questionnaire.questions.find(q => q.id === qid);
+              const question = questionnaire.questions.find(
+                (q) => q.id === qid
+              );
               return (
                 <div key={qid} className="mb-2">
                   <p className="text-sm font-medium">
@@ -116,8 +148,7 @@ export default function QuestionnaireForm({
               : `Page ${currentPageIndex + 1} of ${totalPages}`}
           </span>
           <span>
-            {Math.round(progress)}%{" "}
-            {language === "he" ? "הושלם" : "completed"}
+            {Math.round(progress)}% {language === "he" ? "הושלם" : "completed"}
           </span>
         </div>
         <div className="w-full h-2 bg-gray-200 rounded">
@@ -130,12 +161,12 @@ export default function QuestionnaireForm({
 
       {/* Question Cards */}
       <div className="space-y-6">
-        {currentQuestions.map(question => (
+        {currentQuestions.map((question) => (
           <QuestionCard
             key={question.id}
             question={question}
             answer={answers[question.id]}
-            onAnswer={handleAnswer}
+            onAnswer={(_, ans) => onChange(question.id, ans)}
           />
         ))}
       </div>

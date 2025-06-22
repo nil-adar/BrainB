@@ -34,67 +34,35 @@ export interface QuestionOption {
  * @property options - רשימת אפשרויות השאלה
  */
 export interface Question {
-  /**
-   * Unique question identifier
-   * מזהה השאלה
-   */
-  id: string;
-  /**
-   * Filtering or categorization tag(s)
-   * תגיות לסינון או קטלוג
-   */
-  tag: string;
-  /**
-   * Question type: 'single' = single-choice, 'multiple' = multi-choice
-   * סוג השאלה: 'single' = בחירה יחידה, 'multiple' = בחירה מרובה
-   */
-  type: 'single' | 'multiple';
-  /**
-   * Question text in Hebrew and English
-   * טקסט השאלה בעברית ובאנגלית
-   */
+  id: string; //Unique question identifier
+  tag: string; //Filtering or categorization tag(s)
+  type: "single" | "multiple"; //Question type: 'single' = single-choice, 'multiple' = multi-choice
   text: {
+    // Question text in Hebrew and English
     he: string;
     en: string;
   };
-  /**
-   * Available options for the question
-   * רשימת אפשרויות השאלה
-   */
+  // Available options for the question
   options: QuestionOption[];
 }
 
 /**
  * Questionnaire
- * הגדרת שאלון שלם
  * @property id - מזהה השאלון
  * @property title - כותרת השאלון (he/en)
  * @property questions - מערך השאלות בשאלון
  */
 export interface Questionnaire {
-  /**
-   * Unique questionnaire identifier
-   * מזהה השאלון
-   */
   id: string;
-  /**
-   * Questionnaire title in Hebrew and English
-   * כותרת השאלון בעברית ובאנגלית
-   */
   title: {
     he: string;
     en: string;
   };
-  /**
-   * Array of questions in this questionnaire
-   * מערך השאלות בשאלון
-   */
   questions: Question[];
 }
 
 /**
  * QuestionnaireAnswer
- * ייצוג תשובה בודדת לשאלון
  * @property questionId - מזהה השאלה
  * @property questionTag - תגית השאלה
  * @property selectedOptions - אפשרויות שנבחרו
@@ -102,24 +70,20 @@ export interface Questionnaire {
 export interface QuestionnaireAnswer {
   /**
    * ID of the answered question
-   * מזהה השאלה בתשובה
    */
   questionId: string;
   /**
    * Tag of the question, used for filtering or categorization
-   * תגית השאלה לצרכי סינון וקטלוג
    */
   questionTag: string;
   /**
    * Selected option values (for single: array of one string)
-   * הערכים שנבחרו עבור אפשרויות השאלה
    */
   selectedOptions: string[];
 }
 
 /**
  * QuestionnaireResults
- * מבנה תוצאות השאלון לאחר השלמה
  * @property questionnaireId - מזהה השאלון
  * @property answers - מערך התשובות
  * @property completedAt - תאריך ושעת השלמת השאלון
@@ -127,17 +91,14 @@ export interface QuestionnaireAnswer {
 export interface QuestionnaireResults {
   /**
    * ID of the completed questionnaire
-   * מזהה השאלון שהושלם
    */
   questionnaireId: string;
   /**
    * Array of user answers
-   * מערך התשובות של המשתמש
    */
   answers: QuestionnaireAnswer[];
   /**
    * Timestamp of completion
-   * תאריך ושעת השלמת השאלון
    */
   completedAt: Date;
 }
