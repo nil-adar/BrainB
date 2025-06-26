@@ -9,7 +9,11 @@
     "resolveJsonModule": true,
     "strict": true,
     "types": ["node"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
   "include": ["src/server/**/*"],
   "exclude": ["node_modules"]

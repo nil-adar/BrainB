@@ -4,6 +4,7 @@ import { DiagnosticResultModel } from "../models/DiagnosticResult";
 import { RecommendationModel } from "../models/RecommendationModel";
 import { FormModel } from "../models/FormModel";
 import { QuestionModel } from "../models/QuestionModel";
+import { allergyMapping } from "@/data/foodAllergyMapping";
 
 // Constants from the pipeline documentation
 const MIN_NO_ADHD_VAL = 0.7;
@@ -277,10 +278,7 @@ router.get(
 
       // STAGE 8: Filter by diagnosis_type
       let recommendations = await RecommendationModel.find({
-        $or: [
-          { diagnosis_type: { $in: recommendationList } }, // למשל אם diagnosis_type הוא מערך
-          { diagnosis_type: recommendationList[0] }, // למשל אם diagnosis_type הוא מחרוזת
-        ],
+        "diagnosis_type.en": { $in: recommendationList },
       }).lean();
 
       console.log(
@@ -323,9 +321,8 @@ router.get(
 
       const allergyList: string[] = [];
       if (allergyAnswer === "yes" || allergyAnswer === "opt1") {
-        // Compile allergy list from allergy-tagged questions
         answersByTag.forEach((item) => {
-          if (item.tag === "allergy") {
+          if (item.tag === "allergy" && !item.questionId.includes("q2-19")) {
             if (Array.isArray(item.answer)) {
               allergyList.push(...item.answer);
             } else {
@@ -333,6 +330,10 @@ router.get(
             }
           }
         });
+        console.log(
+          "🧪 Allergy-tagged answers:",
+          answersByTag.filter((a) => a.tag === "allergy")
+        );
 
         // Remove examples that match allergy list
         recommendations = recommendations.map((rec) => {
@@ -364,13 +365,30 @@ router.get(
 
           return filteredRec;
         });
+        console.log("🧪 Stage 10 – Allergy items to filter out:", allergyList);
 
-        console.log(
-          "🔍 Stage 10: Allergy filtering applied, allergy list:",
-          allergyList,
-          "\n"
-        );
+        console.log("🧪 Stage 9.5 – Examples before allergy filtering:");
+        recommendations.forEach((rec, i) => {
+          const examples = Array.isArray(rec.example?.en)
+            ? rec.example.en.join(", ")
+            : rec.example?.en || "–";
+          console.log(`${i + 1}. ${examples}`);
+        });
       }
+      console.log(
+        "🔍 Stage 10: Allergy filtering applied, allergy list:",
+        allergyList,
+        "\n"
+      );
+
+      console.log("🧪 Stage 10 – Examples after allergy filtering:");
+      recommendations.forEach((rec, i) => {
+        const examples = Array.isArray(rec.example?.en)
+          ? rec.example.en.join(", ")
+          : rec.example?.en || "–";
+        console.log(`${i + 1}. ${examples}`);
+      });
+
       // STAGE 11: Present relevant recommendations
       interface RecommendationResponse {
         recommendations: typeof recommendations;
@@ -414,7 +432,7 @@ router.get(
         if (!viewBoth) {
           // Filter to show only main type recommendations
           finalResponse.recommendations = recommendations.filter(
-            (r) => r.diagnosis_type === mainType
+            (r) => r.diagnosis_type?.en === mainType
           );
         }
       }

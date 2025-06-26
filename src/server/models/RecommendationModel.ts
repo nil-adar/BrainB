@@ -7,7 +7,10 @@ import mongoose, { Schema, Document } from "mongoose";
  */
 export interface IRecommendation extends Document {
   //The ADHD presentation subtype this recommendation applies to.
-  diagnosis_type: "Combined" | "Inattentive" | "Hyperactivity" | "Impulsivity";
+  diagnosis_type: {
+    en: "Combined" | "Hyperactivity" | "Inattentive" | "Impulsivity";
+    he: string;
+  };
   tags: string[]; //An array of strings used to match this recommendation against questionnaire answers that “trigger” it.
   example: {
     //that illustrate the recommendation. Used for filtering by exclusions.
