@@ -25,6 +25,7 @@ interface TaskItemProps {
   onImageUpload?: (id: String, imageUrl: string) => void;
   onTogglePause?: (id: string) => void;
   isPaused?: boolean;
+   extraTime?: number;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -42,20 +43,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onImageUpload,
   onTogglePause,
   isPaused,
+   extraTime,
 }) => {
+   console.log("⏱️ extraTime:", extraTime);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [totalTimeInSeconds, setTotalTimeInSeconds] = useState(0);
   const [hasUploadedImage, setHasUploadedImage] = useState(false);
 
-  useEffect(() => {
-    const minutesMatch = timeEstimation.match(/^(\d+)/);
-    if (minutesMatch && minutesMatch[1]) {
-      const minutes = parseInt(minutesMatch[1], 10);
-      setTotalTimeInSeconds(minutes * 60);
-    }
-  }, [timeEstimation]);
+useEffect(() => {
+  const minutesMatch = timeEstimation.match(/^(\d+)/);
+  if (minutesMatch && minutesMatch[1]) {
+    const minutes = parseInt(minutesMatch[1], 10);
+    const adjustedMinutes = extraTime ? minutes * extraTime : minutes;
+
+    setTotalTimeInSeconds(Math.floor(adjustedMinutes * 60));
+  }
+}, [timeEstimation, extraTime]);
 
   useEffect(() => {
     if (isSelected && !startTime) {
@@ -193,7 +199,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
         <div className="flex-grow">
           <h3 className="font-medium text-slate-800 dark:text-slate-200">{title}</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{timeEstimation}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+  {extraTime && extraTime !== 1
+    ? `${Math.floor(parseInt(timeEstimation) * extraTime)} דקות (מותאם)`
+    : `${timeEstimation} דקות`}
+</p>
+
           {renderStars(stars)}
         </div>
         <div className="flex items-center gap-2">

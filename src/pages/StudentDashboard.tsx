@@ -208,12 +208,12 @@ const handleSendHelpMessage = async () => {
   }, [currentTask]);
 
 const navigate = useNavigate();
-const handleStartAssessment = () => {
-  navigate("/start-assessment"); // או הנתיב המתאים אצלך
-};
+
 
 const handleRedirectToAssessment = () => {
   const studentId = localStorage.getItem("studentId");
+  console.log("🧪 Token:", assessmentToken);
+  console.log("🧪 Student ID:", studentId);
   
   if (assessmentToken && studentId) {
     const url = `http://127.0.0.1:8000/?token=${assessmentToken}&studentId=${studentId}`;
@@ -302,7 +302,8 @@ const greeting = language === 'he'
   studentFormText={t.fillForm}
   studentId={studentId} //
 
-  onStartAssessment={handleStartAssessment}
+  onStartAssessment={handleRedirectToAssessment}
+
   onHelpSupportClick={handleOpenHelpSupport}
 
   onStudentFormClick={() => navigate(`/student/${studentId}/assessment`)} 
@@ -328,6 +329,7 @@ const greeting = language === 'he'
                 onSelectTask={handleTaskSelect}
                 onDeleteTask={handleDeleteTask}
                 allowedCategories={allowedCategories}
+                extraTime={student?.extraTime ?? 1}
               />
             </div>
           </div>

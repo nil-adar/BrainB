@@ -21,6 +21,7 @@ interface TaskListSectionProps {
   onSelectTask: (task: Task) => void;
   onDeleteTask: (id: string) => void;
   allowedCategories: readonly string[];
+  extraTime: number;
 }
 
 const TaskListSection = ({
@@ -33,6 +34,7 @@ const TaskListSection = ({
   onSelectTask,
   onDeleteTask,
   allowedCategories,
+   extraTime,
 }: TaskListSectionProps) => {
   return (
     <div className="flex flex-col justify-self-end order-2 md:order-3 w-full">
@@ -52,6 +54,7 @@ const TaskListSection = ({
             stars={task.stars}
             completed={task.completed}
             onToggleComplete={onToggleComplete}
+            extraTime={extraTime} 
             onSelect={() => onSelectTask(task)}
             onDelete={onDeleteTask}
             isSelected={currentTask?.id === task.id}

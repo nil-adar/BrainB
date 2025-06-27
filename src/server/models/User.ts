@@ -58,8 +58,8 @@ const UserSchema: Schema<IUser> = new Schema(
     dateOfBirth: { type: Date },   
     extraTime: {
       type: Number,
-      enum: [0, 25, 50],
-      default: 0
+      enum: [1, 1.25, 1.50],
+      default: 1
     },
     classId:   { type: String },   
     className: { type: String }, 
