@@ -31,6 +31,8 @@ router.get(
     next: NextFunction
   ): Promise<void> => {
     //
+    console.log("📤 sending request to recommendations");
+
     console.log(
       "🚀 Entered /api/recommendations handler for",
       req.params.studentId
@@ -108,25 +110,47 @@ router.get(
           : 0,
       });
 
+      type AnswerObject = {
+        answer: string | string[];
+        tag?: string;
+        type?: string;
+        text?: { he?: string; en?: string };
+      };
+
       // Extract and process all answers
       type AnswerPair = {
         questionId: string;
         response: string | string[];
+        tag?: string;
+        type?: string;
       };
 
       const allForms = [studentForm, parentForm, teacherForm].filter(Boolean);
+      // Extract structured answers
+      const allAnswers: AnswerPair[] = allForms.flatMap((form) => {
+        if (!form?.answers) return [];
+        return Object.entries(form.answers).map(([qid, obj]) => {
+          const a = obj as AnswerObject;
+          return {
+            questionId: qid,
+            response: a.answer,
+            tag: a.tag,
+            type: a.type,
+          };
+        });
+      });
       //Convert each form.answers (Record<string, string|[]>)
       //into an array of { questionId, response } objects
-      const allAnswers: AnswerPair[] = allForms.flatMap((form) => {
+      /* const allAnswers: AnswerPair[] = allForms.flatMap((form) => {
         if (!form?.answers) return [];
         return Object.entries(form.answers).map(([qid, resp]) => ({
           questionId: qid,
           response: resp,
         }));
-      });
+      });*/
 
       // Generate answersByTag directly from allAnswers using embedded tags
-      const answersByTag = allAnswers.map((a) => {
+      /*const answersByTag = allAnswers.map((a) => {
         const [qidPrefix] = a.questionId.split("-");
         let tag = "";
 
@@ -145,7 +169,18 @@ router.get(
           answer: a.response,
           questionId: a.questionId,
         };
-      });
+      });*/
+
+      // Version using embedded tag/type from saved answers
+      const answersByTag = allAnswers.map((a) => ({
+        tag: a.tag || "", // ← מגיע מהשמירה
+        answer: a.response,
+        questionId: a.questionId,
+      }));
+
+      // הדפסת כל הטאגים שנמצאו — כדי לבדוק אם יש בכלל 'allergy'
+      const allTags = answersByTag.map((a) => a.tag);
+      console.log("📌 All tags in answersByTag:", [...new Set(allTags)]);
 
       const selectedTags: string[] = [
         ...(studentForm?.tags || []),
@@ -330,10 +365,13 @@ router.get(
             }
           }
         });
+        console.log("🧪 allergyAnswer from q2-19:", allergyAnswer);
+
         console.log(
           "🧪 Allergy-tagged answers:",
           answersByTag.filter((a) => a.tag === "allergy")
         );
+        console.log("✅ allergyList created:", allergyList);
 
         // Remove examples that match allergy list
         recommendations = recommendations.map((rec) => {
@@ -461,6 +499,7 @@ router.get(
     res: Response,
     next: NextFunction
   ) => {
+    console.log("📥 recommendations endpoint triggered");
     try {
       const { studentId } = req.params;
       if (!mongoose.Types.ObjectId.isValid(studentId)) {

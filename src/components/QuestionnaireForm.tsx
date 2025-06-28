@@ -11,15 +11,36 @@ export interface QuestionnaireFormProps {
   questionnaire: Questionnaire;
 
   /*the current answers state, keyed by question.id */
-  answers: Record<string, string | string[]>;
+  /*answers: Record<string, string | string[]>;*/
+  answers: {
+    questionId: string;
+    response: string | string[];
+    tag?: string;
+    type?: string;
+    text?: string;
+  }[];
 
   /*called whenever any question’s value changes */
-  onChange: (id: string, value: string | string[]) => void;
+  onChange: (answer: {
+    questionId: string;
+    response: string | string[];
+    tag?: string;
+    type?: string;
+    text?: string;
+  }) => void;
   /**
    * נקרא כאשר המשתמש לוחץ "סיים"
    * @param answers אובייקט שבו המפתח הוא question.id והערך הוא מחרוזת או מערך
    */
-  onSubmit: (answers: Record<string, string | string[]>) => void;
+  onSubmit: (
+    answers: {
+      questionId: string;
+      response: string | string[];
+      tag?: string;
+      type?: string;
+      text?: string;
+    }[]
+  ) => void;
 }
 
 export default function QuestionnaireForm({
@@ -33,14 +54,13 @@ export default function QuestionnaireForm({
 
   // Pagination state
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  //const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isCompleted, setIsCompleted] = useState(false);
 
   //First, filter out question dependencies:
   const visibleQuestionsAll = questionnaire.questions.filter((q) => {
     /*If this question is Q2-18, return true only when Q2-17 was answered opt2*/
     if (q.id === "q2-18") {
-      return answers["q2-17"] === "opt2";
+      return answers.find((a) => a.questionId === "q2-17")?.response === "opt2";
     }
     // q2-20…q2-29 only if q2-19 === 'yes'
     const group = [
@@ -56,7 +76,7 @@ export default function QuestionnaireForm({
       "q2-29",
     ];
     if (group.includes(q.id)) {
-      return answers["q2-19"] === "yes";
+      return answers.find((a) => a.questionId === "q2-19")?.response === "yes";
     }
     // all other questions always show
     return true;
@@ -71,7 +91,7 @@ export default function QuestionnaireForm({
   const progress = ((currentPageIndex + 1) / totalPages) * 100;
 
   const canProceed = currentQuestions.every((q) => {
-    const v = answers[q.id];
+    const v = answers.find((a) => a.questionId === q.id)?.response;
     return q.type === "multiple"
       ? Array.isArray(v) && v.length > 0
       : typeof v === "string" && v !== "";
@@ -91,7 +111,6 @@ export default function QuestionnaireForm({
       setCurrentPageIndex((i) => i - 1);
     }
   };
-
   if (isCompleted) {
     return (
       <Card className="max-w-2xl mx-auto">
@@ -116,17 +135,20 @@ export default function QuestionnaireForm({
             <h3 className="font-semibold mb-2">
               {language === "he" ? "סיכום התשובות:" : "Answer Summary:"}
             </h3>
-            {Object.entries(answers).map(([qid, ans]) => {
+
+            {answers.map((ansObj, index) => {
               const question = questionnaire.questions.find(
-                (q) => q.id === qid
+                (q) => q.id === ansObj.questionId
               );
               return (
-                <div key={qid} className="mb-2">
+                <div key={ansObj.questionId || index} className="mb-2">
                   <p className="text-sm font-medium">
                     {question?.text[language]}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {Array.isArray(ans) ? ans.join(", ") : ans}
+                    {Array.isArray(ansObj.response)
+                      ? ansObj.response.join(", ")
+                      : ansObj.response}
                   </p>
                 </div>
               );
@@ -159,17 +181,29 @@ export default function QuestionnaireForm({
         </div>
       </div>
 
-      {/* Question Cards */}
-      <div className="space-y-6">
-        {currentQuestions.map((question) => (
-          <QuestionCard
-            key={question.id}
-            question={question}
-            answer={answers[question.id]}
-            onAnswer={(_, ans) => onChange(question.id, ans)}
-          />
-        ))}
-      </div>
+      {currentQuestions.map((question) => (
+        <QuestionCard
+          key={question.id}
+          question={question}
+          answer={
+            answers.find((a) => a.questionId === question.id)?.response ?? ""
+          }
+          onAnswer={(_, ans) => {
+            const shouldAddAllergyTag =
+              question.id === "q2-19" && (ans === "yes" || ans === "opt1");
+
+            const updatedAnswer = {
+              questionId: question.id,
+              response: ans,
+              tag: shouldAddAllergyTag ? "allergy" : question.tag,
+              type: question.type,
+              text: question.text[language],
+            };
+
+            onChange(updatedAnswer);
+          }}
+        />
+      ))}
 
       {/* Navigation Buttons */}
       <div className="flex justify-between mt-6">
