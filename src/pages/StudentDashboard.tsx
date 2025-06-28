@@ -294,21 +294,18 @@ const greeting = language === 'he'
               <DateDisplay />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_400px] gap-6 max-w-6xl mx-auto">
-<ActionButtons
-  viewRecommendationsText={t['viewRecommendations']}
-  newAssessmentText={t['newAssessment']}
-  myAssessmentsText={t['myAssessments']}
-  helpSupportText={t['helpSupport']}
-  studentFormText={t.fillForm}
-  studentId={studentId} //
-
-  onStartAssessment={handleRedirectToAssessment}
-
-  onHelpSupportClick={handleOpenHelpSupport}
-
-  onStudentFormClick={() => navigate(`/student/${studentId}/assessment`)} 
-/>
-
+              
+  <ActionButtons
+    viewRecommendationsText={t['viewRecommendations']}
+    newAssessmentText={t['newAssessment']}
+    myAssessmentsText={t['myAssessments']}
+    helpSupportText={t['helpSupport']}
+    studentFormText={t.fillForm}
+    studentId={studentId}                                      // ← כאן
+    onStartAssessment={handleRedirectToAssessment}
+    onHelpSupportClick={handleOpenHelpSupport}
+    onStudentFormClick={() => navigate(`/questionnaire/student/${studentId}`)}
+  />
 
               <TimerSection
                 showTimer={showTimer}

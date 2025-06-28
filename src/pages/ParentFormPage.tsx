@@ -1,4 +1,4 @@
-
+/*
 import React from 'react';
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -98,8 +98,8 @@ const { studentId } = useParams<{ studentId: string }>();
           <CardContent className="pt-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {/* Basic Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Basic Information */
+             /*   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="childName"
@@ -128,10 +128,10 @@ const { studentId } = useParams<{ studentId: string }>();
                   />
                 </div>
 
-                <h2 className="text-xl font-semibold pt-4">תצפיות על שגרה יומית</h2>
+                <h2 className="text-xl font-semibold pt-4">תצפיות על שגרה יומית</h2>*/
                 
                 {/* Morning Routine */}
-                <FormField
+                /*<FormField
                   control={form.control}
                   name="morningRoutine"
                   render={({ field }) => (
@@ -168,10 +168,10 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 {/* Diet Plan Adherence */}
-                <FormField
+               /* <FormField
                   control={form.control}
                   name="dietPlanAdherence"
                   render={({ field }) => (
@@ -208,12 +208,12 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 <h2 className="text-xl font-semibold pt-4">מעורבות בפעילות גופנית</h2>
                 
                 {/* Activity Participation */}
-                <FormField
+             /*   <FormField
                   control={form.control}
                   name="activityParticipation"
                   render={({ field }) => (
@@ -250,10 +250,10 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 {/* Physical Activity Level */}
-                <FormField
+               /* <FormField
                   control={form.control}
                   name="physicalActivityLevel"
                   render={({ field }) => (
@@ -290,10 +290,10 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 {/* Focus After Activity */}
-                <FormField
+                /*<FormField
                   control={form.control}
                   name="focusAfterActivity"
                   render={({ field }) => (
@@ -329,9 +329,9 @@ const { studentId } = useParams<{ studentId: string }>();
                 />
 
                 <h2 className="text-xl font-semibold pt-4">דבקות בתוכנית תזונה</h2>
-
+*/
                 {/* Meal Schedule Adherence */}
-                <FormField
+               /* <FormField
                   control={form.control}
                   name="mealScheduleAdherence"
                   render={({ field }) => (
@@ -369,9 +369,9 @@ const { studentId } = useParams<{ studentId: string }>();
                     </FormItem>
                   )}
                 />
-
+*/
                 {/* Eating Habits */}
-                <FormField
+              /*  <FormField
                   control={form.control}
                   name="eatingHabits"
                   render={({ field }) => (
@@ -408,12 +408,12 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 <h2 className="text-xl font-semibold pt-4">התנהגות בבית</h2>
 
                 {/* Homework Completion */}
-                <FormField
+              /*  <FormField
                   control={form.control}
                   name="homeworkCompletion"
                   render={({ field }) => (
@@ -450,10 +450,10 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 {/* Sleep Schedule */}
-                <FormField
+             /*   <FormField
                   control={form.control}
                   name="sleepSchedule"
                   render={({ field }) => (
@@ -490,10 +490,10 @@ const { studentId } = useParams<{ studentId: string }>();
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                />*/
 
                 {/* Energy Levels */}
-                <FormField
+              /*  <FormField
                   control={form.control}
                   name="energyLevels"
                   render={({ field }) => (
@@ -544,4 +544,4 @@ const { studentId } = useParams<{ studentId: string }>();
   );
 };
 
-export default ParentAssessment;
+export default ParentAssessment; */

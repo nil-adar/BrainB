@@ -41,8 +41,8 @@ export default {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#FF7F50",
-          foreground: "#FFFFFF",
+          DEFAULT: "#A5F3EC",
+          foreground: "#000000",
         },
         card: {
           DEFAULT: "#FFFFFF",
@@ -60,4 +60,5 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  
 } satisfies Config;

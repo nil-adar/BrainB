@@ -2,36 +2,47 @@ import { Bell, BarChart, MessageCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Student } from "@/types/school";
+import { FileText } from "lucide-react";
 
 interface StudentCardProps {
   student: Student;
   onViewProgress?: (studentId: string) => void;
+  //onContactParent?: () => void;
   teacherId?: string;
+  questionnaireRole?: "student" | "teacher" | "parent"; 
 }
 
-const actionTranslations = {
-en: [
-  { text: "Create new assessment", path: "/create-assessment" },
-  { text: "View Pre-Assessments", path: "/statistics" },
-  { text: "Daily Task Update", path: "/daily-tasks" },
-{ text: "View recommendations", path: (id: string) => `/recommendations?studentId=${id}` }, // 
+export const StudentCard: React.FC<StudentCardProps> =(props) => {
+  const{
+ student,
+    onViewProgress,
+    //onContactParent,
+    teacherId,
+    questionnaireRole,
+  } = props;
 
-],
-  he: [
-    { text: " צור אבחון חדש ", path: "/create-assessment" },
-    { text: "צפה בהערכות", path: "/statistics" },
-    { text: "עדכון משימות יומי", path: "/daily-tasks" },
-    { text: "צפה בהמלצות", path: (id: string) => `/recommendations?studentId=${id}` },
-  ]
-};
+ const formRole = questionnaireRole ?? (teacherId ? "teacher" : "student");
 
-export const StudentCard = ({
-  student,
-  onViewProgress,
-  teacherId = "teacher1" // אפשר לשנות בהמשך ל־logged-in user
-}: StudentCardProps) => {
   const navigate = useNavigate();
   const language = document.documentElement.dir === "rtl" ? "he" : "en";
+
+  const actionTranslations = {
+    en: [
+      { text: "Create new assessment", path: "/create-assessment" },
+      { text: "Fill student questionnaire", path: (id: string) => `/questionnaire/${formRole}/${id}` },
+      { text: "View Pre-Assessments", path: "/statistics" },
+      { text: "Daily Task Update", path: "/daily-tasks" },
+      { text: "View recommendations", path: (id: string) => `/recommendations?studentId=${id}` },
+    ],
+    he: [
+      { text: "צור אבחון חדש", path: "/create-assessment" },
+      { text: "מילוי שאלון תלמיד", path: (id: string) => `/questionnaire/${formRole}/${id}` },
+      { text: "צפה בהערכות", path: "/statistics" },
+      { text: "עדכון משימות יומי", path: "/daily-tasks" },
+      { text: "צפה בהמלצות", path: (id: string) => `/recommendations?studentId=${id}` },
+    ]
+  };
+
   const actions = actionTranslations[language];
 
   const getPath = (path: string | ((id: string) => string)) => {
@@ -44,7 +55,6 @@ export const StudentCard = ({
       const studentName = encodeURIComponent(`${student.firstName} ${student.lastName}`);
       return `/create-assessment?studentId=${student.id}&studentName=${studentName}`;
     }
-  
     return path;
   };
   
@@ -67,7 +77,6 @@ export const StudentCard = ({
       contactParent: "צור קשר עם הורה"
     }
   };
-
   const t = buttonLabels[language];
 
   return (
@@ -76,7 +85,6 @@ export const StudentCard = ({
         <div 
           className="flex items-center gap-2 md:gap-3 cursor-pointer"
           onClick={() => navigate(`/recommendations?studentId=${student.id}`)}
-
         >
           <img
             src={student.avatar}
@@ -97,7 +105,9 @@ export const StudentCard = ({
             onClick={() => navigate(getPath(action.path))}
             className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-primary text-white rounded hover:opacity-90 transition-opacity text-sm md:text-base"
           >
-            {action.text}
+            {/* OPTIONALLY, show icon for questionnaire */}
+            {/*action.text.includes("שאלון") && <FileText className="w-4 h-4 ml-2" />*/}
+            <span>{action.text}</span>
           </button>
         ))}
 

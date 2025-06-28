@@ -23,11 +23,6 @@ import { useNavigate } from "react-router-dom";
 
 import { ChildrenProgressSection } from "@/components/parent/ChildrenProgressSection";
 
-
-
-
-
-
 const useLoggedInUser = () => {
   return useQuery({
     queryKey: ["user"],
@@ -36,8 +31,6 @@ const useLoggedInUser = () => {
 };
 
 
-
-  
   const translations = {
     en: {
       childProgress:    "Children Progress",
@@ -329,10 +322,6 @@ const useLoggedInUser = () => {
     ))}
   </div>
 </CardContent>
-
-
-
-
             </Card>
           </aside>
         </main>
