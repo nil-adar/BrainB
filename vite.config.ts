@@ -5,8 +5,8 @@ import path from "path";
 
 export default defineConfig(() => ({
   server: {
-    host: "0.0.0.0", // ← תקן את זה
-     port: 8081,
+    host: "0.0.0.0",
+    port: 8080,
     proxy: {
       "/api": {
         target: "http://localhost:5000",
@@ -14,6 +14,9 @@ export default defineConfig(() => ({
         secure: false,
       },
     },
+    watch: {
+      ignored: ["**/venv/**"]
+    }
   },
   plugins: [react()],
   resolve: {

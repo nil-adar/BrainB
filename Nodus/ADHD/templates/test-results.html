@@ -355,45 +355,75 @@
             </div>
         </header>
         <section class="hero">
+        <div style="background-color: #e9f5fe; padding: 20px; margin: 20px auto; max-width: 800px; border-radius: 8px; text-align: center;">
+  <h2 style="color: #0063A0; margin: 0; font-size: 2em;" data-translate="assessment_complete">
+    האבחון הסתיים בהצלחה!
+  </h2>
+  <p style="color: #0063A0; font-size: 1.2em;" data-translate="view_results_note">
+    כדי לצפות בתוצאות המלאות וההמלצות האישיות, חזור למערכת BrainBridge.
+  </p>
+</div>
+    
+
+
+      
+           
 
 
 
-            <div class="overlay" style="margin-top: 3%;">
-                <div class="labResultsHeader">
-                    <img src="{% static 'images/Lab.png' %}" alt="lab-logo" sizes="50px">
-                    <div class="labResultsHeaderText">
-                        <h1 data-translate="results_title">Results and Treatment</h1>
-                        <h3 data-translate="results_subtitle">This is what your test results say about you (according to our analysis)</h3>
-                    </div>
-                </div>
+</div>
+<div style="display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap;">
+  <div
+    onclick="window.location.href='http://localhost:8080/'"
+    style="width: 220px; height: 70px; background-color: #00c39a; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+    onmouseover="this.style.backgroundColor='#019c84'; this.style.transform='translateY(-2px)'"
+    onmouseout="this.style.backgroundColor='#00c39a'; this.style.transform='translateY(0)'"
+    data-translate="back_to_brainbridge"
+  >
+    חזור ל־BrainBridge
+  </div>
 
-                <div class="card">
-                    <div class="resultOverview">
-                        <p data-translate="dominant_type">Your dominant ADHD subtype is:</p>
-                        <h2 id="dominant" style="align-self: center;">Combined - 75%</h2>
-                        <p id="tips-text">{{ tips }}</p>
-                        <p id="tips-he" style="display:none;">{{ tips_he }}</p>
-                        <p id="tips-en" style="display:none;">{{ tips_en }}</p>
+<div
+  id="recommendationsButton"
+  style="
+    width: 220px;
+    height: 70px;
+    background-color: #0f75bc;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  "
+  onmouseover="this.style.backgroundColor='#0d5fa3'; this.style.transform='translateY(-2px)'"
+  onmouseout="this.style.backgroundColor='#0f75bc'; this.style.transform='translateY(0)'"
+  data-translate="go_to_recommendations"
+>
+  מעבר להמלצות
+</div>
 
-                    </div>
+<script>
+  const studentId = localStorage.getItem("studentId");
 
-                    <div class="resultsGraph">
-                        <canvas id="myPieChart" width="400" height="400"></canvas>
-                        <div class="types" style="margin-left: 20%; text-align: left;">
-                            <p id="combined">Combined - 0%</p>
-                            <p id="impulse">Impulsive/Hyperactive - 0%</p>
-                            <p id="inattentive">Inattentive - 0%</p>
-                            <p id="none">No ADHD - 0%</p>
-                        </div>
-                    </div>
+  if (studentId) {
+    const recommendationsUrl = `http://localhost:8080/recommendations?studentId=${studentId}`;
+    document.getElementById("recommendationsButton").onclick = function() {
+      window.location.href = recommendationsUrl;
+    };
+  } else {
+    console.warn("⚠️ studentId לא נמצא ב-localStorage.");
+    document.getElementById("recommendationsButton").onclick = function() {
+      alert("⚠️ לא נמצא מזהה תלמיד. נסה להתחיל את האבחון מחדש.");
+    };
+  }
+</script>
 
-                </div>
 
-               <button onclick="window.location.href='http://localhost:8080/'" data-translate="back_home">
-  Back to Brain Bridge System
-</button>
 
-            </div>
         </section>
 
         <footer class="footer">
@@ -432,13 +462,17 @@
                     impulsive_hyperactive: "Impulsive/Hyperactive",
                     inattentive: "Inattentive",
                     no_adhd: "No ADHD",
+                    assessment_complete: "The assessment has been successfully completed!",
+                    view_results_note: "To view your full results and personalized recommendations, return to the BrainBridge system.",   
                     back_home: "Back to BrainBriddge",
+                    go_to_recommendations: "מעבר להמלצות",
                     incomplete_form: "Incomplete Form",
                     form_error: "Some questions are not answered.\nPlease answer all questions.",
                     learn_more: "Learn more about ADHD",
                     who_adhd: "World Health Organization - ADHD",
                     cdc_adhd: "CDC.gov - ADHD",
                     contact_us: "Contact Us"
+                   
                 },
                 he: {
                     nodus: "נודוס",
@@ -451,8 +485,9 @@
                     combined: "משולב",
                     impulsive_hyperactive: "אימפולסיבי/היפראקטיבי",
                     back_to_brainbridge: "  חזור לדף הבית של BrainBridge ",
-                    
-
+                    go_to_recommendations: "מעבר להמלצות",
+                    assessment_complete: "האבחון הסתיים בהצלחה!",
+                    view_results_note: "כדי לצפות בתוצאות המלאות וההמלצות האישיות, חזור למערכת BrainBridge.",
 
                     
 

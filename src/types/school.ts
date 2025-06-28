@@ -37,6 +37,7 @@ export interface Student extends User {
   tasks: Task[];
   className: string; 
   progressReports: Report[];
+  extraTime?: number; // 
 }
 
 // Assessment related types
