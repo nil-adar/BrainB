@@ -26,7 +26,9 @@ router.get('/me', authMiddleware, async (req: Request, res: Response): Promise<v
 router.get('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.params.id)
-      .select('name email phone role schoolId schoolName assignedClasses')
+     .select('name email phone role schoolId schoolName assignedClasses extraTime')
+
+
       .lean<IUser>();
 
     if (!user) {
@@ -90,7 +92,8 @@ router.get('/:id/classes', async (req: Request<{ id: string }>, res: Response): 
 router.get('/profiles/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.params.id)
-      .select('name email phone role schoolId schoolName assignedClasses')
+      .select('name email phone role schoolId schoolName assignedClasses extraTime')
+
       .lean<IUser>();
 
     if (!user) {

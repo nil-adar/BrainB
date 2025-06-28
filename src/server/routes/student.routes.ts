@@ -103,7 +103,7 @@ router.get('/:studentId', async (req: Request, res: Response): Promise<void> => 
   const { studentId } = req.params;
   try {
     const doc = await User.findById(studentId)
-      .select('name firstName lastName classId teacherId parentIds avatar')
+      .select('name firstName lastName classId teacherId parentIds avatar extraTime')
       .lean();
     if (!doc) {
       res.status(404).json({ message: 'Student not found' });
@@ -121,6 +121,7 @@ router.get('/:studentId', async (req: Request, res: Response): Promise<void> => 
       teacherId: doc.teacherId,
       parentIds: (doc.parentIds || []).map((pid) => pid.toString()),
       avatar: doc.avatar || '',
+      extraTime: doc.extraTime ?? 1,
     };
 
     res.status(200).json(student);

@@ -421,21 +421,28 @@
         }
 
         // Initialize language on page load
-        document.addEventListener('DOMContentLoaded', (event) => {
-            // אני שומר כאן את הטוקן פרטי התלמיד בזכרון של הדפדפן 
-            const params = new URLSearchParams(window.location.search);
-            const token = params.get("token");
-            if (token) {
-                sessionStorage.setItem("sessionToken", token);
-                console.log("🔐 טוקן נשמר ב-sessionStorage:", token);
-            } else {
-               console.warn("⚠️ טוקן לא נמצא ב-URL");
-            }
-            changeLanguage(currentLanguage);
-            
-            // Clean up files in backend
-            cleanUp();
-        });
+document.addEventListener('DOMContentLoaded', (event) => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const studentId = params.get("studentId");
+
+    if (token) {
+        sessionStorage.setItem("sessionToken", token);
+        console.log("🔐 טוקן נשמר ב-sessionStorage:", token);
+    } else {
+        console.warn("⚠️ טוקן לא נמצא ב-URL");
+    }
+
+    if (studentId) {
+        localStorage.setItem("studentId", studentId);
+        console.log("✅ studentId נשמר ב-localStorage:", studentId);
+    } else {
+        console.warn("⚠️ studentId לא נמצא ב-URL");
+    }
+
+    changeLanguage(currentLanguage);
+    cleanUp();
+});
     </script>
 </body>
 </html>

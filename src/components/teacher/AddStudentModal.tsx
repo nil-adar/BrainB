@@ -82,7 +82,8 @@
             avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
             tasks: [],
             progressReports: [],
-            extraTime: values.extraTime === "none" ? 0 : Number(values.extraTime),
+           extraTime: values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
+
       
           };
           
