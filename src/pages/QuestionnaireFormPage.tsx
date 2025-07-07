@@ -23,7 +23,7 @@ export default function QuestionnaireFormPage() {
   type RichAnswer = {
     questionId: string;
     response: string | string[];
-    tag?: string;
+    tag?: string[];
     type?: string;
     text?: string;
   };
@@ -148,7 +148,7 @@ export default function QuestionnaireFormPage() {
   };
 
   // 2) Filter q2-18 by q2-17==='opt2', and q2-20..q2-29 by q2-19==='yes'
-  const filteredQuestions = questionnaire.questions.filter((q) => {
+  /*const filteredQuestions = questionnaire.questions.filter((q) => {
     if (q.id === "q2-18") {
       return answers["q2-17"] === "opt2";
     }
@@ -168,11 +168,37 @@ export default function QuestionnaireFormPage() {
       return answers["q2-19"] === "yes";
     }
     return true;
+  });*/
+
+  const getAnswer = (qid: string) =>
+    answers.find((a) => a.questionId === qid)?.response;
+
+  const filteredQuestions = questionnaire.questions.filter((q) => {
+    if (q.id === "q2-18") {
+      return getAnswer("q2-17") === "opt2";
+    }
+    const allergyGroup = [
+      "q2-20",
+      "q2-21",
+      "q2-22",
+      "q2-23",
+      "q2-24",
+      "q2-25",
+      "q2-26",
+      "q2-27",
+      "q2-28",
+      "q2-29",
+    ];
+    if (allergyGroup.includes(q.id)) {
+      return getAnswer("q2-19") === "yes";
+    }
+    return true;
   });
+
   const handleChange = (answer: {
     questionId: string;
     response: string | string[];
-    tag?: string;
+    tag?: string[];
     type?: string;
     text?: string;
   }) => {
@@ -181,17 +207,30 @@ export default function QuestionnaireFormPage() {
     );
     if (!question) return;
 
-    const isYesAllergy =
-      answer.questionId === "q2-19" &&
-      (answer.response === "yes" || answer.response === "opt1");
+    const answeredYesAllergy =
+      answers.find((a) => a.questionId === "q2-19")?.response === "yes";
+
+    const shouldTagAsAllergy =
+      answer.questionId === "q2-19" ||
+      (question.tag === "allergy" &&
+        question.type === "multiple" &&
+        answeredYesAllergy);
 
     const updatedAnswer = {
       questionId: answer.questionId,
       response: answer.response,
-      tag: isYesAllergy ? "allergy" : question.tag,
+      tag: (() => {
+        if (answeredYesAllergy) return ["allergy"];
+        if (question.tag?.includes(",")) {
+          return question.tag.split(",").map((t) => t.trim());
+        }
+        return question.tag ? [question.tag] : [];
+      })(),
+
       type: question.type,
       text: question.text[language],
     };
+
     setAnswers((prev) => {
       const existing = prev.find((a) => a.questionId === answer.questionId);
       if (existing) {
@@ -203,50 +242,6 @@ export default function QuestionnaireFormPage() {
       }
     });
   };
-
-  /*const handleChange = (answer: {
-    questionId: string;
-    response: string | string[];
-    tag?: string;
-    type?: string;
-    text?: string;
-  }) => {
-    setAnswers((prev) => {
-      const existing = prev.find((a) => a.questionId === answer.questionId);
-      if (existing) {
-        return prev.map((a) =>
-          a.questionId === answer.questionId ? answer : a
-        );
-      } else {
-        return [...prev, answer];
-      }
-    });
-  };*/
-
-  /* const handleChange = (id: string, value: string | string[]) => {
-    const question = questionnaire.questions.find((q) => q.id === id);
-    if (!question) return;
-
-    const isYesAllergy =
-      id === "q2-19" && (value === "yes" || value === "opt1");
-
-    const updatedAnswer = {
-      questionId: id,
-      response: value,
-      tag: isYesAllergy ? "allergy" : question.tag,
-      type: question.type,
-      text: question.text[language],
-    };
-
-    setAnswers((prev) => {
-      const existing = prev.find((a) => a.questionId === id);
-      if (existing) {
-        return prev.map((a) => (a.questionId === id ? updatedAnswer : a));
-      } else {
-        return [...prev, updatedAnswer];
-      }
-    });
-  };*/
 
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="p-4 max-w-3xl mx-auto">

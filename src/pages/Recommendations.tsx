@@ -1,4 +1,3 @@
-
 import { Search, Bell, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,6 +7,8 @@ import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import RecommendationPdfView from "@/components/RecommendationPdfView";
+
 const translations = {
   en: {
     title: "Recommendations",
@@ -30,18 +31,18 @@ const translations = {
     greeting: "בוקר טוב",
     viewRecommendations: "צפייה בהמלצות",
     home: "דף הבית",
-  }
+  },
 };
 
 export default function Recommendations() {
   interface RecommendationStatus {
-  studentFormCompleted: boolean;
-  parentFormCompleted: boolean;
-  teacherFormCompleted: boolean;
-  diagnosisCompleted: boolean;
-}
+    studentFormCompleted: boolean;
+    parentFormCompleted: boolean;
+    teacherFormCompleted: boolean;
+    diagnosisCompleted: boolean;
+  }
 
-const [status, setStatus] = useState<RecommendationStatus | null>(null);
+  const [status, setStatus] = useState<RecommendationStatus | null>(null);
   const language = document.documentElement.dir === "rtl" ? "he" : "en";
   const t = translations[language];
   const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
@@ -50,63 +51,73 @@ const [status, setStatus] = useState<RecommendationStatus | null>(null);
   const params = new URLSearchParams(location.search);
   const studentId = params.get("studentId");
 
- const [studentName, setStudentName] = useState<string>("");
+  const [studentName, setStudentName] = useState<string>("");
+  const [recommendations, setRecommendations] = useState([]);
 
-useEffect(() => {
-  if (!studentId) return;
+  useEffect(() => {
+    if (!studentId) return;
 
-  // טען סטטוס טפסים
-  fetch(`/api/forms/check-status/${studentId}`)
-    .then((res) => res.json())
-    .then((data) => {
-      setStatus(data);
-    })
-    .catch((err) => {
-      console.error("❌ Failed to load recommendation status:", err);
-    });
+    // טען המלצות מסוננות
+    fetch(`/api/recommendations/${studentId}?lang=${language}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRecommendations(data.recommendations || []);
+      })
+      .catch((err) => {
+        console.error("❌ Failed to load recommendations:", err);
+      });
 
-  // טען שם תלמיד
- fetch(`/api/users/${studentId}`)
-  .then((res) => res.json())
-  .then((res) => {
-    console.log("📦 student data:", res);
+    // טען סטטוס טפסים
+    fetch(`/api/forms/check-status/${studentId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setStatus(data);
+      })
+      .catch((err) => {
+        console.error("❌ Failed to load recommendation status:", err);
+      });
 
-    const user = res.data;
+    // טען שם תלמיד
+    fetch(`/api/users/${studentId}`)
+      .then((res) => res.json())
+      .then((res) => {
+        console.log("📦 student data:", res);
 
-    if (user.firstName && user.lastName) {
-      setStudentName(`${user.firstName} ${user.lastName}`);
-    } else if (user.name) {
-      setStudentName(user.name);
-    } else {
-      setStudentName("תלמיד");
-    }
-  })
-  .catch((err) => {
-    console.error("❌ Failed to load student name:", err);
-    setStudentName("תלמיד");
-  });
+        const user = res.data;
 
-}, [studentId]);
+        if (user.firstName && user.lastName) {
+          setStudentName(`${user.firstName} ${user.lastName}`);
+        } else if (user.name) {
+          setStudentName(user.name);
+        } else {
+          setStudentName("תלמיד");
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Failed to load student name:", err);
+        setStudentName("תלמיד");
+      });
+  }, [studentId]);
 
-
-
-const breadcrumbItems = [
-  { label: t.home, href: "/dashboard" },
-  { label: studentName || "תלמיד", href: `/student/${studentId}` },
-  { label: t.title },
-];
-
+  const breadcrumbItems = [
+    { label: t.home, href: "/dashboard" },
+    { label: studentName || "תלמיד", href: `/student/${studentId}` },
+    { label: t.title },
+  ];
 
   const handleNutritionClick = () => {
     document.documentElement.dir = "rtl";
-    navigate('/nutritional-recommendations');
+    navigate("/nutritional-recommendations");
   };
 
   const handlePhysicalClick = () => {
     document.documentElement.dir = "rtl";
-    navigate('/physical-recommendations');
+    navigate("/physical-recommendations");
   };
 
+  <Card className="p-6">
+    <RecommendationPdfView recommendations={recommendations} lang={language} />
+  </Card>;
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -146,32 +157,29 @@ const breadcrumbItems = [
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-<h1 className="text-3xl font-bold mb-2">
-  {`${t.greeting}${studentName ? ` ${studentName}` : ""}`}
-</h1>
-
-
+          <h1 className="text-3xl font-bold mb-2">
+            {`${t.greeting}${studentName ? ` ${studentName}` : ""}`}
+          </h1>
 
           <h2 className="text-2xl font-semibold text-gray-700">{t.title}</h2>
         </div>
-          {status && (
-  (!status.studentFormCompleted ||
-    !status.parentFormCompleted ||
-    !status.teacherFormCompleted ||
-    !status.diagnosisCompleted) && (
-    <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-6">
-      <p className="font-semibold mb-2">
-        כדי להציג את ההמלצות המלאות, יש להשלים את:
-      </p>
-      <ul className="list-disc list-inside">
-        {!status.studentFormCompleted && <li>שאלון תלמיד</li>}
-        {!status.parentFormCompleted && <li>שאלון הורה</li>}
-        {!status.teacherFormCompleted && <li>שאלון מורה</li>}
-        {!status.diagnosisCompleted && <li>אבחון נודוס</li>}
-      </ul>
-    </div>
-  )
-)}
+        {status &&
+          (!status.studentFormCompleted ||
+            !status.parentFormCompleted ||
+            !status.teacherFormCompleted ||
+            !status.diagnosisCompleted) && (
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-6">
+              <p className="font-semibold mb-2">
+                כדי להציג את ההמלצות המלאות, יש להשלים את:
+              </p>
+              <ul className="list-disc list-inside">
+                {!status.studentFormCompleted && <li>שאלון תלמיד</li>}
+                {!status.parentFormCompleted && <li>שאלון הורה</li>}
+                {!status.teacherFormCompleted && <li>שאלון מורה</li>}
+                {!status.diagnosisCompleted && <li>אבחון נודוס</li>}
+              </ul>
+            </div>
+          )}
 
         {/* Recommendation Type Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -180,9 +188,9 @@ const breadcrumbItems = [
             className="h-auto p-8 flex flex-col items-center gap-4 hover:bg-primary/20"
             onClick={handleNutritionClick}
           >
-            <img 
-              src="/lovable-uploads/37956930-4a12-43ab-8954-771975d7735f.png" 
-              alt="Nutritional Advice Icon" 
+            <img
+              src="/lovable-uploads/37956930-4a12-43ab-8954-771975d7735f.png"
+              alt="Nutritional Advice Icon"
               className="w-32 h-32 object-cover rounded-lg"
             />
             <span className="text-xl font-semibold">{t.nutritionalAdvice}</span>
@@ -193,9 +201,9 @@ const breadcrumbItems = [
             className="h-auto p-8 flex flex-col items-center gap-4 hover:bg-primary/20"
             onClick={handlePhysicalClick}
           >
-            <img 
-              src="/lovable-uploads/9763419c-0e06-40b4-90a1-f6969514f16e.png" 
-              alt="Physical Activity Icon" 
+            <img
+              src="/lovable-uploads/9763419c-0e06-40b4-90a1-f6969514f16e.png"
+              alt="Physical Activity Icon"
               className="w-32 h-32 object-cover rounded-lg"
             />
             <span className="text-xl font-semibold">{t.physicalActivity}</span>
@@ -204,38 +212,38 @@ const breadcrumbItems = [
           <Button
             variant="secondary"
             className="h-auto p-8 flex flex-col items-center gap-4 hover:bg-primary/20"
-            onClick={() => navigate('/recommendations/environmental')}
+            onClick={() => navigate("/recommendations/environmental")}
           >
-            <img 
-              src="/lovable-uploads/47ed425a-be3a-46dc-9573-8c0d92d0150f.png" 
-              alt="Environmental Modifications Icon" 
+            <img
+              src="/lovable-uploads/47ed425a-be3a-46dc-9573-8c0d92d0150f.png"
+              alt="Environmental Modifications Icon"
               className="w-16 h-16"
             />
-            <span className="text-xl font-semibold">{t.environmentalModifications}</span>
+            <span className="text-xl font-semibold">
+              {t.environmentalModifications}
+            </span>
           </Button>
         </div>
 
         {/* Formal Recommendations Section */}
         <div>
-          <h3 className="text-xl font-semibold mb-4">{t.formalRecommendations}</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            {t.formalRecommendations}
+          </h3>
           <Card className="p-6">
             <div className="relative flex-1 max-w-md mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="search"
-                placeholder={t.search}
-                className="pl-10"
+              <Input type="search" placeholder={t.search} className="pl-10" />
+            </div>
+            <Card className="p-6">
+              <RecommendationPdfView
+                recommendations={recommendations}
+                lang={language}
               />
-            </div>
-            <div className="bg-gray-50 rounded-lg p-8 text-center">
-              <h4 className="text-xl font-bold mb-2">CHAPTER 1</h4>
-              <p className="text-lg">SUMMARY OF FINDINGS, CONCLUSION, AND</p>
-              <p className="text-lg">RECOMMENDATIONS</p>
-            </div>
+            </Card>
           </Card>
         </div>
       </main>
     </div>
   );
 }
-  

@@ -1,6 +1,6 @@
 // data/foodAllergyMapping.ts
 
-export const allergyMapping = {
+export const allergyMapping: { [key: string]: { he: string; en: string } } = {
   // Nuts & Seeds
   nut1: { he: "שקדים", en: "Almonds" },
   nut2: { he: "אגוזי קשיו", en: "Cashews" },
@@ -168,3 +168,4 @@ export const allergyMapping = {
   other9: { he: "מרווה", en: "Sage" },
   other10: { he: "עשבי תיבול", en: "Mixed herbs" },
 };
+export default allergyMapping;
