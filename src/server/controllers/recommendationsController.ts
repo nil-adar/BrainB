@@ -8,7 +8,7 @@ import { allergyMapping } from "../../data/foodAllergyMapping";
 import { filterExamplesByAllergy } from "../../utils/filterExamplesByAllergy";
 import { StudentRecommendationsModel } from "../models/StudentRecommendations";
 import { ParsedQs } from "qs";
-import { translateDiagnosisType } from "@/utils/translateDiagnosisType";
+import { translateDiagnosisType } from "../../utils/translateDiagnosisType";
 
 // Constants from the pipeline documentation
 const MIN_NO_ADHD_VAL = 0.7;
@@ -497,6 +497,14 @@ router.get(
 
       console.log("💾 Saving recommendations to DB...", finalResponse);
 
+      //  תרגום סוג האבחנה המרכזי לשתי שפות
+      const dominantType =
+        finalResponse.mainType || finalResponse.recommendationTypesList[0];
+      const dominantDiagnosisType = {
+        en: dominantType,
+        he: translateDiagnosisType(dominantType, "he"),
+      };
+
       // שמירה למסד לפני שליחה למשתמש
       await StudentRecommendationsModel.create({
         studentId,
@@ -507,6 +515,7 @@ router.get(
         professionalSupport: finalResponse.professionalSupport,
         mainDiagnosisType: finalResponse.mainType,
         subtypeDiagnosisTypes: finalResponse.subTypes || [],
+        dominantDiagnosisType,
       });
 
       // שליחת ההמלצות ל-frontend

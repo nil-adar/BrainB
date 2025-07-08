@@ -1,10 +1,13 @@
-export function translateDiagnosisType(type: string, lang: "he" | "en") {
-  const map = {
+export const translateDiagnosisType = (
+  type: string,
+  lang: "he" | "en"
+): string => {
+  const map: Record<string, { he: string; en: string }> = {
     Combined: { he: "משולב", en: "Combined" },
-    Inattentive: { he: "חוסר קשב", en: "Inattentive" },
-    Hyperactivity: { he: "היפראקטיבי", en: "Hyperactivity" },
-    Impulsivity: { he: "אימפולסיבי", en: "Impulsivity" },
-    NoADHD: { he: "ללא ADHD", en: "No ADHD" },
+    Hyperactivity: { he: "היפראקטיביות", en: "Hyperactivity" },
+    Inattentive: { he: "קשב", en: "Inattentive" },
+    Impulsivity: { he: "אימפולסיביות", en: "Impulsivity" },
   };
-  return map[type]?.[lang] || type;
-}
+
+  return map[type]?.[lang] ?? type;
+};

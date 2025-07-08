@@ -18,8 +18,6 @@ interface Props {
   lang: "he" | "en";
 }
 
-<Text style={styles.text}>{rec.recommendation?.[lang]}</Text>;
-
 const MyDocument = ({ recommendations, lang }: Props) => {
   const isHebrew = lang === "he";
 
@@ -35,9 +33,7 @@ const MyDocument = ({ recommendations, lang }: Props) => {
             <Text style={styles.label}>
               {isHebrew ? "סוג אבחון:" : "Diagnosis type:"}
             </Text>
-            <Text style={styles.text}>
-              {rec.diagnosis_type[lang].join(", ")}
-            </Text>
+            <Text style={styles.text}>{rec.diagnosis_type[lang]}</Text>
 
             <Text style={styles.label}>
               {isHebrew ? "תיאור קושי:" : "Difficulty description:"}
