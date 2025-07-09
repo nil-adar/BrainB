@@ -3,12 +3,20 @@ export interface TranslatedField {
   en: string;
 }
 
+export interface TranslatedArrayField {
+  he: string[];
+  en: string[];
+}
+
 export interface Recommendation {
-  diagnosis_type: TranslatedField;
-  category: TranslatedField;
-  difficulty_description: TranslatedField;
-  recommendation: TranslatedField;
-  example: TranslatedField;
-  contribution: TranslatedField;
-  difficulty_tags: string[];
+  _id?: string;
+  type?: string;
+  diagnosis_type: TranslatedArrayField | TranslatedField | string; // יכול להיות מערך או מחרוזת
+  category?: string;
+  catagory?: TranslatedField; // שגיאת כתיב בנתונים המקוריים
+  difficulty_description?: TranslatedField | string;
+  recommendation: TranslatedField | string;
+  example: TranslatedArrayField | TranslatedField | string | string[];
+  contribution: TranslatedField | string;
+  tags?: string[];
 }

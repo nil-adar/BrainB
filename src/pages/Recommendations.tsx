@@ -16,7 +16,7 @@ const translations = {
     physicalActivity: "Physical Activity Suggestions",
     environmentalModifications: "Environmental Modifications",
     formalRecommendations: "Formal recommendations file:",
-    search: "Search",
+    //search: "Search",
     greeting: "Good morning",
     viewRecommendations: "View recommendations",
     home: "Home",
@@ -27,7 +27,7 @@ const translations = {
     physicalActivity: "המלצות פעילות גופנית",
     environmentalModifications: "התאמות סביבתיות",
     formalRecommendations: "קובץ המלצות פורמלי:",
-    search: "חיפוש",
+    //search: "חיייייייפוש",
     greeting: "בוקר טוב",
     viewRecommendations: "צפייה בהמלצות",
     home: "דף הבית",
@@ -61,7 +61,10 @@ export default function Recommendations() {
     fetch(`/api/recommendations/${studentId}?lang=${language}`)
       .then((res) => res.json())
       .then((data) => {
-        setRecommendations(data.recommendations || []);
+        const recs = data.recommendations || [];
+        setRecommendations(recs);
+
+        console.log("✅ Recommendations fetched:", recs.length);
       })
       .catch((err) => {
         console.error("❌ Failed to load recommendations:", err);
@@ -115,9 +118,6 @@ export default function Recommendations() {
     navigate("/physical-recommendations");
   };
 
-  <Card className="p-6">
-    <RecommendationPdfView recommendations={recommendations} lang={language} />
-  </Card>;
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -130,14 +130,6 @@ export default function Recommendations() {
                 alt="BrainBridge Logo"
                 className="h-12 w-auto"
               />
-              <div className="relative flex items-center">
-                <Search className="absolute left-3 h-5 w-5 text-gray-400" />
-                <Input
-                  type="search"
-                  placeholder={t.search}
-                  className="pl-10 w-[300px]"
-                />
-              </div>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-gray-600">{currentDate}</span>
@@ -231,16 +223,17 @@ export default function Recommendations() {
             {t.formalRecommendations}
           </h3>
           <Card className="p-6">
-            <div className="relative flex-1 max-w-md mb-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input type="search" placeholder={t.search} className="pl-10" />
-            </div>
             <Card className="p-6">
+              {(() => {
+                console.log("🐞 PDF Recommendations Preview:", recommendations);
+                return null;
+              })()}
               <RecommendationPdfView
                 recommendations={recommendations}
                 lang={language}
               />
             </Card>
+            ;
           </Card>
         </div>
       </main>

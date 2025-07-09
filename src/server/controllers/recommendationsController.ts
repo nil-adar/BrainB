@@ -495,7 +495,7 @@ router.get(
         "\n"
       );
 
-      console.log("💾 Saving recommendations to DB...", finalResponse);
+      //console.log("💾 Saving recommendations to DB...", finalResponse);
 
       //  תרגום סוג האבחנה המרכזי לשתי שפות
       const dominantType =
@@ -518,6 +518,18 @@ router.get(
         dominantDiagnosisType,
       });
 
+      console.log(
+        "🔍 Final recommendations sample:",
+        finalResponse.recommendations.slice(0, 2).map((r: any) => ({
+          id: r._id,
+          hasCategory: !!(r.category || r.catagory),
+          categoryValue: r.category || r.catagory,
+          hasRecommendation: !!r.recommendation,
+          recommendationType: typeof r.recommendation,
+          sampleText: r.recommendation?.[lang] || "No text for " + lang,
+          allKeys: Object.keys(r),
+        }))
+      );
       // שליחת ההמלצות ל-frontend
       res.json(finalResponse);
     } catch (err) {
