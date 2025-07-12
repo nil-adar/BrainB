@@ -303,6 +303,8 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
                   <button
                     onClick={clearSearch}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label={lang === "he" ? "נקה חיפוש" : "Clear search"}
+                    title={lang === "he" ? "נקה חיפוש" : "Clear search"}
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -403,7 +405,6 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
             style={{
               border: "none",
               minHeight: "80vh",
-              display: "block",
             }}
             showToolbar={true}
           >

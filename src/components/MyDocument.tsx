@@ -20,10 +20,10 @@ interface MyDocumentProps {
 const translations = {
   en: {
     title: "Nutritional Recommendations Guide",
-    subTitle:
-      "Evidence-based nutrition strategies for ADHD and behavioral support",
+    subTitle: "Evidence-based strategies for ADHD and behavioral support",
     dateLabel: "Generated on",
     diagnosisType: "Diagnosis Type",
+    loading: "Loading recommendations...",
     category: "Category",
     difficulty: "Difficulty Description",
     recommendation: "Recommendation",
@@ -31,10 +31,11 @@ const translations = {
     contribution: "Contribution",
   },
   he: {
-    title: "מדריך המלצות תזונתיות",
-    subTitle: "אסטרטגיות תזונה מבוססות ראיות להפרעת קשב ותמיכה רגשית",
+    title: "מדריך המלצות ADHD",
+    subTitle: "אסטרטגיות מבוססות ראיות להפרעת קשב ותמיכה רגשית",
     dateLabel: "תאריך",
     diagnosisType: "סוג אבחנה",
+    loading: "טוען המלצות...",
     category: "קטגוריה",
     difficulty: "תיאור קושי",
     recommendation: "המלצה",

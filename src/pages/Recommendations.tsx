@@ -1,4 +1,11 @@
-import { Search, Bell, UserCircle } from "lucide-react";
+import {
+  Search,
+  Bell,
+  UserCircle,
+  Users,
+  BookOpen,
+  Activity,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,10 +23,32 @@ const translations = {
     physicalActivity: "Physical Activity Suggestions",
     environmentalModifications: "Environmental Modifications",
     formalRecommendations: "Formal recommendations file:",
-    //search: "Search",
     greeting: "Good morning",
     viewRecommendations: "View recommendations",
     home: "Home",
+    guideTitle: "ADHD Recommendations Guide",
+    guideSubtitle:
+      "Evidence-based recommendations for children with attention and focus disorders",
+    forParents: "For Parents",
+    forTeachers: "For Teachers",
+    forChildren: "For Children",
+    nutritionTitle: "Nutrition Recommendations",
+    nutritionDescription:
+      "Beneficial foods, supplements, and special diets to reduce ADHD symptoms",
+    physicalTitle: "Physical Activity",
+    physicalDescription:
+      "Exercises and physical activities to improve attention and focus",
+    environmentalTitle: "Environmental Changes",
+    environmentalDescription:
+      "Space organization, routines, and visual aids to improve functioning",
+    howToUse: "How to use this guide?",
+    step1Title: "1. Choose a category",
+    step1Description:
+      "Click on the category that's most relevant to your needs",
+    step2Title: "2. Read carefully",
+    step2Description: "Each recommendation is based on scientific research",
+    step3Title: "3. Implement gradually",
+    step3Description: "Start with one change and add more gradually",
   },
   he: {
     title: "המלצות",
@@ -27,10 +56,29 @@ const translations = {
     physicalActivity: "המלצות פעילות גופנית",
     environmentalModifications: "התאמות סביבתיות",
     formalRecommendations: "קובץ המלצות פורמלי:",
-    //search: "חיייייייפוש",
     greeting: "בוקר טוב",
     viewRecommendations: "צפייה בהמלצות",
     home: "דף הבית",
+    guideTitle: "מדריך המלצות ADHD",
+    guideSubtitle: "המלצות מבוססות מחקר לילדים עם הפרעות קשב וריכוז",
+    forParents: "להורים",
+    forTeachers: "למורים",
+    forChildren: "לילדים",
+    nutritionTitle: "המלצות תזונה",
+    nutritionDescription:
+      "מזונות מועילים, תוספים ודיאטות מיוחדות להפחתת תסמיני ADHD",
+    physicalTitle: "פעילות גופנית",
+    physicalDescription: "תרגילים ופעילויות גופניות לשיפור קשב וריכוז",
+    environmentalTitle: "שינויים סביבתיים",
+    environmentalDescription:
+      "ארגון מרחב, שגרות ועזרים ויזואליים לשיפור התפקוד",
+    howToUse: "איך להשתמש במדריך?",
+    step1Title: "1. בחר קטגוריה",
+    step1Description: "לחץ על הקטגוריה הרלוונטית ביותר לצרכים שלך",
+    step2Title: "2. קרא בעיון",
+    step2Description: "כל המלצה מבוססת על מחקר מדעי",
+    step3Title: "3. יישם בהדרגה",
+    step3Description: "התחל משינוי אחד והוסף עוד בהדרגה",
   },
 };
 
@@ -110,12 +158,17 @@ export default function Recommendations() {
 
   const handleNutritionClick = () => {
     document.documentElement.dir = "rtl";
-    navigate("/nutritional-recommendations");
+    navigate(`/nutritional-recommendations?studentId=${studentId}`);
   };
 
   const handlePhysicalClick = () => {
     document.documentElement.dir = "rtl";
-    navigate("/physical-recommendations");
+    navigate(`/physical-recommendations?studentId=${studentId}`);
+  };
+
+  const handleEnvironmentalClick = () => {
+    document.documentElement.dir = "rtl";
+    navigate(`/Environmental-recommendations?studentId=${studentId}`);
   };
 
   return (
@@ -152,9 +205,9 @@ export default function Recommendations() {
           <h1 className="text-3xl font-bold mb-2">
             {`${t.greeting}${studentName ? ` ${studentName}` : ""}`}
           </h1>
-
           <h2 className="text-2xl font-semibold text-gray-700">{t.title}</h2>
         </div>
+
         {status &&
           (!status.studentFormCompleted ||
             !status.parentFormCompleted ||
@@ -173,48 +226,135 @@ export default function Recommendations() {
             </div>
           )}
 
+        {/* ADHD Guide Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-8 text-center">
+          <div className="flex items-center justify-center mb-4">
+            <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
+            <h1 className="text-3xl font-bold text-gray-800">{t.guideTitle}</h1>
+          </div>
+          <p className="text-lg text-gray-600 mb-6">{t.guideSubtitle}</p>
+
+          {/* Target Audience */}
+          <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+            <div className="flex items-center">
+              <Users className="h-5 w-5 mr-2 text-blue-500" />
+              <span>{t.forParents}</span>
+            </div>
+            <div className="flex items-center">
+              <BookOpen className="h-5 w-5 mr-2 text-green-500" />
+              <span>{t.forTeachers}</span>
+            </div>
+            <div className="flex items-center">
+              <Activity className="h-5 w-5 mr-2 text-purple-500" />
+              <span>{t.forChildren}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Recommendation Type Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Button
-            variant="secondary"
-            className="h-auto p-8 flex flex-col items-center gap-4 hover:bg-primary/20"
-            onClick={handleNutritionClick}
-          >
-            <img
-              src="/lovable-uploads/37956930-4a12-43ab-8954-771975d7735f.png"
-              alt="Nutritional Advice Icon"
-              className="w-32 h-32 object-cover rounded-lg"
-            />
-            <span className="text-xl font-semibold">{t.nutritionalAdvice}</span>
-          </Button>
+          {/* Nutrition Card */}
+          <Card className="p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-green-100 rounded-lg p-6 mb-4">
+              <div className="text-4xl mb-4">🍎</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {t.nutritionTitle}
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                {t.nutritionDescription}
+              </p>
+              <Button
+                className="w-full bg-green-600 hover:bg-green-700"
+                onClick={() =>
+                  navigate(
+                    `/nutritional-recommendations?studentId=${studentId}`
+                  )
+                }
+              >
+                {t.viewRecommendations} →
+              </Button>
+            </div>
+          </Card>
 
-          <Button
-            variant="secondary"
-            className="h-auto p-8 flex flex-col items-center gap-4 hover:bg-primary/20"
-            onClick={handlePhysicalClick}
-          >
-            <img
-              src="/lovable-uploads/9763419c-0e06-40b4-90a1-f6969514f16e.png"
-              alt="Physical Activity Icon"
-              className="w-32 h-32 object-cover rounded-lg"
-            />
-            <span className="text-xl font-semibold">{t.physicalActivity}</span>
-          </Button>
+          {/* Physical Activity Card */}
+          <Card className="p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-blue-100 rounded-lg p-6 mb-4">
+              <div className="text-4xl mb-4">🏃‍♂️</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {t.physicalTitle}
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                {t.physicalDescription}
+              </p>
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                onClick={() =>
+                  navigate(`/physical-recommendations?studentId=${studentId}`)
+                }
+              >
+                {t.viewRecommendations} →
+              </Button>
+            </div>
+          </Card>
 
-          <Button
-            variant="secondary"
-            className="h-auto p-8 flex flex-col items-center gap-4 hover:bg-primary/20"
-            onClick={() => navigate("/recommendations/environmental")}
-          >
-            <img
-              src="/lovable-uploads/47ed425a-be3a-46dc-9573-8c0d92d0150f.png"
-              alt="Environmental Modifications Icon"
-              className="w-16 h-16"
-            />
-            <span className="text-xl font-semibold">
-              {t.environmentalModifications}
-            </span>
-          </Button>
+          {/* Environmental Card */}
+          <Card className="p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-purple-100 rounded-lg p-6 mb-4">
+              <div className="text-4xl mb-4">🏠</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {t.environmentalTitle}
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                {t.environmentalDescription}
+              </p>
+              <Button
+                className="w-full bg-purple-600 hover:bg-purple-700"
+                onClick={() =>
+                  navigate(
+                    `/Environmental-recommendations?studentId=${studentId}`
+                  )
+                }
+              >
+                {t.viewRecommendations} →
+              </Button>
+            </div>
+          </Card>
+        </div>
+
+        {/* How to Use Guide */}
+        <div className="bg-white rounded-lg p-8 shadow-sm border mb-8">
+          <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+            {t.howToUse}
+          </h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600">1</span>
+              </div>
+              <h4 className="font-semibold text-gray-800 mb-2">
+                {t.step1Title}
+              </h4>
+              <p className="text-gray-600 text-sm">{t.step1Description}</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600">2</span>
+              </div>
+              <h4 className="font-semibold text-gray-800 mb-2">
+                {t.step2Title}
+              </h4>
+              <p className="text-gray-600 text-sm">{t.step2Description}</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-purple-600">3</span>
+              </div>
+              <h4 className="font-semibold text-gray-800 mb-2">
+                {t.step3Title}
+              </h4>
+              <p className="text-gray-600 text-sm">{t.step3Description}</p>
+            </div>
+          </div>
         </div>
 
         {/* Formal Recommendations Section */}
@@ -223,17 +363,14 @@ export default function Recommendations() {
             {t.formalRecommendations}
           </h3>
           <Card className="p-6">
-            <Card className="p-6">
-              {(() => {
-                console.log("🐞 PDF Recommendations Preview:", recommendations);
-                return null;
-              })()}
-              <RecommendationPdfView
-                recommendations={recommendations}
-                lang={language}
-              />
-            </Card>
-            ;
+            {(() => {
+              console.log("🐞 PDF Recommendations Preview:", recommendations);
+              return null;
+            })()}
+            <RecommendationPdfView
+              recommendations={recommendations}
+              lang={language}
+            />
           </Card>
         </div>
       </main>
