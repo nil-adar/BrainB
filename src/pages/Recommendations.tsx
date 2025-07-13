@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import RecommendationPdfView from "@/components/RecommendationPdfView";
+import { useSettings } from "@/components/SettingsContext";
 
 const translations = {
   en: {
@@ -42,12 +43,12 @@ const translations = {
     environmentalDescription:
       "Space organization, routines, and visual aids to improve functioning",
     howToUse: "How to use this guide?",
-    step1Title: "1. Choose a category",
+    step1Title: "Choose a category",
     step1Description:
       "Click on the category that's most relevant to your needs",
-    step2Title: "2. Read carefully",
+    step2Title: "Read carefully",
     step2Description: "Each recommendation is based on scientific research",
-    step3Title: "3. Implement gradually",
+    step3Title: "Implement gradually",
     step3Description: "Start with one change and add more gradually",
   },
   he: {
@@ -73,11 +74,11 @@ const translations = {
     environmentalDescription:
       "ארגון מרחב, שגרות ועזרים ויזואליים לשיפור התפקוד",
     howToUse: "איך להשתמש במדריך?",
-    step1Title: "1. בחר קטגוריה",
+    step1Title: "בחר קטגוריה",
     step1Description: "לחץ על הקטגוריה הרלוונטית ביותר לצרכים שלך",
-    step2Title: "2. קרא בעיון",
+    step2Title: "קרא בעיון",
     step2Description: "כל המלצה מבוססת על מחקר מדעי",
-    step3Title: "3. יישם בהדרגה",
+    step3Title: "יישם בהדרגה",
     step3Description: "התחל משינוי אחד והוסף עוד בהדרגה",
   },
 };
@@ -91,8 +92,9 @@ export default function Recommendations() {
   }
 
   const [status, setStatus] = useState<RecommendationStatus | null>(null);
-  const language = document.documentElement.dir === "rtl" ? "he" : "en";
+  const { language } = useSettings();
   const t = translations[language];
+  const isRTL = language === "he";
   const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
   const navigate = useNavigate();
   const location = useLocation();
@@ -148,7 +150,7 @@ export default function Recommendations() {
         console.error("❌ Failed to load student name:", err);
         setStudentName("תלמיד");
       });
-  }, [studentId]);
+  }, [studentId, language]); // הוספנו language ל-dependency array
 
   const breadcrumbItems = [
     { label: t.home, href: "/dashboard" },
@@ -156,35 +158,36 @@ export default function Recommendations() {
     { label: t.title },
   ];
 
-  const handleNutritionClick = () => {
-    document.documentElement.dir = "rtl";
-    navigate(`/nutritional-recommendations?studentId=${studentId}`);
-  };
-
-  const handlePhysicalClick = () => {
-    document.documentElement.dir = "rtl";
-    navigate(`/physical-recommendations?studentId=${studentId}`);
-  };
-
-  const handleEnvironmentalClick = () => {
-    document.documentElement.dir = "rtl";
-    navigate(`/Environmental-recommendations?studentId=${studentId}`);
-  };
-
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
+      dir={isRTL ? "rtl" : "ltr"}
+      style={{ direction: isRTL ? "rtl" : "ltr" }}
+    >
       {/* Header */}
       <header className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-8">
+          <div
+            className={`flex items-center justify-between ${
+              isRTL ? "flex-row-reverse" : ""
+            }`}
+          >
+            <div
+              className={`flex items-center gap-8 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
               <img
                 src="/lovable-uploads/8408577d-8175-422f-aaff-2bc2788f66e3.png"
                 alt="BrainBridge Logo"
                 className="h-12 w-auto"
               />
             </div>
-            <div className="flex items-center gap-4">
+            <div
+              className={`flex items-center gap-4 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
               <span className="text-gray-600">{currentDate}</span>
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
@@ -201,11 +204,21 @@ export default function Recommendations() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
+        <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
+          <h1
+            className={`text-3xl font-bold mb-2 ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
             {`${t.greeting}${studentName ? ` ${studentName}` : ""}`}
           </h1>
-          <h2 className="text-2xl font-semibold text-gray-700">{t.title}</h2>
+          <h2
+            className={`text-2xl font-semibold text-gray-700 ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
+            {/*t.title*/}
+          </h2>
         </div>
 
         {status &&
@@ -213,11 +226,23 @@ export default function Recommendations() {
             !status.parentFormCompleted ||
             !status.teacherFormCompleted ||
             !status.diagnosisCompleted) && (
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-6">
-              <p className="font-semibold mb-2">
+            <div
+              className={`bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-md p-4 mb-6 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
+              <p
+                className={`font-semibold mb-2 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 כדי להציג את ההמלצות המלאות, יש להשלים את:
               </p>
-              <ul className="list-disc list-inside">
+              <ul
+                className={`list-disc ${
+                  isRTL ? "list-inside text-right" : "list-inside text-left"
+                }`}
+              >
                 {!status.studentFormCompleted && <li>שאלון תלמיד</li>}
                 {!status.parentFormCompleted && <li>שאלון הורה</li>}
                 {!status.teacherFormCompleted && <li>שאלון מורה</li>}
@@ -232,7 +257,9 @@ export default function Recommendations() {
             <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
             <h1 className="text-3xl font-bold text-gray-800">{t.guideTitle}</h1>
           </div>
-          <p className="text-lg text-gray-600 mb-6">{t.guideSubtitle}</p>
+          <p className="text-lg text-gray-600 mb-6 text-center">
+            {t.guideSubtitle}
+          </p>
 
           {/* Target Audience */}
           <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
@@ -254,13 +281,35 @@ export default function Recommendations() {
         {/* Recommendation Type Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Nutrition Card */}
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <div className="bg-green-100 rounded-lg p-6 mb-4">
-              <div className="text-4xl mb-4">🍎</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+          <Card
+            className={`p-6 hover:shadow-lg transition-shadow ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
+            <div
+              className={`bg-green-100 rounded-lg p-6 mb-4 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
+              <div
+                className={`text-4xl mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                🍎
+              </div>
+              <h3
+                className={`text-xl font-bold text-gray-800 mb-2 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.nutritionTitle}
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
+              <p
+                className={`text-gray-600 text-sm mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.nutritionDescription}
               </p>
               <Button
@@ -277,13 +326,35 @@ export default function Recommendations() {
           </Card>
 
           {/* Physical Activity Card */}
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <div className="bg-blue-100 rounded-lg p-6 mb-4">
-              <div className="text-4xl mb-4">🏃‍♂️</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+          <Card
+            className={`p-6 hover:shadow-lg transition-shadow ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
+            <div
+              className={`bg-blue-100 rounded-lg p-6 mb-4 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
+              <div
+                className={`text-4xl mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                🏃‍♂️
+              </div>
+              <h3
+                className={`text-xl font-bold text-gray-800 mb-2 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.physicalTitle}
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
+              <p
+                className={`text-gray-600 text-sm mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.physicalDescription}
               </p>
               <Button
@@ -298,13 +369,35 @@ export default function Recommendations() {
           </Card>
 
           {/* Environmental Card */}
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <div className="bg-purple-100 rounded-lg p-6 mb-4">
-              <div className="text-4xl mb-4">🏠</div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+          <Card
+            className={`p-6 hover:shadow-lg transition-shadow ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
+            <div
+              className={`bg-purple-100 rounded-lg p-6 mb-4 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
+              <div
+                className={`text-4xl mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                🏠
+              </div>
+              <h3
+                className={`text-xl font-bold text-gray-800 mb-2 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.environmentalTitle}
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
+              <p
+                className={`text-gray-600 text-sm mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.environmentalDescription}
               </p>
               <Button
@@ -328,26 +421,28 @@ export default function Recommendations() {
           </h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">1</span>
+              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-gray-600">1</span>
               </div>
               <h4 className="font-semibold text-gray-800 mb-2">
                 {t.step1Title}
               </h4>
               <p className="text-gray-600 text-sm">{t.step1Description}</p>
             </div>
+
             <div className="text-center">
-              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-green-600">2</span>
+              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-gray-600">2</span>
               </div>
               <h4 className="font-semibold text-gray-800 mb-2">
                 {t.step2Title}
               </h4>
               <p className="text-gray-600 text-sm">{t.step2Description}</p>
             </div>
+
             <div className="text-center">
-              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-purple-600">3</span>
+              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-gray-600">3</span>
               </div>
               <h4 className="font-semibold text-gray-800 mb-2">
                 {t.step3Title}
@@ -358,8 +453,12 @@ export default function Recommendations() {
         </div>
 
         {/* Formal Recommendations Section */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">
+        <div className="text-center">
+          <h3
+            className={`text-xl font-semibold mb-4 ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
             {t.formalRecommendations}
           </h3>
           <Card className="p-6">
@@ -370,6 +469,7 @@ export default function Recommendations() {
             <RecommendationPdfView
               recommendations={recommendations}
               lang={language}
+              isLoading={!studentId || recommendations.length === 0}
             />
           </Card>
         </div>

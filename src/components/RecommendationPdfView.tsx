@@ -2,14 +2,29 @@ import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
 import { Recommendation } from "@/types/recommendation";
 import { useState, useRef } from "react";
-import { Search, Download, Printer, X, Menu } from "lucide-react";
+import { useSettings } from "@/components/SettingsContext";
+import {
+  Search,
+  Download,
+  Printer,
+  X,
+  Menu,
+  Users,
+  BookOpen,
+  Activity,
+} from "lucide-react";
 
 interface Props {
   recommendations: Recommendation[];
-  lang: "he" | "en";
+  //language: "he" | "en";
+  isLoading?: boolean; // הוספה חדשה
 }
 
-const RecommendationPdfView = ({ recommendations, lang }: Props) => {
+const RecommendationPdfView = ({
+  recommendations,
+  isLoading = false,
+}: Props) => {
+  const { language } = useSettings();
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [isToolbarOpen, setIsToolbarOpen] = useState(true);
@@ -28,8 +43,8 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
       hasRecommendation: !!r?.recommendation,
       recType: typeof r?.recommendation,
       recKeys: r?.recommendation ? Object.keys(r.recommendation) : [],
-      hasLangText: !!r?.recommendation?.[lang],
-      langValue: r?.recommendation?.[lang],
+      hasLangText: !!r?.recommendation?.[language],
+      languageValue: r?.recommendation?.[language],
       fullRec: r,
     });
   });
@@ -38,8 +53,8 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
   const createTranslatedField = (
     value: string
   ): { he: string; en: string } => ({
-    he: lang === "he" ? value : "",
-    en: lang === "en" ? value : "",
+    he: language === "he" ? value : "",
+    en: language === "en" ? value : "",
   });
 
   // נסה לתקן נתונים שבורים
@@ -109,20 +124,22 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
   const baseFilteredRecommendations = cleanedRecommendations.filter(
     (r, index) => {
       // בדוק אם יש category או catagory (שגיאת כתיב בנתונים)
-      const hasCategory = !!(r.category || (r as any).catagory);
+      const hasCategory = !!(
+        r.category || (r as Recommendation & { catagory?: any }).catagory
+      );
       const isValid =
         r &&
         hasCategory &&
         r.recommendation &&
         typeof r.recommendation === "object" &&
-        r.recommendation[lang]?.trim();
+        r.recommendation[language]?.trim();
 
       console.log(`✅ Rec ${index} is valid:`, isValid, {
         hasCategory,
         categoryValue: r.category || (r as any).catagory,
         hasRecommendation: !!r.recommendation,
         isObject: typeof r.recommendation === "object",
-        hasLangText: !!r.recommendation?.[lang]?.trim(),
+        hasLangText: !!r.recommendation?.[language]?.trim(),
       });
 
       return isValid;
@@ -155,8 +172,8 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
         if (typeof text === "string") {
           return text.toLowerCase().includes(searchTerm.toLowerCase());
         }
-        if (typeof text === "object" && text[lang]) {
-          const value = text[lang];
+        if (typeof text === "object" && text[language]) {
+          const value = text[language];
           if (Array.isArray(value)) {
             return value.some((item) =>
               item.toLowerCase().includes(searchTerm.toLowerCase())
@@ -183,13 +200,13 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
 
     if (searchResults.length === 0) {
       alert(
-        lang === "he"
+        language === "he"
           ? `לא נמצאו תוצאות עבור: "${searchTerm}"`
           : `No results found for: "${searchTerm}"`
       );
     } else {
       alert(
-        lang === "he"
+        language === "he"
           ? `נמצאו ${searchResults.length} תוצאות עבור: "${searchTerm}"`
           : `Found ${searchResults.length} results for: "${searchTerm}"`
       );
@@ -217,11 +234,28 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
     const date = new Date().toISOString().split("T")[0];
     const suffix =
       filteredData.length > 0 ? `-search-${searchTerm.slice(0, 10)}` : "";
-    return lang === "he"
+    return language === "he"
       ? `המלצות-תזונתיות-${date}${suffix}.pdf`
       : `nutritional-recommendations-${date}${suffix}.pdf`;
   };
 
+  // אם אנחנו עדיין בטעינה, הצג loading
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">
+            {language === "he"
+              ? "טוען המלצות..."
+              : "Loading recommendations..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // אם אין המלצות כלל (אחרי שסיימנו לטעון), הצג הודעה ידידותית
   if (!finalRecommendations.length && !searchTerm) {
     return (
       <div className="p-5 border border-red-500 rounded-lg bg-red-50">
@@ -235,7 +269,7 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
           <div>• Raw recommendations received: {recommendations.length}</div>
           <div>• After cleaning: {cleanedRecommendations.length}</div>
           <div>• After filtering: {baseFilteredRecommendations.length}</div>
-          <div>• Language: {lang}</div>
+          <div>• Language: {language}</div>
           <div>Check browser console for detailed analysis.</div>
         </div>
 
@@ -272,7 +306,7 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
           )}
         </button>
         <span className="text-sm font-medium">
-          {lang === "he" ? "כלי עבודה" : "Tools"}
+          {language === "he" ? "כלי עבודה" : "Tools"}
         </span>
       </div>
 
@@ -291,20 +325,22 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
                 <input
                   type="text"
                   placeholder={
-                    lang === "he" ? "חיפוש בטקסט..." : "Search in text..."
+                    language === "he" ? "חיפוש בטקסט..." : "Search in text..."
                   }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                   className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  dir={lang === "he" ? "rtl" : "ltr"}
+                  dir={language === "he" ? "rtl" : "ltr"}
                 />
                 {searchTerm && (
                   <button
                     onClick={clearSearch}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    aria-label={lang === "he" ? "נקה חיפוש" : "Clear search"}
-                    title={lang === "he" ? "נקה חיפוש" : "Clear search"}
+                    title={language === "he" ? "נקה חיפוש" : "Clear search"}
+                    aria-label={
+                      language === "he" ? "נקה חיפוש" : "Clear search"
+                    }
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -319,10 +355,10 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
                 >
                   <Search className="h-4 w-4" />
                   {isSearching
-                    ? lang === "he"
+                    ? language === "he"
                       ? "מחפש..."
                       : "Searching..."
-                    : lang === "he"
+                    : language === "he"
                     ? "חיפוש"
                     : "Search"}
                 </button>
@@ -333,7 +369,7 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
                     className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2 text-sm whitespace-nowrap"
                   >
                     <X className="h-4 w-4" />
-                    {lang === "he" ? "נקה" : "Clear"}
+                    {language === "he" ? "נקה" : "Clear"}
                   </button>
                 )}
               </div>
@@ -345,7 +381,7 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
                 document={
                   <MyDocument
                     recommendations={finalRecommendations}
-                    lang={lang}
+                    lang={language}
                   />
                 }
                 fileName={getFileName()}
@@ -356,15 +392,15 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
                     <Download className="h-4 w-4" />
                     <span className="hidden sm:inline">
                       {loading
-                        ? lang === "he"
+                        ? language === "he"
                           ? "מכין..."
                           : "Preparing..."
-                        : lang === "he"
+                        : language === "he"
                         ? "הורד"
                         : "Download"}
                     </span>
                     <span className="sm:hidden">
-                      {loading ? "..." : lang === "he" ? "הורד" : "PDF"}
+                      {loading ? "..." : language === "he" ? "הורד" : "PDF"}
                     </span>
                   </>
                 )}
@@ -376,7 +412,7 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
               >
                 <Printer className="h-4 w-4" />
                 <span className="hidden sm:inline">
-                  {lang === "he" ? "הדפס" : "Print"}
+                  {language === "he" ? "הדפס" : "Print"}
                 </span>
               </button>
             </div>
@@ -385,7 +421,7 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
           {/* Search Results Info */}
           {filteredData.length > 0 && (
             <div className="mt-2 text-sm text-gray-600">
-              {lang === "he"
+              {language === "he"
                 ? `מציג ${filteredData.length} תוצאות מתוך ${baseFilteredRecommendations.length} המלצות`
                 : `Showing ${filteredData.length} results out of ${baseFilteredRecommendations.length} recommendations`}
             </div>
@@ -408,8 +444,38 @@ const RecommendationPdfView = ({ recommendations, lang }: Props) => {
             }}
             showToolbar={true}
           >
-            <MyDocument recommendations={finalRecommendations} lang={lang} />
+            <MyDocument
+              recommendations={finalRecommendations}
+              lang={language}
+            />
           </PDFViewer>
+        </div>
+      </div>
+
+      {/* Target Audience Footer */}
+      <div className="bg-white rounded-lg p-4 shadow-sm border mt-4">
+        <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
+          <div
+            className="flex items-center"
+            dir={language === "he" ? "rtl" : "ltr"}
+          >
+            <Users className="h-4 w-4 ml-2" />
+            <span>{language === "he" ? "להורים" : "For Parents"}</span>
+          </div>
+          <div
+            className="flex items-center"
+            dir={language === "he" ? "rtl" : "ltr"}
+          >
+            <BookOpen className="h-4 w-4 ml-2" />
+            <span>{language === "he" ? "למורים" : "For Teachers"}</span>
+          </div>
+          <div
+            className="flex items-center"
+            dir={language === "he" ? "rtl" : "ltr"}
+          >
+            <Activity className="h-4 w-4 ml-2" />
+            <span>{language === "he" ? "לילדים" : "For Children"}</span>
+          </div>
         </div>
       </div>
     </div>

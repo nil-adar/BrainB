@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useSettings } from "@/components/SettingsContext"; // הוספנו את זה!
 
 const translations = {
   en: {
@@ -65,13 +66,24 @@ interface Recommendation {
   catagory?: { en: string; he: string };
 }
 
+const getText = (
+  field: string | { he: string; en: string } | undefined,
+  lang: "he" | "en"
+) => {
+  if (!field) return "-";
+  if (typeof field === "string") return field;
+  return field[lang] ?? "-";
+};
+
 export default function NutritionalRecommendations() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentName, setStudentName] = useState<string>("");
 
-  const language = document.documentElement.dir === "rtl" ? "he" : "en";
+  // שימוש ב-useSettings במקום document.documentElement.dir
+  const { language } = useSettings();
   const t = translations[language];
+  const isRTL = language === "he";
   const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
   const navigate = useNavigate();
   const location = useLocation();
@@ -102,6 +114,7 @@ export default function NutritionalRecommendations() {
     console.log("🔍 NutritionalRecommendations useEffect started");
     console.log("📍 Current location:", location);
     console.log("🆔 Student ID from params:", studentId);
+    console.log("🌍 Current language:", language); // נוסף debug
 
     const loadRecommendations = async () => {
       try {
@@ -120,12 +133,14 @@ export default function NutritionalRecommendations() {
         }
 
         if (!finalStudentId) {
-          console.log("❌ No studentId found, using mock data");
-          setLoading(false);
+          console.log("❌ No studentId found");
+          setRecommendations([]);
           return;
         }
 
         console.log("📡 Fetching recommendations for student:", finalStudentId);
+        console.log("🌍 Using language:", language);
+
         const response = await fetch(
           `/api/recommendations/${finalStudentId}?lang=${language}`
         );
@@ -155,120 +170,26 @@ export default function NutritionalRecommendations() {
             category,
             type: rec.type,
             isNutritional,
+            difficulty_desc: rec.difficulty_description?.[language], // נוסף debug
+            recommendation_text: rec.recommendation?.[language], // נוסף debug
           });
 
           return isNutritional;
         });
 
         console.log(
-          "🍎 Nutritional recommendations found:",
+          "🥑 Nutritional recommendations found:",
           nutritionalRecs.length
+        );
+        console.log(
+          "🥑 Sample recommendation text:",
+          nutritionalRecs[0]?.recommendation?.[language]
         );
         setRecommendations(nutritionalRecs);
       } catch (error) {
         console.error("❌ Failed to load nutritional recommendations:", error);
-
-        // Show mock data for development
-        console.log("🎭 Using mock data for development");
-        const mockRecommendations = [
-          {
-            _id: "mock1",
-            difficulty_description: {
-              en: "Behavioral and emotional issues, difficulty concentrating, restlessness, forgetfulness",
-              he: "קשיים התנהגותיים ורגשיים, קושי בריכוז, חוסר שקט, שכחנות",
-            },
-            recommendation: {
-              en: "Magnesium plus vitamin D supplementation reduced behavioral and emotional problems in children with ADHD",
-              he: "תוסף מגנזיום יחד עם ויטמין D הפחית קשיים התנהגותיים ורגשיים בילדים עם ADHD",
-            },
-            example: {
-              en: [
-                "Almonds",
-                "cashews",
-                "sunflower seeds",
-                "spinach",
-                "Swiss chard",
-                "black beans",
-              ],
-              he: [
-                "שקדים",
-                "אגוזי קשיו",
-                "גרעיני חמנייה",
-                "תרד",
-                "מנגולד",
-                "שעועית שחורה",
-              ],
-            },
-            contribution: {
-              en: "Reduces behavioral outbursts, improves mood, and stabilizes emotional regulation",
-              he: "מפחית התפרצויות, משפר מצב רוח ומייצב ויסות רגשי",
-            },
-            tags: ["recommended"],
-            category: "nutrition",
-          },
-          {
-            _id: "mock2",
-            difficulty_description: {
-              en: "Poor concentration and emotional dysregulation",
-              he: "קושי בריכוז וחוסר ויסות רגשי",
-            },
-            recommendation: {
-              en: "Few-Foods diet improved symptoms in 60% of children",
-              he: "דיאטת מזונות מעטים שיפרה תסמינים ב-60% מהילדים",
-            },
-            example: {
-              en: ["Rice", "potato", "chicken", "lamb", "pear", "banana"],
-              he: ["אורז", "תפוחי אדמה", "עוף", "כבש", "אגס", "בננה"],
-            },
-            contribution: {
-              en: "Reduces behavioral outbursts and improves attention in sensitive children",
-              he: "מפחית התפרצויות ומשפר קשב בילדים רגישים",
-            },
-            tags: ["recommended"],
-            category: "nutrition",
-          },
-          {
-            _id: "mock3",
-            difficulty_description: {
-              en: "Worsening hyperactivity, impulsivity, mood swings and fatigue",
-              he: "החרפת היפראקטיביות, אימפולסיביות, מצבי רוח ועייפות",
-            },
-            recommendation: {
-              en: "A diet high in processed foods may worsen ADHD symptoms",
-              he: "דיאטה עשירה במזונות מעובדים עלולה להחמיר תסמיני ADHD",
-            },
-            example: {
-              en: [
-                "Fast food",
-                "pizza",
-                "hamburger",
-                "processed schnitzel",
-                "salty snacks",
-                "chips",
-              ],
-              he: [
-                "מזון מהיר",
-                "פיצה",
-                "המבורגר",
-                "שניצל מעובד",
-                "חטיפים מלוחים",
-                "צ'יפס",
-              ],
-            },
-            contribution: {
-              en: "Prevents symptom worsening, supports better behavioral and emotional stability",
-              he: "מונע החמרת תסמינים, תומך ביציבות התנהגותית ורגשית טובה יותר",
-            },
-            tags: ["avoid"],
-            category: "nutrition",
-          },
-        ];
-
-        console.log(
-          "🎭 Setting mock recommendations:",
-          mockRecommendations.length
-        );
-        setRecommendations(mockRecommendations);
+        // הסרנו את הנתונים המדומים כפי שביקשת
+        setRecommendations([]);
       } finally {
         setLoading(false);
       }
@@ -309,7 +230,7 @@ export default function NutritionalRecommendations() {
 
     loadRecommendations();
     loadStudentName();
-  }, [studentId, language, location]);
+  }, [studentId, language, location]); // הוספנו language ל-dependency array
 
   const breadcrumbItems = [
     { label: t.home, href: "/dashboard" },
@@ -345,27 +266,47 @@ export default function NutritionalRecommendations() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
+      dir={isRTL ? "rtl" : "ltr"}
+      style={{ direction: isRTL ? "rtl" : "ltr" }}
+    >
       {/* Header */}
       <header className="bg-card border-b border-border">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-8">
+          <div
+            className={`flex items-center justify-between ${
+              isRTL ? "flex-row-reverse" : ""
+            }`}
+          >
+            <div
+              className={`flex items-center gap-8 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
               <img
                 src="/lovable-uploads/8408577d-8175-422f-aaff-2bc2788f66e3.png"
                 alt="BrainBridge Logo"
                 className="h-12 w-auto"
               />
               <div className="relative flex items-center">
-                <Search className="absolute left-3 h-5 w-5 text-gray-400" />
+                <Search
+                  className={`absolute ${
+                    isRTL ? "right-3" : "left-3"
+                  } h-5 w-5 text-gray-400`}
+                />
                 <Input
                   type="search"
                   placeholder={t.search}
-                  className="pl-10 w-[300px]"
+                  className={`${isRTL ? "pr-10" : "pl-10"} w-[300px]`}
                 />
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div
+              className={`flex items-center gap-4 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
               <span className="text-gray-600">{currentDate}</span>
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
@@ -383,44 +324,88 @@ export default function NutritionalRecommendations() {
 
       <main className="container mx-auto px-4 py-8">
         {/* Header with Back Button */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(`/recommendations?studentId=${studentId}`)}
-            className="flex items-center gap-2"
+        <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
+          <div
+            className={`flex items-center gap-4 ${
+              isRTL ? "flex-row-reverse justify-end" : "justify-start"
+            }`}
           >
-            <ArrowLeft className="h-4 w-4" />
-            {t.back}
-          </Button>
-          <div className="flex items-center gap-3">
-            <div className="text-4xl">🍎</div>
-            <h1 className="text-3xl font-bold">{t.title}</h1>
+            <Button
+              variant="ghost"
+              onClick={() =>
+                navigate(`/recommendations?studentId=${studentId}`)
+              }
+              className={`flex items-center gap-2 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <ArrowLeft className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
+              {t.back}
+            </Button>
+            <div
+              className={`flex items-center gap-3 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <div className="text-4xl">🥑</div>
+              <h1
+                className={`text-3xl font-bold ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                {t.title}
+              </h1>
+            </div>
           </div>
         </div>
 
         {/* Greeting */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-700">
+        <div className={`mb-6 ${isRTL ? "text-right" : "text-left"}`}>
+          <h2
+            className={`text-2xl font-semibold text-gray-700 ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
             {`${t.greeting}${studentName ? `, ${studentName}` : ""}`}
           </h2>
         </div>
 
         {/* Important Note */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-          <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-blue-900 mb-1">
+        <div
+          className={`bg-green-50 border border-green-200 rounded-lg p-4 mb-8`}
+        >
+          <div
+            className={`flex items-start gap-3 ${
+              isRTL ? "flex-row-reverse" : ""
+            }`}
+          >
+            <Info className="h-5 w-5 text-green-600 mt-0.5" />
+            <div className={`w-full ${isRTL ? "text-right" : "text-left"}`}>
+              <h3
+                className={`font-semibold text-green-600 mb-1 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
                 {t.importantNote}
               </h3>
-              <p className="text-blue-800 text-sm">{t.disclaimer}</p>
+              <p
+                className={`text-grey-400 text-sm ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                {t.disclaimer}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Debug Info - Remove in production */}
         {process.env.NODE_ENV === "development" && (
-          <div className="bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono">
+          <div
+            className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
             <div>
               <strong>Debug Info:</strong>
             </div>
@@ -431,6 +416,10 @@ export default function NutritionalRecommendations() {
             <div>Language: {language}</div>
             <div>Recommendations: {recommendations.length}</div>
             <div>Loading: {loading.toString()}</div>
+            <div>
+              Sample recommendation:{" "}
+              {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
+            </div>
             <Button
               onClick={() =>
                 navigate(
@@ -449,10 +438,18 @@ export default function NutritionalRecommendations() {
         {!loading && !studentId && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold mb-4">
+            <h3
+              className={`text-xl font-semibold mb-4 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
               Missing Student Information
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p
+              className={`text-gray-600 mb-6 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
               We need a student ID to load personalized recommendations.
             </p>
             <Button
@@ -468,15 +465,23 @@ export default function NutritionalRecommendations() {
         {loading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">{t.loading}</p>
+            <p
+              className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
+            >
+              {t.loading}
+            </p>
           </div>
         )}
 
         {/* No Recommendations State */}
-        {!loading && recommendations.length === 0 && (
+        {!loading && recommendations.length === 0 && studentId && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🤷‍♂️</div>
-            <p className="text-gray-600">{t.noRecommendations}</p>
+            <p
+              className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
+            >
+              {t.noRecommendations}
+            </p>
           </div>
         )}
 
@@ -492,66 +497,111 @@ export default function NutritionalRecommendations() {
                   key={rec._id}
                   className={`overflow-hidden ${
                     isAvoid ? "border-red-200" : ""
-                  }`}
+                  } ${isRTL ? "text-right" : "text-left"}`}
                 >
                   {/* Header */}
                   <div
-                    className={`p-4 ${isAvoid ? "bg-red-50" : "bg-green-50"}`}
+                    className={`p-4 ${isAvoid ? "bg-red-50" : "bg-green-50"} ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`p-2 rounded-full ${
-                            isAvoid ? "bg-red-100" : "bg-green-100"
+                    <div
+                      className={`flex items-center w-full ${
+                        isRTL ? "flex-row-reverse" : ""
+                      }`}
+                    >
+                      <div
+                        className={`flex items-center gap-3 ${
+                          isRTL
+                            ? "flex-1 justify-end flex-row-reverse"
+                            : "flex-1"
+                        }`}
+                      >
+                        <div className="w-8 h-8 bg-green-100 rounded border border-green-300 flex items-center justify-center">
+                          <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">
+                              ✓
+                            </span>
+                          </div>
+                        </div>
+
+                        <h3
+                          className={`text-xl font-bold text-gray-800 ${
+                            isRTL ? "text-right" : "text-left"
                           }`}
                         >
-                          {isAvoid ? "⚠️" : "✅"}
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-800">
-                          {rec.recommendation[language].split(".")[0]}
+                          {getText(rec.recommendation, language).split(".")[0]}
                         </h3>
                       </div>
-                      <Badge
-                        variant={isAvoid ? "destructive" : "default"}
-                        className={
-                          isAvoid
-                            ? "bg-red-100 text-red-800 hover:bg-red-200"
-                            : "bg-green-100 text-green-800 hover:bg-green-200"
-                        }
-                      >
-                        {isAvoid ? t.avoid : t.recommended}
-                      </Badge>
+                      <div className={`${isRTL ? "mr-auto" : "ml-auto"}`}>
+                        <Badge
+                          variant={isAvoid ? "destructive" : "default"}
+                          className={
+                            isAvoid
+                              ? "bg-red-100 text-red-800 hover:bg-red-200"
+                              : "bg-green-100 text-green-800 hover:bg-green-200"
+                          }
+                        >
+                          {isAvoid ? t.avoid : t.recommended}
+                        </Badge>
+                      </div>
                     </div>
                   </div>
 
-                  <CardContent className="p-6">
+                  <CardContent
+                    className={`p-6 ${isRTL ? "text-right" : "text-left"}`}
+                  >
                     {/* Difficulty Description */}
                     <div className="mb-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">
+                      <h4
+                        className={`font-semibold text-gray-800 mb-2 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
                         {t.difficulty}
                       </h4>
-                      <p className="text-gray-600">
-                        {rec.difficulty_description[language]}
+                      <p
+                        className={`text-gray-600 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
+                        {getText(rec.difficulty_description, language)}
                       </p>
                     </div>
 
                     {/* Recommendation */}
                     <div className="mb-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">
+                      <h4
+                        className={`font-semibold text-gray-800 mb-2 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
                         {t.recommendation}
                       </h4>
-                      <p className="text-gray-700">
-                        {rec.recommendation[language]}
+                      <p
+                        className={`text-gray-700 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
+                        {getText(rec.recommendation, language)}
                       </p>
                     </div>
 
                     {/* Examples */}
                     <div className="mb-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">
+                      <h4
+                        className={`font-semibold text-gray-800 mb-2 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
                         {t.examples}
                       </h4>
                       <div className="bg-gray-50 p-3 rounded-lg">
-                        <p className="text-gray-700">
+                        <p
+                          className={`text-gray-700 ${
+                            isRTL ? "text-right" : "text-left"
+                          }`}
+                        >
                           {formatExamples(rec.example[language])}
                         </p>
                       </div>
@@ -559,11 +609,19 @@ export default function NutritionalRecommendations() {
 
                     {/* Contribution */}
                     <div>
-                      <h4 className="font-semibold text-gray-800 mb-2">
+                      <h4
+                        className={`font-semibold text-gray-800 mb-2 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
                         {t.contribution}
                       </h4>
-                      <p className="text-gray-700">
-                        {rec.contribution[language]}
+                      <p
+                        className={`text-gray-700 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
+                        {getText(rec.contribution, language)}
                       </p>
                     </div>
                   </CardContent>

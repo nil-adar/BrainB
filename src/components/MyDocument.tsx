@@ -10,20 +10,29 @@ import {
 } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { he, enUS } from "date-fns/locale";
+import HeeboRegular from "@/components/ui/fonts/Heebo-Light.ttf";
+import HeeboBold from "@/components/ui/fonts/Heebo-Medium.ttf";
 
 interface MyDocumentProps {
   recommendations: Recommendation[];
   lang: "he" | "en";
 }
 
+Font.register({
+  family: "Heebo",
+  fonts: [
+    { src: HeeboRegular, fontWeight: "normal" },
+    { src: HeeboBold, fontWeight: "bold" },
+  ],
+});
+
 // תרגומים
 const translations = {
   en: {
-    title: "Nutritional Recommendations Guide",
+    title: " Recommendations Guide",
     subTitle: "Evidence-based strategies for ADHD and behavioral support",
     dateLabel: "Generated on",
     diagnosisType: "Diagnosis Type",
-    loading: "Loading recommendations...",
     category: "Category",
     difficulty: "Difficulty Description",
     recommendation: "Recommendation",
@@ -31,11 +40,10 @@ const translations = {
     contribution: "Contribution",
   },
   he: {
-    title: "מדריך המלצות ADHD",
+    title: "מדריך המלצות ",
     subTitle: "אסטרטגיות מבוססות ראיות להפרעת קשב ותמיכה רגשית",
     dateLabel: "תאריך",
     diagnosisType: "סוג אבחנה",
-    loading: "טוען המלצות...",
     category: "קטגוריה",
     difficulty: "תיאור קושי",
     recommendation: "המלצה",
@@ -43,48 +51,6 @@ const translations = {
     contribution: "תרומה",
   },
 };
-
-// סגנונות
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontSize: 12,
-    fontFamily: "Helvetica",
-    direction: "ltr",
-  },
-  rtlPage: {
-    direction: "rtl",
-  },
-  title: {
-    fontSize: 20,
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  subTitle: {
-    fontSize: 10,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  date: {
-    fontSize: 10,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  card: {
-    border: "1 solid #ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 12,
-    backgroundColor: "#f9f9f9",
-  },
-  label: {
-    fontWeight: "bold",
-    marginTop: 4,
-  },
-  value: {
-    marginBottom: 4,
-  },
-});
 
 // הקומפוננטה
 const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
@@ -94,6 +60,60 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
   });
 
   const isRTL = lang === "he";
+
+  // סגנונות
+  const styles = StyleSheet.create({
+    page: {
+      fontFamily: "Heebo",
+      padding: 40,
+      fontSize: 12,
+      direction: isRTL ? "rtl" : "ltr",
+    },
+    rtlPage: {
+      direction: "rtl",
+    },
+    title: {
+      fontSize: 20,
+      textAlign: "justify",
+      marginBottom: 10,
+    },
+    subTitle: {
+      fontSize: 10,
+      textAlign: "center",
+      marginBottom: 20,
+    },
+    date: {
+      fontSize: 10,
+      textAlign: "center",
+      marginBottom: 20,
+    },
+    card: {
+      border: "1 solid #ccc",
+      borderRadius: 6,
+      padding: 10,
+      marginBottom: 12,
+      backgroundColor: "#f9f9f9",
+      textAlign: isRTL ? "right" : "left",
+    },
+    label: {
+      fontWeight: "bold", // הכותרות בBOLD
+      marginTop: 4,
+      textAlign: isRTL ? "right" : "left",
+    },
+    value: {
+      fontWeight: "normal",
+      marginBottom: 4,
+      textAlign: isRTL ? "right" : "left",
+    },
+    rtlText: {
+      textAlign: "right",
+      direction: "rtl",
+    },
+    ltrText: {
+      textAlign: "left",
+      direction: "ltr",
+    },
+  });
 
   console.log("📄 recs for PDF:", recommendations);
   console.log("🔤 sample text fields:", {
@@ -129,36 +149,88 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
 
   return (
     <Document>
-      <Page size="A4" style={[styles.page, isRTL && styles.rtlPage]} wrap>
-        <Text style={[styles.title, isRTL && { textAlign: "right" }]}>
+      <Page size="A4" style={styles.page} wrap>
+        <Text style={[styles.title, isRTL ? styles.rtlText : styles.ltrText]}>
           {t.title}
         </Text>
-        {t.subTitle && <Text style={styles.subTitle}>{t.subTitle}</Text>}
-        <Text style={styles.date}>
+        {t.subTitle && (
+          <Text
+            style={[styles.subTitle, isRTL ? styles.rtlText : styles.ltrText]}
+          >
+            {t.subTitle}
+          </Text>
+        )}
+        <Text style={[styles.date, isRTL ? styles.rtlText : styles.ltrText]}>
           {t.dateLabel}: {dateStr}
         </Text>
 
         {recommendations.map((rec, i) => (
           <View key={i} style={styles.card}>
-            <Text style={styles.label}>{t.diagnosisType}:</Text>
-            <Text style={styles.value}>{getText(rec.diagnosis_type)}</Text>
+            <Text
+              style={[styles.label, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {t.diagnosisType}:
+            </Text>
+            <Text
+              style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {getText(rec.diagnosis_type)}
+            </Text>
 
-            <Text style={styles.label}>{t.category}:</Text>
-            <Text style={styles.value}>{getCategory(rec)}</Text>
+            <Text
+              style={[styles.label, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {t.category}:
+            </Text>
+            <Text
+              style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {getCategory(rec)}
+            </Text>
 
-            <Text style={styles.label}>{t.difficulty}:</Text>
-            <Text style={styles.value}>
+            <Text
+              style={[styles.label, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {t.difficulty}:
+            </Text>
+            <Text
+              style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
+            >
               {getText(rec.difficulty_description)}
             </Text>
 
-            <Text style={styles.label}>{t.recommendation}:</Text>
-            <Text style={styles.value}>{getText(rec.recommendation)}</Text>
+            <Text
+              style={[styles.label, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {t.recommendation}:
+            </Text>
+            <Text
+              style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {getText(rec.recommendation)}
+            </Text>
 
-            <Text style={styles.label}>{t.example}:</Text>
-            <Text style={styles.value}>{getText(rec.example)}</Text>
+            <Text
+              style={[styles.label, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {t.example}:
+            </Text>
+            <Text
+              style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {getText(rec.example)}
+            </Text>
 
-            <Text style={styles.label}>{t.contribution}:</Text>
-            <Text style={styles.value}>{getText(rec.contribution)}</Text>
+            <Text
+              style={[styles.label, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {t.contribution}:
+            </Text>
+            <Text
+              style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
+            >
+              {getText(rec.contribution)}
+            </Text>
           </View>
         ))}
       </Page>
