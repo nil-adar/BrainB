@@ -127,7 +127,7 @@ export default function CreateAssessment() {
       });
       return;
     }
-
+    /*
     try {
       console.log("🧪 בודק האם מולא שאלון מורה...");
       const { hasTeacherForm } = await studentService.checkFormStatus(
@@ -149,7 +149,7 @@ export default function CreateAssessment() {
       });
       return;
     }
-
+    */
     console.log("✅ בדיקה עברה, מתחיל יצירת אבחון...");
     setLoading(true);
 

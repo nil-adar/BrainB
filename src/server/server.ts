@@ -20,6 +20,8 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Logger middleware
 app.use((req, res, next) => {
   const timestamp = new Date().toISOString();
   console.log(
@@ -28,20 +30,32 @@ app.use((req, res, next) => {
   console.log(`Headers:`, req.headers);
   next();
 });
-app.use("/api/users", userRouter);
+// Logger middleware
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(
+    `🔹 [${timestamp}] Request incoming: ${req.method} ${req.originalUrl}`
+  );
+  console.log(`Headers:`, req.headers);
+  next();
+});
+
+// Serve static files in /uploads
+app.use('/uploads', express.static('uploads'));
+
+// Routes
 app.use("/api/users", authRouter);
+app.use("/api/users", userRouter);
 app.use("/api/students", studentRoutes);
 app.use("/api/profiles", profileRouter);
 app.use("/api/schedule", scheduleRouter);
-app.use("/api/students", studentRoutes);
 app.use("/api/messages", messageRouter);
 app.use("/api/diagnostic", diagnosticRoutes);
-app.use("/api/students", studentRoutes);
-app.use("/api/students", studentRoutes);
-app.use("/api", taskRoutes);
 app.use("/api/forms", formRouter);
-app.use("/api", recommendationsRouter); //המלצות
+app.use("/api", taskRoutes);
+app.use("/api", recommendationsRouter); // המלצות
 
+// Status endpoint
 app.get("/api/status", (req, res) => {
   res.json({ status: "OK", time: new Date() });
 });

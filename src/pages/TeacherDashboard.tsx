@@ -252,7 +252,11 @@ type ClassOption = {
   
 
   const toggleLanguage = () => setLanguage(prev => (prev === "en" ? "he" : "en"));
-  const teacherName = teacherData?.name || "שרה";
+  const teacherName =
+  teacherData
+    ? `${teacherData.firstName || ""} ${teacherData.lastName || ""}`.trim()
+    : "מורה";
+
   const handleSearchChange = (value: string) => setSearchTerm(value);
   const handleClassChange = (classData: any) => setCurrentClass(classData);
 
