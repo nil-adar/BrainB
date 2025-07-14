@@ -4,7 +4,11 @@ import { DiagnosticResultModel } from "../models/DiagnosticResult";
 import { RecommendationModel } from "../models/RecommendationModel";
 import { FormModel } from "../models/FormModel";
 import { QuestionModel } from "../models/QuestionModel";
-import { allergyMapping } from "@/data/foodAllergyMapping";
+import { allergyMapping } from "../../data/foodAllergyMapping";
+import { filterExamplesByAllergy } from "../../utils/filterExamplesByAllergy";
+import { StudentRecommendationsModel } from "../models/StudentRecommendations";
+import { ParsedQs } from "qs";
+import { translateDiagnosisType } from "../../utils/translateDiagnosisType";
 
 // Constants from the pipeline documentation
 const MIN_NO_ADHD_VAL = 0.7;
@@ -39,6 +43,7 @@ router.get(
     );
 
     try {
+      const lang = req.query.lang === "he" ? "he" : "en";
       //Validate and parse studentId
       const { studentId } = req.params;
       if (!mongoose.Types.ObjectId.isValid(studentId)) {
@@ -63,7 +68,7 @@ router.get(
 
       console.log(
         "💡 Stage 1 – percentages breakdown:\n" +
-          `  🟠 Combined:     ${combined_pct}\n` +
+          `  🟠 Combined:     ${combined_pct} \n` +
           `  🔵 Hyperactive:  ${hyper_pct}\n` +
           `  🟡 Inattentive:  ${inatt_pct}\n` +
           `  ⚪ No ADHD:      ${noAdhd_pct}\n`
@@ -112,7 +117,7 @@ router.get(
 
       type AnswerObject = {
         answer: string | string[];
-        tag?: string;
+        tag?: string | string[];
         type?: string;
         text?: { he?: string; en?: string };
       };
@@ -121,7 +126,7 @@ router.get(
       type AnswerPair = {
         questionId: string;
         response: string | string[];
-        tag?: string;
+        tag?: string[];
         type?: string;
       };
 
@@ -129,82 +134,64 @@ router.get(
       // Extract structured answers
       const allAnswers: AnswerPair[] = allForms.flatMap((form) => {
         if (!form?.answers) return [];
-        return Object.entries(form.answers).map(([qid, obj]) => {
-          const a = obj as AnswerObject;
+        return Object.entries(form.answers).flatMap(([qid, obj]) => {
+          /*console.log(typeof obj.answer);
+          console.log("The obj answer is: ", obj.answer);
+          if (!("answer" in obj)) {
+            console.warn(`❗ Missing answer for questionId ${qid}`);
+            console.warn("Raw object is:", obj);
+          }*/
+          const a = obj as any;
+          /*console.log("a.response: ", a.response);
+          console.log(form.answers[0].answer);
+          console.log("Test2 typeof: ", typeof form.answers[0].answer);
+          console.log("TESTTTTT: ", a.answer);*/
+
           return {
             questionId: qid,
-            response: a.answer,
-            tag: a.tag,
+            response: a.response,
+            tag: Array.isArray(a.tag) ? a.tag : a.tag ? [a.tag] : [],
             type: a.type,
           };
         });
       });
-      //Convert each form.answers (Record<string, string|[]>)
-      //into an array of { questionId, response } objects
-      /* const allAnswers: AnswerPair[] = allForms.flatMap((form) => {
-        if (!form?.answers) return [];
-        return Object.entries(form.answers).map(([qid, resp]) => ({
-          questionId: qid,
-          response: resp,
-        }));
-      });*/
-
-      // Generate answersByTag directly from allAnswers using embedded tags
-      /*const answersByTag = allAnswers.map((a) => {
-        const [qidPrefix] = a.questionId.split("-");
-        let tag = "";
-
-        if (qidPrefix.startsWith("q1")) tag = "student";
-        else if (qidPrefix.startsWith("q2")) tag = "parent";
-        else if (qidPrefix.startsWith("q3")) tag = "teacher";
-
-        // Add special tags by ID
-        if (a.questionId.includes("q2-16")) tag = "subtype";
-        if (a.questionId.includes("q2-19")) tag = "allergy";
-        if (a.questionId.includes("q2-27")) tag = "env_onset";
-        if (a.questionId.includes("q2-28")) tag = "env_trigger";
-
-        return {
-          tag,
-          answer: a.response,
-          questionId: a.questionId,
-        };
-      });*/
 
       // Version using embedded tag/type from saved answers
       const answersByTag = allAnswers.map((a) => ({
-        tag: a.tag || "", // ← מגיע מהשמירה
-        answer: a.response,
+        tag: Array.isArray(a.tag) ? a.tag : a.tag ? [a.tag] : [],
+        response: a.response,
         questionId: a.questionId,
+        type: a.type || "", // ← הוספה חשובה!
       }));
+
+      /*console.log("Test1 - ", allAnswers[0].response);
+      console.log(typeof allAnswers[0].response, "\n");*/
 
       // הדפסת כל הטאגים שנמצאו — כדי לבדוק אם יש בכלל 'allergy'
       const allTags = answersByTag.map((a) => a.tag);
-      console.log("📌 All tags in answersByTag:", [...new Set(allTags)]);
 
-      const selectedTags: string[] = [
+      /*  const selectedTags: string[] = [
         ...(studentForm?.tags || []),
         ...(parentForm?.tags || []),
         ...(teacherForm?.tags || []),
-      ];
+      ];*/
+      const selectedTags: string[] = [];
+      let allergyList: string[] = [];
 
       //check
       console.log("🏷️ Answers mapped to tags:", {
         totalMapped: answersByTag.length,
         tagsFound: answersByTag.filter((a) => a.tag).length,
-        sampleTags: answersByTag
-          .slice(0, 3)
-          .map((a) => ({ tag: a.tag, answer: a.answer })),
       });
 
       // STAGE 2-6: Classification Logic
-      let recommendationList: string[] = []; //will hold the sutble ADHD types
-      const flags: Set<string> = new Set(); //will hold the ADHDtypes in a temp way to add later to the recommendationList
+      let recommendationTypesList: string[] = []; //will hold the sutble ADHD types
+      const flags: Set<string> = new Set(); //will hold the ADHDtypes in a temp way to add later to the recommendationTypesList
 
       // STAGE 2: Combined vs. Subtype Differentiation
       if (Math.max(hyper_pct, inatt_pct, combined_pct) === combined_pct) {
         console.log("🔍 Stage 2: Combined type detected");
-        recommendationList.push("Combined");
+        recommendationTypesList.push("Combined");
       } else {
         // STAGE 3: Subtype Pathway Selection
         const mainType =
@@ -225,14 +212,14 @@ router.get(
               "🔍 Stage 4: Secondary hyperactivity check triggered\n"
             );
           } else {
-            recommendationList.push("Inattention");
+            recommendationTypesList.push("Inattention");
           }
         }
         // STAGE 4 & 5: Parent Questionnaire Processing
         // Find parent's subtype answer (q2-16: "Which behavior best describes your child?")
         const subtypeAnswer = answersByTag.find(
-          (x) => x.tag === "subtype" || x.questionId.includes("q2-16")
-        )?.answer as string | undefined;
+          (x) => x.tag?.includes("subtype") || x.questionId.includes("q2-16")
+        )?.response as string | undefined;
 
         if (subtypeAnswer) {
           console.log(
@@ -262,7 +249,7 @@ router.get(
         console.log("🔍 Stage 6: Active flags:", flagArray, "\n");
 
         if (flagArray.length === 1) {
-          recommendationList = flagArray;
+          recommendationTypesList = flagArray;
         } else {
           // Evaluate combination patterns
           const hasHyper = flags.has("Hyperactivity");
@@ -270,21 +257,21 @@ router.get(
           const hasInatt = flags.has("Inattention");
 
           if (hasHyper && hasInatt && !hasImpuls) {
-            recommendationList = ["Hyperactivity", "Inattentive"];
+            recommendationTypesList = ["Hyperactivity", "Inattentive"];
           } else if (hasImpuls && hasInatt && !hasHyper) {
-            recommendationList = ["Impulsivity", "Inattentive"];
+            recommendationTypesList = ["Impulsivity", "Inattentive"];
           } else if (hasHyper && hasImpuls && hasInatt) {
-            recommendationList = ["Combined"];
+            recommendationTypesList = ["Combined"];
           } else if (hasHyper && hasImpuls && !hasInatt) {
-            recommendationList = ["Hyperactivity", "Impulsivity"];
+            recommendationTypesList = ["Hyperactivity", "Impulsivity"];
           } else {
-            recommendationList = flagArray;
+            recommendationTypesList = flagArray;
           }
         }
       }
       console.log(
         "🔍 Stage 6 Complete: Recommendation list:",
-        recommendationList,
+        recommendationTypesList,
         "\n"
       );
 
@@ -294,14 +281,14 @@ router.get(
       // Find q2-27: "Have the behaviors always been present?"
       const alwaysPresentAnswer = answersByTag.find((x) =>
         x.questionId.includes("q2-27")
-      )?.answer as string | undefined;
+      )?.response as string | undefined;
 
       if (alwaysPresentAnswer === "opt2") {
         // Symptoms started recently
         // Find q2-28: "Did any special event occur before symptoms started?"
         const specialEventAnswer = answersByTag.find((x) =>
           x.questionId.includes("q2-28")
-        )?.answer as string | undefined;
+        )?.response as string | undefined;
 
         if (["opt2", "opt3", "opt4"].includes(specialEventAnswer || "")) {
           professionalSupport = true;
@@ -313,7 +300,7 @@ router.get(
 
       // STAGE 8: Filter by diagnosis_type
       let recommendations = await RecommendationModel.find({
-        "diagnosis_type.en": { $in: recommendationList },
+        "diagnosis_type.en": { $in: recommendationTypesList },
       }).lean();
 
       console.log(
@@ -321,22 +308,61 @@ router.get(
         recommendations.length,
         "\n"
       );
-      console.log(
-        "🔍 Stage 8: Recommendations:",
-        recommendations.map((r) => r.diagnosis_type)
-      );
-      console.log("🧩 Selected tags:", selectedTags);
-      console.log("🧩 First recommendation tags:", recommendations[0]?.tags);
-      console.log(
-        "🧩 Stage 9 – tags in recommendation[0]:",
-        recommendations[0]?.tags
-      );
-      console.log("🧩 Stage 9 – selectedTags:", selectedTags);
+
       console.log(
         "Selected tags include trauma_suspected?",
         selectedTags.includes("trauma_suspected")
       );
 
+      answersByTag.forEach(({ tag, response, type, questionId }) => {
+        /* console.log("Stage 9 - starting foreach  \n");
+        console.log("the tag is: ", tag);
+        console.log("The type of answer is : ", typeof response);
+        console.log("the answer is: ", response);
+        console.log("the type is: ", type);
+        console.log("the questionId is: ", questionId);*/
+        // 🟡 SINGLE + opt3/opt4 → שמור תג לסינון
+        if (type === "single" && (response === "opt3" || response === "opt4")) {
+          //console.log("Stage 9a \n");
+          if (Array.isArray(tag)) {
+            selectedTags.push(...tag);
+            // console.log("Stage 9b \n");
+          } else if (tag) {
+            selectedTags.push(tag);
+            // console.log("Stage 9c \n");
+          }
+        }
+
+        //  console.log("Stage 9 - End of first 'if'  \n");
+
+        // 🔵 q2-19 === yes/opt1 → מוסיפים 'allergy'
+        if (
+          questionId.includes("q2-19") &&
+          (response === "yes" || response === "opt1")
+        ) {
+          selectedTags.push("allergy");
+        }
+
+        //  MULTIPLE שאלות עם תג allergy → ממיר לתוך allergyList
+        if (
+          type === "multiple" &&
+          Array.isArray(tag) &&
+          tag.includes("allergy")
+        ) {
+          const values = Array.isArray(response) ? response : [response];
+          for (const code of values) {
+            const mapped = allergyMapping[code as keyof typeof allergyMapping];
+            if (mapped) {
+              allergyList.push(mapped.en); // או .en אם את רוצה לסנן באנגלית
+            }
+          }
+        }
+      });
+
+      //selectedTags = Array.from(new Set(selectedTags));
+      allergyList = Array.from(new Set(allergyList));
+      console.log("🏷️ Stage 9 selectedTags:", selectedTags);
+      console.log("🧪 allergyList:", allergyList);
       // STAGE 9: Filter by tags from saved questionnaire forms
       if (selectedTags.length > 0) {
         recommendations = recommendations.filter((r) =>
@@ -350,95 +376,83 @@ router.get(
       }
 
       // STAGE 10: Filtering by allergies
-      const allergyAnswer = answersByTag.find((x) =>
-        x.questionId.includes("q2-19")
-      )?.answer as string | undefined;
+      console.log("🧪 Stage 10 – Allergy items to filter out:", allergyList);
+      recommendations = recommendations.map((rec) => {
+        const newRec = { ...rec };
 
-      const allergyList: string[] = [];
-      if (allergyAnswer === "yes" || allergyAnswer === "opt1") {
-        answersByTag.forEach((item) => {
-          if (item.tag === "allergy" && !item.questionId.includes("q2-19")) {
-            if (Array.isArray(item.answer)) {
-              allergyList.push(...item.answer);
-            } else {
-              allergyList.push(item.answer);
-            }
-          }
-        });
-        console.log("🧪 allergyAnswer from q2-19:", allergyAnswer);
-
-        console.log(
-          "🧪 Allergy-tagged answers:",
-          answersByTag.filter((a) => a.tag === "allergy")
-        );
-        console.log("✅ allergyList created:", allergyList);
-
-        // Remove examples that match allergy list
-        recommendations = recommendations.map((rec) => {
-          const filteredRec = { ...rec };
-
-          // Filter English examples
+        // טיפול ב-example.en
+        if (rec.example?.en) {
           if (Array.isArray(rec.example.en)) {
-            filteredRec.example.en = rec.example.en.filter(
-              (example) => !allergyList.includes(example)
+            const { filtered, matches } = filterExamplesByAllergy(
+              rec.example.en,
+              allergyList
             );
-          } else if (
-            typeof rec.example.en === "string" &&
-            allergyList.includes(rec.example.en)
-          ) {
-            filteredRec.example.en = "";
-          }
+            newRec.example.en = filtered;
 
-          // Filter Hebrew examples
+            /*if (matches.length > 0) {
+              console.log(
+                `⚠️ Allergy match in recommendation ${rec._id} (EN array):`,
+                matches
+              );
+            }*/
+          } else {
+            // לא נוגעים אם זו מחרוזת
+            /*console.log(
+              `ℹ️ Skipped allergy filtering for rec ${rec._id} (EN string)`
+            );*/
+          }
+        }
+
+        // טיפול ב-example.he
+        if (rec.example?.he) {
           if (Array.isArray(rec.example.he)) {
-            filteredRec.example.he = rec.example.he.filter(
-              (example) => !allergyList.includes(example)
+            const { filtered, matches } = filterExamplesByAllergy(
+              rec.example.he,
+              allergyList
             );
-          } else if (
-            typeof rec.example.he === "string" &&
-            allergyList.includes(rec.example.he)
-          ) {
-            filteredRec.example.he = "";
-          }
+            newRec.example.he = filtered;
 
-          return filteredRec;
-        });
-        console.log("🧪 Stage 10 – Allergy items to filter out:", allergyList);
+            /*if (matches.length > 0) {
+              console.log(
+                `⚠️ Allergy match in recommendation ${rec._id} (HE array):`,
+                matches
+              );
+            }*/
+          } /*else {
+            // לא נוגעים אם זו מחרוזת
+            console.log(
+              `ℹ️ Skipped allergy filtering for rec ${rec._id} (HE string)`
+            );
+          }*/
+        }
 
-        console.log("🧪 Stage 9.5 – Examples before allergy filtering:");
-        recommendations.forEach((rec, i) => {
-          const examples = Array.isArray(rec.example?.en)
-            ? rec.example.en.join(", ")
-            : rec.example?.en || "–";
-          console.log(`${i + 1}. ${examples}`);
-        });
-      }
-      console.log(
-        "🔍 Stage 10: Allergy filtering applied, allergy list:",
-        allergyList,
-        "\n"
-      );
+        return newRec;
+      });
 
-      console.log("🧪 Stage 10 – Examples after allergy filtering:");
+      console.log("🧪 Final filtered examples:");
       recommendations.forEach((rec, i) => {
-        const examples = Array.isArray(rec.example?.en)
-          ? rec.example.en.join(", ")
-          : rec.example?.en || "–";
-        console.log(`${i + 1}. ${examples}`);
+        console.log(
+          `${i + 1}. ${
+            Array.isArray(rec.example?.en)
+              ? rec.example.en.join(", ")
+              : rec.example?.en || "–"
+          }`
+        );
       });
 
       // STAGE 11: Present relevant recommendations
       interface RecommendationResponse {
         recommendations: typeof recommendations;
         answersByTag: Array<{
-          tag: string;
-          answer: string | string[];
+          tag: string[];
+          response: string | string[];
           questionId: string;
+          type: string;
         }>;
         professionalSupport: boolean;
         selectedTags: string[];
         allergyList: string[];
-        recommendationList: string[];
+        recommendationTypesList: string[];
         multipleTypes?: boolean;
         mainType?: string;
         subTypes?: string[];
@@ -451,12 +465,12 @@ router.get(
         professionalSupport,
         selectedTags,
         allergyList,
-        recommendationList,
+        recommendationTypesList, //recommendation types List
       };
 
-      if (recommendationList.length > 1) {
-        const mainType = recommendationList[0];
-        const subTypes = recommendationList.slice(1);
+      if (recommendationTypesList.length > 1) {
+        const mainType = recommendationTypesList[0];
+        const subTypes = recommendationTypesList.slice(1);
 
         finalResponse.multipleTypes = true;
         finalResponse.mainType = mainType;
@@ -470,7 +484,7 @@ router.get(
         if (!viewBoth) {
           // Filter to show only main type recommendations
           finalResponse.recommendations = recommendations.filter(
-            (r) => r.diagnosis_type?.en === mainType
+            (r) => r.diagnosis_type?.[lang] === mainType
           );
         }
       }
@@ -480,6 +494,43 @@ router.get(
         finalResponse.recommendations.length,
         "\n"
       );
+
+      //console.log("💾 Saving recommendations to DB...", finalResponse);
+
+      //  תרגום סוג האבחנה המרכזי לשתי שפות
+      const dominantType =
+        finalResponse.mainType || finalResponse.recommendationTypesList[0];
+      const dominantDiagnosisType = {
+        en: dominantType,
+        he: translateDiagnosisType(dominantType, "he"),
+      };
+
+      // שמירה למסד לפני שליחה למשתמש
+      await StudentRecommendationsModel.create({
+        studentId,
+        recommendations: finalResponse.recommendations,
+        tagsUsed: finalResponse.selectedTags,
+        allergyList: finalResponse.allergyList,
+        diagnosisTypes: finalResponse.recommendationTypesList,
+        professionalSupport: finalResponse.professionalSupport,
+        mainDiagnosisType: finalResponse.mainType,
+        subtypeDiagnosisTypes: finalResponse.subTypes || [],
+        dominantDiagnosisType,
+      });
+
+      console.log(
+        "🔍 Final recommendations sample:",
+        finalResponse.recommendations.slice(0, 2).map((r: any) => ({
+          id: r._id,
+          hasCategory: !!(r.category || r.catagory),
+          categoryValue: r.category || r.catagory,
+          hasRecommendation: !!r.recommendation,
+          recommendationType: typeof r.recommendation,
+          sampleText: r.recommendation?.[lang] || "No text for " + lang,
+          allKeys: Object.keys(r),
+        }))
+      );
+      // שליחת ההמלצות ל-frontend
       res.json(finalResponse);
     } catch (err) {
       console.error("❌ Error in recommendations controller:", err);
@@ -488,6 +539,43 @@ router.get(
   }
 );
 
+/**
+ * GET /api/recommendations/:studentId/latest
+ * Get the latest saved recommendations for a student
+ */
+router.get(
+  "/recommendations/:studentId/latest",
+  async (
+    req: Request<{ studentId: string }>,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { studentId } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(studentId)) {
+        res.status(400).json({ error: "Invalid studentId" });
+        return;
+      }
+
+      const latest = await StudentRecommendationsModel.findOne({
+        studentId: new mongoose.Types.ObjectId(studentId),
+      })
+        .sort({ createdAt: -1 })
+        .lean();
+
+      if (!latest) {
+        res.status(404).json({ message: "No saved recommendations found." });
+        return;
+      }
+
+      res.json(latest);
+    } catch (err) {
+      console.error("❌ Error fetching latest saved recommendations:", err);
+      next(err);
+    }
+  }
+);
 /**
  * GET /api/recommendations/:studentId/debug
  * Debug endpoint to see the step-by-step pipeline execution
