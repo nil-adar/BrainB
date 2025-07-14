@@ -1,4 +1,3 @@
-
 import { Search, Bell, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,13 @@ interface HeaderProps {
   breadcrumbItems: Array<{ label: string; href?: string }>;
 }
 
-export function Header({ t, currentDate, language, toggleLanguage, breadcrumbItems }: HeaderProps) {
+export function Header({
+  t,
+  currentDate,
+  language,
+  toggleLanguage,
+  breadcrumbItems,
+}: HeaderProps) {
   return (
     <header className="bg-card border-b border-border">
       <div className="container mx-auto px-4 py-4">

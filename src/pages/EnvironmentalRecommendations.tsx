@@ -4,8 +4,11 @@ import {
   UserCircle,
   ArrowLeft,
   Info,
-  Clock,
-  Activity,
+  Eye,
+  Home,
+  Brain,
+  Headphones,
+  PenTool,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,58 +18,54 @@ import { format } from "date-fns";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useSettings } from "@/components/SettingsContext"; // הוספנו!
+import { useSettings } from "@/components/SettingsContext";
 
 const translations = {
   en: {
-    title: "Physical Activity Recommendations",
+    title: "Environmental Changes",
     search: "Search",
     greeting: "Good morning",
     home: "Home",
     recommendations: "Recommendations",
     back: "Back",
     loading: "Loading recommendations...",
-    noRecommendations: "No physical activity recommendations found.",
+    noRecommendations: "No environmental recommendations found.",
     importantNote: "Important to remember:",
     disclaimer:
-      "Start gradually and adjust the activity level to the child's physical fitness. Activity intensity and duration will vary according to the child's age and abilities.",
+      "Environmental changes require individual adaptation for each child. Start with one change at a time and check effectiveness before adding additional changes.",
     difficulty: "Difficulty Description:",
-    activityExamples: "Activity Examples:",
+    recommendation: "Recommendation:",
+    implementationMethods: "Implementation Methods:",
     functionalContribution: "Functional Contribution:",
-    minutes: "minutes",
-    intensity: "Intensity:",
-    duration: "Duration:",
-    moderate: "Moderate",
-    high: "High",
-    low: "Low",
+    visual: "Visual",
+    organization: "Organization",
     combined: "Combined",
-    hyperactive: "Hyperactive",
-    inattentive: "Inattentive",
+    routine: "Routine",
+    environment: "Environment",
+    sensory: "Sensory",
   },
   he: {
-    title: "המלצות פעילות גופנית",
+    title: "שינויים סביבתיים",
     search: "חיפוש",
     greeting: "בוקר טוב",
     home: "דף הבית",
     recommendations: "המלצות",
     back: "חזרה",
     loading: "טוען המלצות...",
-    noRecommendations: "לא נמצאו המלצות פעילות גופנית.",
+    noRecommendations: "לא נמצאו המלצות סביבתיות.",
     importantNote: "חשוב לזכור:",
     disclaimer:
-      "התחילו בהדרגה והתאימו את רמת הפעילות לכושר הגופני של הילד. עצימות ומשך הפעילות ישתנו בהתאם לגיל ויכולות הילד.",
+      "שינויים סביבתיים דורשים התאמה אישית לכל ילד. התחילו בשינוי אחד בכל פעם ובדקו יעילות לפני הוספת שינויים נוספים.",
     difficulty: "תיאור הקושי:",
-    activityExamples: "דוגמאות פעילות:",
+    recommendation: "המלצה:",
+    implementationMethods: "שיטות יישום:",
     functionalContribution: "תרומה פונקציונלית:",
-    minutes: "דקות",
-    intensity: "עצימות:",
-    duration: "משך:",
-    moderate: "בינוני",
-    high: "גבוה",
-    low: "נמוך",
+    visual: "ויזואלי",
+    organization: "ארגון",
     combined: "משולב",
-    hyperactive: "היפראקטיבי",
-    inattentive: "קשב",
+    routine: "שגרה",
+    environment: "סביבה",
+    sensory: "חושי",
   },
 };
 
@@ -76,11 +75,11 @@ interface Recommendation {
   recommendation: { en: string; he: string };
   example: { en: string[] | string; he: string[] | string };
   contribution: { en: string; he: string };
+  implementation_methods?: { en: string[] | string; he: string[] | string };
   tags?: string[];
   category?: string;
   catagory?: { en: string; he: string };
-  duration?: number;
-  intensity?: string;
+  icon?: string;
 }
 
 const getText = (
@@ -92,12 +91,11 @@ const getText = (
   return field[lang] ?? "-";
 };
 
-export default function PhysicalActivityRecommendations() {
+export default function EnvironmentalRecommendations() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentName, setStudentName] = useState<string>("");
 
-  // החלפנו ל-useSettings
   const { language } = useSettings();
   const t = translations[language];
   const isRTL = language === "he";
@@ -119,26 +117,36 @@ export default function PhysicalActivityRecommendations() {
   }
 
   useEffect(() => {
-    console.log("🏃‍♂️ Physical Activity Recommendations useEffect started");
+    console.log("🏠 Environmental Recommendations useEffect started");
     console.log("📍 Current location:", location);
     console.log("🆔 Student ID:", studentId);
     console.log("🌍 Current language:", language);
 
     const loadRecommendations = async () => {
       try {
-        console.log("🚀 Starting to load physical recommendations...");
+        console.log("🚀 Starting to load environmental recommendations...");
 
-        if (!studentId) {
+        let finalStudentId = studentId;
+        if (!finalStudentId) {
+          const pathParts = location.pathname.split("/");
+          const studentIndex = pathParts.indexOf("student");
+          if (studentIndex !== -1 && pathParts[studentIndex + 1]) {
+            finalStudentId = pathParts[studentIndex + 1];
+            console.log("🔄 Got studentId from path:", finalStudentId);
+          }
+        }
+
+        if (!finalStudentId) {
           console.log("❌ No studentId found");
           setRecommendations([]);
           return;
         }
 
-        console.log("📡 Fetching recommendations for student:", studentId);
+        console.log("📡 Fetching recommendations for student:", finalStudentId);
         console.log("🌍 Using language:", language);
 
         const response = await fetch(
-          `/api/recommendations/${studentId}?lang=${language}`
+          `/api/recommendations/${finalStudentId}?lang=${language}`
         );
         console.log("📬 Response status:", response.status);
 
@@ -149,38 +157,37 @@ export default function PhysicalActivityRecommendations() {
         const data = await response.json();
         console.log("📦 Raw data received:", data);
 
-        // Filter only physical activity recommendations
         const allRecs = data.recommendations || [];
-        console.log("📊 Total recommendations:", allRecs.length);
+        console.log(
+          "📊 Total recommendations for this student:",
+          allRecs.length
+        );
 
-        const physicalRecs = allRecs.filter((rec: any) => {
-          const category =
-            rec.category || rec.catagory?.[language] || rec.catagory?.en || "";
-          const isPhysical =
-            category.toLowerCase().includes("physical") ||
-            category.toLowerCase().includes("גופנית") ||
-            rec.type === "physical";
+        // הפילטר הנכון - רק לפי type
+        const environmentalRecs = allRecs.filter((rec: any) => {
+          const isEnvironmental = rec.type === "environment";
 
-          console.log("🔍 Checking rec:", {
-            id: rec._id,
-            category,
-            type: rec.type,
-            isPhysical,
-            difficulty_desc: rec.difficulty_description?.[language],
-            recommendation_text: rec.recommendation?.[language],
-          });
+          if (isEnvironmental) {
+            console.log("🏠 Found environmental rec:", {
+              id: rec._id,
+              type: rec.type,
+              title: rec.recommendation?.[language],
+            });
+          }
 
-          return isPhysical;
+          return isEnvironmental;
         });
 
-        console.log("🏃‍♂️ Physical recommendations found:", physicalRecs.length);
         console.log(
-          "🏃‍♂️ Sample recommendation text:",
-          physicalRecs[0]?.recommendation?.[language]
+          "🏠 Environmental recommendations for this student:",
+          environmentalRecs.length
         );
-        setRecommendations(physicalRecs);
+        setRecommendations(environmentalRecs);
       } catch (error) {
-        console.error("❌ Failed to load physical recommendations:", error);
+        console.error(
+          "❌ Failed to load environmental recommendations:",
+          error
+        );
         setRecommendations([]);
       } finally {
         setLoading(false);
@@ -213,7 +220,7 @@ export default function PhysicalActivityRecommendations() {
 
     loadRecommendations();
     loadStudentName();
-  }, [studentId, language, location]); // הוספנו language ל-dependency array
+  }, [studentId, language, location]);
 
   const breadcrumbItems = [
     { label: t.home, href: "/dashboard" },
@@ -225,53 +232,51 @@ export default function PhysicalActivityRecommendations() {
     { label: t.title },
   ];
 
-  const formatExamples = (examples: string[] | string): string[] => {
-    if (Array.isArray(examples)) {
-      return examples;
+  const formatMethods = (methods: string[] | string | undefined): string[] => {
+    if (!methods) return [];
+    if (Array.isArray(methods)) {
+      return methods;
     }
-    return [examples];
+    return [methods];
   };
 
-  const getIntensityColor = (intensity: string | undefined): string => {
-    if (!intensity) return "bg-gray-100 text-gray-800";
-
-    const intensityLower = intensity.toLowerCase();
-    if (intensityLower.includes("high") || intensityLower.includes("גבוה"))
-      return "bg-red-100 text-red-800";
-    if (
-      intensityLower.includes("moderate") ||
-      intensityLower.includes("בינוני")
-    )
-      return "bg-yellow-100 text-yellow-800";
-    if (intensityLower.includes("low") || intensityLower.includes("נמוך"))
+  const getTagColor = (tag: string): string => {
+    const tagLower = tag.toLowerCase();
+    if (tagLower.includes("visual") || tagLower.includes("ויזואלי"))
+      return "bg-blue-100 text-blue-800";
+    if (tagLower.includes("organization") || tagLower.includes("ארגון"))
       return "bg-green-100 text-green-800";
-    return "bg-blue-100 text-blue-800";
+    if (tagLower.includes("routine") || tagLower.includes("שגרה"))
+      return "bg-purple-100 text-purple-800";
+    if (tagLower.includes("environment") || tagLower.includes("סביבה"))
+      return "bg-orange-100 text-orange-800";
+    if (tagLower.includes("combined") || tagLower.includes("משולב"))
+      return "bg-pink-100 text-pink-800";
+    if (tagLower.includes("inattentive") || tagLower.includes("קשב"))
+      return "bg-red-100 text-red-800";
+    return "bg-gray-100 text-gray-800";
   };
 
-  const getDifficultyTags = (
-    tags: string[] = [],
-    intensity: string | undefined
-  ): string[] => {
-    const result = [];
-
-    if (intensity) {
-      result.push(intensity);
+  const getIconByType = (icon: string | undefined) => {
+    switch (icon) {
+      case "eye":
+        return <Eye className="h-6 w-6" />;
+      case "home":
+        return <Home className="h-6 w-6" />;
+      case "brain":
+        return <Brain className="h-6 w-6" />;
+      case "headphones":
+        return <Headphones className="h-6 w-6" />;
+      default:
+        return <PenTool className="h-6 w-6" />;
     }
-
-    tags.forEach((tag) => {
-      if (tag.includes("combined")) result.push(isRTL ? "משולב" : "Combined");
-      if (tag.includes("hyperactive"))
-        result.push(isRTL ? "היפראקטיבי" : "Hyperactive");
-      if (tag.includes("inattentive"))
-        result.push(isRTL ? "קשב" : "Inattentive");
-    });
-
-    return result;
   };
 
   return (
     <div
-      className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
+      className={`min-h-screen bg-gradient-to-br from-purple-20 to-purple-100 ${
+        isRTL ? "rtl" : "ltr"
+      }`}
       dir={isRTL ? "rtl" : "ltr"}
       style={{ direction: isRTL ? "rtl" : "ltr" }}
     >
@@ -351,7 +356,7 @@ export default function PhysicalActivityRecommendations() {
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-              <Activity className="h-8 w-8 text-blue-600" />
+              <Home className="h-8 w-8 text-purple-400" />
               <h1
                 className={`text-3xl font-bold ${
                   isRTL ? "text-right" : "text-left"
@@ -375,36 +380,40 @@ export default function PhysicalActivityRecommendations() {
         </div>
 
         {/* Important Note */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-          <div
-            className={`flex items-start gap-3 ${
-              isRTL ? "flex-row-reverse" : ""
-            }`}
-          >
-            <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div className={`w-full ${isRTL ? "text-right" : "text-left"}`}>
-              <h3
-                className={`font-semibold text-blue-900 mb-1 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.importantNote}
-              </h3>
-              <p
-                className={`text-blue-800 text-sm ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.disclaimer}
-              </p>
+        <Card className="mb-6 border-purple-100 bg-purple-50">
+          <CardContent className="p-4">
+            <div
+              className={`flex items-start ${isRTL ? "flex-row-reverse" : ""}`}
+            >
+              <Info
+                className={`h-5 w-5 text-purple-300 mt-1 ${
+                  isRTL ? "ml-3" : "mr-3"
+                } flex-shrink-0`}
+              />
+              <div className={`w-full ${isRTL ? "text-right" : "text-left"}`}>
+                <p
+                  className={`text-purple-400 font-medium ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  {t.importantNote}
+                </p>
+                <p
+                  className={`text-gray-600 text-sm ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  {t.disclaimer}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Debug Info - Remove in production */}
         {process.env.NODE_ENV === "development" && (
           <div
-            className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
+            className={`bg-blue-50 p-4 rounded-lg mb-6 text-sm font-mono ${
               isRTL ? "text-right" : "text-left"
             }`}
           >
@@ -444,7 +453,7 @@ export default function PhysicalActivityRecommendations() {
             </p>
             <Button
               onClick={() => navigate("/recommendations")}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-purple-600 hover:bg-purple-700"
             >
               Back to Recommendations
             </Button>
@@ -454,7 +463,7 @@ export default function PhysicalActivityRecommendations() {
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
             <p
               className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
             >
@@ -479,8 +488,10 @@ export default function PhysicalActivityRecommendations() {
         {!loading && recommendations.length > 0 && (
           <div className="space-y-6">
             {recommendations.map((rec) => {
-              const examples = formatExamples(rec.example[language]);
-              const difficultyTags = getDifficultyTags(rec.tags, rec.intensity);
+              const implementationMethods = formatMethods(
+                rec.implementation_methods?.[language] || rec.example[language]
+              );
+              const tags = rec.tags || [];
 
               return (
                 <Card
@@ -491,7 +502,7 @@ export default function PhysicalActivityRecommendations() {
                 >
                   {/* Header */}
                   <div
-                    className={`bg-slate-400 p-4 text-white ${
+                    className={`bg-purple-300 p-4 text-white ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
@@ -507,7 +518,7 @@ export default function PhysicalActivityRecommendations() {
                             : "flex-1"
                         }`}
                       >
-                        <Activity className="h-6 w-6" />
+                        {getIconByType(rec.icon)}
                         <h3
                           className={`text-xl font-bold ${
                             isRTL ? "text-right" : "text-left"
@@ -515,17 +526,6 @@ export default function PhysicalActivityRecommendations() {
                         >
                           {getText(rec.recommendation, language)}
                         </h3>
-                      </div>
-                      <div
-                        className={`flex gap-2 ${
-                          isRTL ? "mr-auto" : "ml-auto"
-                        }`}
-                      >
-                        {difficultyTags.map((tag, index) => (
-                          <Badge key={index} className={getIntensityColor(tag)}>
-                            {tag}
-                          </Badge>
-                        ))}
                       </div>
                     </div>
                   </div>
@@ -551,61 +551,45 @@ export default function PhysicalActivityRecommendations() {
                       </p>
                     </div>
 
-                    {/* Duration and Intensity */}
-                    {(rec.duration || rec.intensity) && (
-                      <div
-                        className={`flex gap-6 mb-6 ${
-                          isRTL ? "flex-row-reverse justify-end" : ""
+                    {/* Recommendation */}
+                    <div className="mb-6">
+                      <h4
+                        className={`font-semibold text-gray-800 mb-2 ${
+                          isRTL ? "text-right" : "text-left"
                         }`}
                       >
-                        {rec.duration && (
-                          <div
-                            className={`flex items-center gap-2 text-gray-700 ${
-                              isRTL ? "flex-row-reverse" : ""
-                            }`}
-                          >
-                            <Clock className="h-4 w-4" />
-                            <span className="font-medium">
-                              {rec.duration} {t.minutes}
-                            </span>
-                          </div>
-                        )}
-                        {rec.intensity && (
-                          <div
-                            className={`flex items-center gap-2 text-gray-700 ${
-                              isRTL ? "flex-row-reverse" : ""
-                            }`}
-                          >
-                            <Activity className="h-4 w-4" />
-                            <span className="font-medium">
-                              {t.intensity} {rec.intensity}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                        {t.recommendation}
+                      </h4>
+                      <p
+                        className={`text-gray-700 ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                      >
+                        {getText(rec.recommendation, language)}
+                      </p>
+                    </div>
 
-                    {/* Activity Examples */}
+                    {/* Implementation Methods */}
                     <div className="mb-6">
                       <h4
                         className={`font-semibold text-gray-800 mb-3 ${
                           isRTL ? "text-right" : "text-left"
                         }`}
                       >
-                        {t.activityExamples}
+                        {t.implementationMethods}
                       </h4>
                       <div className="space-y-2">
-                        {examples.map((example, index) => (
+                        {implementationMethods.map((method, index) => (
                           <div
                             key={index}
-                            className="bg-blue-50 p-3 rounded-lg"
+                            className="bg-purple-50 p-3 rounded-lg"
                           >
                             <p
                               className={`text-gray-700 ${
                                 isRTL ? "text-right" : "text-left"
                               }`}
                             >
-                              {example}
+                              {method}
                             </p>
                           </div>
                         ))}

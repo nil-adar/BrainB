@@ -15,7 +15,7 @@ export interface QuestionnaireFormProps {
   answers: {
     questionId: string;
     response: string | string[];
-    tag?: string;
+    tag?: string[];
     type?: string;
     text?: string;
   }[];
@@ -24,7 +24,7 @@ export interface QuestionnaireFormProps {
   onChange: (answer: {
     questionId: string;
     response: string | string[];
-    tag?: string;
+    tag?: string[];
     type?: string;
     text?: string;
   }) => void;
@@ -36,7 +36,7 @@ export interface QuestionnaireFormProps {
     answers: {
       questionId: string;
       response: string | string[];
-      tag?: string;
+      tag?: string[];
       type?: string;
       text?: string;
     }[]
@@ -195,7 +195,13 @@ export default function QuestionnaireForm({
             const updatedAnswer = {
               questionId: question.id,
               response: ans,
-              tag: shouldAddAllergyTag ? "allergy" : question.tag,
+              tag: shouldAddAllergyTag
+                ? ["allergy"]
+                : question.tag?.includes(",")
+                ? question.tag.split(",").map((t) => t.trim())
+                : question.tag
+                ? [question.tag]
+                : [],
               type: question.type,
               text: question.text[language],
             };
