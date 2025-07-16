@@ -45,18 +45,19 @@ export const StudentCard: React.FC<StudentCardProps> =(props) => {
 
   const actions = actionTranslations[language];
 
-  const getPath = (path: string | ((id: string) => string)) => {
-    if (typeof path === "function") {
-      return path(student.id);
-    }
-  
-    // הוספת פרטי תלמיד לנתיב של יצירת אבחון
-    if (path === "/create-assessment") {
-      const studentName = encodeURIComponent(`${student.firstName} ${student.lastName}`);
-      return `/create-assessment?studentId=${student.id}&studentName=${studentName}`;
-    }
-    return path;
-  };
+const getPath = (path: string | ((id: string) => string)) => {
+  if (typeof path === "function") {
+    return path(student.id);
+  }
+
+  // אם הנתיב הוא "/daily-tasks", נוסיף teacherId ו-classId
+  if (path === "/daily-tasks") {
+    return `/daily-tasks/${teacherId}/${student.classId}`;
+  }
+
+  return path;
+};
+
   
 
   const handleViewProgress = () => {

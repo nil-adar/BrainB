@@ -86,10 +86,14 @@ function App() {
                 element={<EnvironmentalRecommendations />}
               />
               <Route path="/create-assessment" element={<CreateAssessment />} />
-              <Route
-                path="/daily-tasks/:teacherId/:classId"
-                element={<DailyTasks />}
-              />
+            <Route
+  path="/daily-tasks/:teacherId/:classId"
+  element={<DailyTasks />}
+/>
+<Route
+  path="/daily-tasks"
+  element={<DailyTasks />}
+/>
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/settings" element={<Settings />} />
               <Route
