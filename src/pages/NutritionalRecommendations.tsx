@@ -13,6 +13,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSettings } from "@/components/SettingsContext"; // הוספנו את זה!
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 const translations = {
   en: {
@@ -307,6 +308,8 @@ export default function NutritionalRecommendations() {
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
+              <LanguageToggle variant="button" />
+
               <span className="text-gray-600">{currentDate}</span>
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />

@@ -1,17 +1,12 @@
-
-import { Globe, Moon, Sun } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useSettings } from '@/components/SettingsContext';
+import { Globe, Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useSettings } from "@/components/SettingsContext";
 
 const SettingsToggle = () => {
-  const { language, theme, setLanguage, setTheme } = useSettings();
+  const { language, setLanguage } = useSettings();
 
   const toggleLanguage = () => {
-    setLanguage(language === 'he' ? 'en' : 'he');
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setLanguage(language === "he" ? "en" : "he");
   };
 
   return (
@@ -23,16 +18,7 @@ const SettingsToggle = () => {
         className="flex items-center gap-2"
       >
         <Globe size={16} />
-        {language === 'he' ? 'עברית' : 'English'}
-      </Button>
-      
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={toggleTheme}
-        className="flex items-center gap-2"
-      >
-        {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+        {language === "he" ? "עברית" : "English"}
       </Button>
     </div>
   );

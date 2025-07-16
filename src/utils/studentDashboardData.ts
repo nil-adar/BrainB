@@ -22,6 +22,20 @@ export const translations = {
     name: "Name",
     date: "Date",
     submit: "Submit",
+    deleteTaskError: "Error deleting task",
+    taskUpdatedSuccess: "Task updated successfully",
+    taskUpdateError: "Error updating task",
+    generalUpdateError: "General error in update",
+    messageSentToTeacher: "Message sent to teacher",
+    messageSendError: "Error sending message",
+    noAssessmentAvailable:
+      "No assessment available right now. Please contact your teacher",
+    helpAndSupport: "Help and Support",
+    writeYourMessage: "Write your message here on any topic you choose",
+    whatWouldYouLike: "What would you like to ask or share?",
+    cancel: "Cancel",
+    send: "Send",
+    timeUpForTask: "Time's up for task",
 
     child: {
       title: "Student Questionnaire",
@@ -29,7 +43,7 @@ export const translations = {
       tired: "How tired do you feel during the day?",
       seat: "Does your seat help you focus?",
       food: "How do you feel about the school food?",
-      physicalActivity: "Does physical activity help you feel better?"
+      physicalActivity: "Does physical activity help you feel better?",
     },
 
     none: "Not at all",
@@ -49,11 +63,13 @@ export const translations = {
     tasksList: {
       task1: "math homework Q1,2,3,4,8",
       task2: "Read & summarize a chapter from the book you are reading",
-      task3: "Draw or paint a picture of your favorite scene from the book you are reading",
+      task3:
+        "Draw or paint a picture of your favorite scene from the book you are reading",
       task4: "Enjoy a healthy snack and hydrate",
-      task5: "Watch a fun educational video related to this week's science topic",
-      task6: "Write down three interesting facts you learned"
-    }
+      task5:
+        "Watch a fun educational video related to this week's science topic",
+      task6: "Write down three interesting facts you learned",
+    },
   },
 
   he: {
@@ -77,14 +93,26 @@ export const translations = {
     name: "שם",
     date: "תאריך",
     submit: "שלח",
-
+    deleteTaskError: "שגיאה במחיקת משימה",
+    taskUpdatedSuccess: "המשימה עודכנה בהצלחה",
+    taskUpdateError: "שגיאה בעדכון המשימה",
+    generalUpdateError: "שגיאה כללית בעדכון",
+    messageSentToTeacher: "ההודעה נשלחה למורה",
+    messageSendError: "שגיאה בשליחת ההודעה",
+    noAssessmentAvailable: "אין אבחון זמין כרגע. אנא פנה למורה שלך",
+    helpAndSupport: "עזרה ותמיכה",
+    writeYourMessage: "כתוב את ההודעה שלך כאן בכל נושא שתבחר",
+    whatWouldYouLike: "מה תרצה לשאול או לשתף?",
+    cancel: "ביטול",
+    send: "שלח",
+    timeUpForTask: "הזמן נגמר למשימה",
     child: {
       title: "שאלון תלמיד",
       focus: "כמה אתה מצליח להתרכז בכיתה?",
       tired: "כמה אתה מרגיש עייף במהלך היום?",
       seat: "האם המקום שבו אתה יושב עוזר לך להתרכז?",
       food: "מה התחושה שלך לגבי האוכל בבית הספר?",
-      physicalActivity: "עד כמה פעילות גופנית עוזרת לך להרגיש טוב יותר?"
+      physicalActivity: "עד כמה פעילות גופנית עוזרת לך להרגיש טוב יותר?",
     },
 
     none: "בכלל לא",
@@ -107,9 +135,9 @@ export const translations = {
       task3: "צייר או צבע תמונה של הסצנה האהובה עליך מהספר שאתה קורא",
       task4: "תהנה מחטיף בריא ושתה מים",
       task5: "צפה בסרטון חינוכי מהנה הקשור לנושא המדע של השבוע",
-      task6: "כתוב שלוש עובדות מעניינות שלמדת"
-    }
-  }
+      task6: "כתוב שלוש עובדות מעניינות שלמדת",
+    },
+  },
 };
 
 export interface ScheduleItem {
@@ -126,15 +154,15 @@ export const scheduleItems: ScheduleItem[] = [
     subject: "Biology",
     chapter: "Chapter 3: Animal Kingdom",
     room: "Room S-305",
-    teacher: "Julie Watson"
+    teacher: "Julie Watson",
   },
   {
     time: "15:10",
     subject: "Geography",
     chapter: "Chapter 2: Knowing USA",
     room: "Room H-403",
-    teacher: "Jenny Alexander"
-  }
+    teacher: "Jenny Alexander",
+  },
 ];
 
 export const colorfulTasks = [
@@ -145,7 +173,7 @@ export const colorfulTasks = [
     color: "#FBBF24",
     completed: false,
     stars: 2,
-    category: "listening"
+    category: "listening",
   },
   {
     id: 2,
@@ -154,7 +182,7 @@ export const colorfulTasks = [
     color: "#60A5FA",
     completed: false,
     stars: 3,
-    category: "listening"
+    category: "listening",
   },
   {
     id: 3,
@@ -163,6 +191,6 @@ export const colorfulTasks = [
     color: "#34D399",
     completed: false,
     stars: 1,
-    category: "listening"
-  }
+    category: "listening",
+  },
 ];

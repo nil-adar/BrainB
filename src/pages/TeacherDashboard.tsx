@@ -16,20 +16,19 @@ import { Message } from "@/types/school";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useTeacherNotifications } from "@/hooks/useTeacherNotifications";
-
-
+import { useSettings } from "@/components/SettingsContext";
 
 function getUserIdFromToken(): string | null {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) return null;
   try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split('')
-        .map(c => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join('')
+        .split("")
+        .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
+        .join("")
     );
     const parsed = JSON.parse(jsonPayload);
     return parsed.id;
@@ -38,44 +37,43 @@ function getUserIdFromToken(): string | null {
   }
 }
 
-
 export default function TeacherDashboard() {
   const navigate = useNavigate();
   const handleViewProgress = (studentId: string) => {
     navigate(`/statistics?studentId=${studentId}`);
   };
 
-// the shape of what `/users/:teacherId` returns
-interface TeacherData {
-  _id: string;
-  name: string;
-  // …add any other fields you actually use…
-}
+  // the shape of what `/users/:teacherId` returns
+  interface TeacherData {
+    _id: string;
+    name: string;
+    // …add any other fields you actually use…
+  }
 
-// reuse the same shape for classes everywhere
-type ClassOption = {
-  schoolId: string;
-  schoolName: string;
-  classId: string;
-  className: string;
-};
-  
+  // reuse the same shape for classes everywhere
+  type ClassOption = {
+    schoolId: string;
+    schoolName: string;
+    classId: string;
+    className: string;
+  };
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
-  const [language, setLanguage] = useState<"en" | "he">("he");
+  const { language } = useSettings();
   const [teacherData, setTeacherData] = useState<TeacherData | null>(null);
-  const [teacherId, setTeacherId] = useState<string | null>(null)
+  const [teacherId, setTeacherId] = useState<string | null>(null);
   const {
-      notifications,
-      unreadMessages,                   // אם תרצה להשתמש בעתיד
-       handleNotificationClick,
-       handleNotificationCheckboxChange,
-       handleNotificationColorSelection
-     } = useTeacherNotifications(teacherId ?? "");
-  
+    notifications,
+    unreadMessages, // אם תרצה להשתמש בעתיד
+    handleNotificationClick,
+    handleNotificationCheckboxChange,
+    handleNotificationColorSelection,
+  } = useTeacherNotifications(teacherId ?? "");
+
   const handleSendMessage = async () => {
     if (!messageText.trim() || !selectedStudentId) return;
-  
+
     const newMessage: Message = {
       id: crypto.randomUUID(),
       senderId: teacherId!,
@@ -87,20 +85,22 @@ type ClassOption = {
       timestamp: new Date().toISOString(),
     };
 
-    
-  
     try {
       await axios.post("/api/messages", newMessage); // ← שליחה לשרת
-      setMessages(prev => [...prev, newMessage]);
+      setMessages((prev) => [...prev, newMessage]);
       setMessageText("");
     } catch (error) {
       console.error("❌ שגיאה בשליחת הודעה:", error);
     }
   };
-  
 
   const [assignedClasses, setAssignedClasses] = useState<
-    { schoolId: string; schoolName: string; classId: string; className: string;  }[]
+    {
+      schoolId: string;
+      schoolName: string;
+      classId: string;
+      className: string;
+    }[]
   >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentClass, setCurrentClass] = useState<{
@@ -113,15 +113,21 @@ type ClassOption = {
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>("");
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
-
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null
+  );
 
   const openMessageSheet = (
-      studentId: string,
-      parentId: string,
+    studentId: string,
+    parentId: string,
     studentName: string
   ) => {
-    console.log("✅ פתיחת צ'אט: studentId =", studentId, ", parentId =", parentId);
+    console.log(
+      "✅ פתיחת צ'אט: studentId =",
+      studentId,
+      ", parentId =",
+      parentId
+    );
     console.log("📥 פתיחת צ'אט:");
     console.log("👦 studentId:", studentId);
     console.log("👨‍👩‍👧 parentId:", parentId);
@@ -140,17 +146,18 @@ type ClassOption = {
 
   useEffect(() => {
     if (!teacherId) return;
-  
-    teacherService.getAssignedClasses(teacherId)
-      .then(classes => {
+
+    teacherService
+      .getAssignedClasses(teacherId)
+      .then((classes) => {
         console.log("📥 קיבלתי מהשרת כיתות:", classes);
         setAssignedClasses(classes);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("❌ שגיאה בשליפת כיתות:", error);
       });
   }, [teacherId]);
-  
+
   const t = dashboardTranslations[language];
 
   useEffect(() => {
@@ -159,8 +166,9 @@ type ClassOption = {
 
   useEffect(() => {
     if (!teacherId || teacherData) return;
-    dataService.getData<TeacherData>(`/users/${teacherId}`)
-      .then(response => {
+    dataService
+      .getData<TeacherData>(`/users/${teacherId}`)
+      .then((response) => {
         if (response.success) setTeacherData(response.data);
       })
       .catch(console.error);
@@ -173,14 +181,14 @@ type ClassOption = {
   });
 
   useEffect(() => {
-  if (teacherData?._id) {
-    localStorage.setItem("teacherId", teacherData._id);
-  }
+    if (teacherData?._id) {
+      localStorage.setItem("teacherId", teacherData._id);
+    }
 
-  if (currentClass?.classId) {
-    localStorage.setItem("classId", currentClass.classId);
-  }
-}, [teacherData, currentClass]);
+    if (currentClass?.classId) {
+      localStorage.setItem("classId", currentClass.classId);
+    }
+  }, [teacherData, currentClass]);
 
   console.log("👨‍🏫 teacherProfile:", teacherProfile);
   useEffect(() => {
@@ -207,26 +215,29 @@ type ClassOption = {
 
   const filteredStudents = allStudents?.filter((s, index) => {
     console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
-  
+
     const normalize = (val: string) =>
       (val ?? "")
         .normalize("NFKC") // Normalize composed characters
         .replace(/\s+/g, "") // Remove all whitespace
         .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
-  
+
     const studentClassId = normalize(s.classId);
     const currentClassId = normalize(currentClass?.classId);
-  
+
     const matchesClass =
       currentClassId && studentClassId
         ? studentClassId === currentClassId
         : true;
-  
+
     const matchesTeacher = s.teacherId === teacherId;
-  
+
     const unicodeBreakdown = (str: string) =>
-      str.split("").map((char) => char.charCodeAt(0)).join(",");
-  
+      str
+        .split("")
+        .map((char) => char.charCodeAt(0))
+        .join(",");
+
     console.log(`👩‍🏫 תלמיד ${index + 1}:`);
     console.log("🆔 student.classId (raw):", s.classId);
     console.log("🎯 currentClass.classId (raw):", currentClass?.classId);
@@ -240,20 +251,20 @@ type ClassOption = {
     console.log("✅ התאמה מורה:", matchesTeacher);
     console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
     console.log("────────────");
-  
+
     return matchesClass && matchesTeacher;
   });
-  
-  
-  const handleOpenNotification = (parentId: string, studentId: string, studentName: string) => {
+
+  const handleOpenNotification = (
+    parentId: string,
+    studentId: string,
+    studentName: string
+  ) => {
     handleNotificationClick(parentId, studentId); // מסמן כהודעה נקראה
     openMessageSheet(studentId, parentId, studentName); // פותח שיחה
   };
-  
 
-  const toggleLanguage = () => setLanguage(prev => (prev === "en" ? "he" : "en"));
-  const teacherName =
-  teacherData
+  const teacherName = teacherData
     ? `${teacherData.firstName || ""} ${teacherData.lastName || ""}`.trim()
     : "מורה";
 
@@ -261,38 +272,30 @@ type ClassOption = {
   const handleClassChange = (classData: any) => setCurrentClass(classData);
 
   const classSwitcherComponent = teacherId ? (
-<ClassSwitcher
-  teacherId={teacherId}
-  classOptions={teacherProfile?.assignedClasses || []}
-  language={language}
-  onClassChange={handleClassChange}
-/>
-
-
+    <ClassSwitcher
+      teacherId={teacherId}
+      classOptions={teacherProfile?.assignedClasses || []}
+      language={language}
+      onClassChange={handleClassChange}
+    />
   ) : null;
-  
 
   const greetingClassText = currentClass
-  ? language === "he"
-    ? `כיתה ${currentClass.className}, ${currentClass.schoolName}`
-    : `Class ${currentClass.className}, ${currentClass.schoolName}`
-  : "";
+    ? language === "he"
+      ? `כיתה ${currentClass.className}, ${currentClass.schoolName}`
+      : `Class ${currentClass.className}, ${currentClass.schoolName}`
+    : "";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TeacherHeader
         language={language}
-        toggleLanguage={toggleLanguage}
         notifications={notifications}
         onNotificationClick={(parentId, studentId, studentName) =>
           handleOpenNotification(parentId, studentId, studentName)
         }
-        
         onNotificationCheckboxChange={handleNotificationCheckboxChange}
         onNotificationColorSelection={handleNotificationColorSelection}
-        
-        
-        
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
         translations={{
@@ -300,7 +303,7 @@ type ClassOption = {
           notifications: t.notifications,
           noNotifications: t.noNotifications,
           viewConversation: t.viewConversation,
-          viewAssessment: t.viewAssessment
+          viewAssessment: t.viewAssessment,
         }}
       />
 
@@ -330,7 +333,7 @@ type ClassOption = {
             translations={{
               messageToParent: t.messageToParent,
               writeMessage: t.writeMessage,
-              sendMessage: t.sendMessage
+              sendMessage: t.sendMessage,
             }}
           />
         )}
@@ -344,22 +347,21 @@ type ClassOption = {
               subject: t.subject,
               topic: t.topic,
               room: t.room,
-              digitalClock: t.digitalClock
+              digitalClock: t.digitalClock,
             }}
             language={language}
           />
         )}
         <div className="flex items-center justify-between mb-4 mt-10">
           <h2 className="text-xl font-semibold">{t.classStudents}</h2>
- <Button
-  className={`rounded-xl shadow px-3 py-2 text-sm ${language === "he" ? "ml-6" : "mr-6"}`}
-  onClick={() => setIsAddStudentOpen(true)}
->
-  {language === "he" ?  "הוסף תלמיד חדש  ➕" : "Add New Student  ➕"}
-</Button>
-
-
-
+          <Button
+            className={`rounded-xl shadow px-3 py-2 text-sm ${
+              language === "he" ? "ml-6" : "mr-6"
+            }`}
+            onClick={() => setIsAddStudentOpen(true)}
+          >
+            {language === "he" ? "הוסף תלמיד חדש  ➕" : "Add New Student  ➕"}
+          </Button>
         </div>
         <StudentsList
           students={filteredStudents || []}
@@ -378,7 +380,7 @@ type ClassOption = {
             dailyTaskUpdate: t.dailyTaskUpdate,
             viewRecommendations: t.viewRecommendations,
             progressMessage: t.progressMessage,
-            contactMessage: t.contactMessage
+            contactMessage: t.contactMessage,
           }}
           onViewProgress={handleViewProgress}
           onContactParent={(student) =>
@@ -388,24 +390,26 @@ type ClassOption = {
               `${student.firstName} ${student.lastName}`
             )
           }
-          teacherId={teacherId} 
+          teacherId={teacherId}
           questionnaireRole="teacher"
-          />
+        />
 
-          <AddStudentModal
-            open={isAddStudentOpen}
-            onOpenChange={setIsAddStudentOpen}
-            currentClass={currentClass}
-            teacherId={teacherId!}
-            classes={assignedClasses.map(cls => cls.classId)} 
-          />
-
+        <AddStudentModal
+          open={isAddStudentOpen}
+          onOpenChange={setIsAddStudentOpen}
+          currentClass={currentClass}
+          teacherId={teacherId!}
+          classes={assignedClasses.map((cls) => cls.classId)}
+        />
       </div>
     </div>
   );
 }
-{/* שאלונים זמינים למילוי על ידי המורה */}
-{/*<section className="mt-8">
+{
+  /* שאלונים זמינים למילוי על ידי המורה */
+}
+{
+  /*<section className="mt-8">
   <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
   {filteredStudents?.map((student) => {
     const id = student.id || (student as any)._id;
@@ -426,8 +430,10 @@ type ClassOption = {
     );
   })}
 
-  {/* שאלונים זמינים למילוי על ידי המורה */}
-{/*</section>
+  {/* שאלונים זמינים למילוי על ידי המורה */
+}
+{
+  /*</section>
 <section className="mt-8">
   <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
   {filteredStudents?.map((student) => {
@@ -449,4 +455,5 @@ type ClassOption = {
     );
   })}
 </section>
-*/}
+*/
+}

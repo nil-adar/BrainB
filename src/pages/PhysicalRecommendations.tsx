@@ -15,7 +15,8 @@ import { format } from "date-fns";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useSettings } from "@/components/SettingsContext"; // הוספנו!
+import { useSettings } from "@/components/SettingsContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 const translations = {
   en: {
@@ -311,6 +312,8 @@ export default function PhysicalActivityRecommendations() {
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
+              <LanguageToggle variant="button" />
+
               <span className="text-gray-600">{currentDate}</span>
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
