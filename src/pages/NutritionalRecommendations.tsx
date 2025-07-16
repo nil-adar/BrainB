@@ -403,7 +403,7 @@ export default function NutritionalRecommendations() {
         </div>
 
         {/* Debug Info - Remove in production */}
-        {process.env.NODE_ENV === "development" && (
+        {/*process.env.NODE_ENV === "development" && (
           <div
             className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
               isRTL ? "text-right" : "text-left"
@@ -435,7 +435,7 @@ export default function NutritionalRecommendations() {
               Test with Sample Student ID
             </Button>
           </div>
-        )}
+        )*/}
 
         {/* No Student ID State */}
         {!loading && !studentId && (

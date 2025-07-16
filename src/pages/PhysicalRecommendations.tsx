@@ -405,7 +405,7 @@ export default function PhysicalActivityRecommendations() {
         </div>
 
         {/* Debug Info - Remove in production */}
-        {process.env.NODE_ENV === "development" && (
+        {/*process.env.NODE_ENV === "development" && (
           <div
             className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
               isRTL ? "text-right" : "text-left"
@@ -425,7 +425,7 @@ export default function PhysicalActivityRecommendations() {
               {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
             </div>
           </div>
-        )}
+        )*/}
 
         {/* No Student ID State */}
         {!loading && !studentId && (
