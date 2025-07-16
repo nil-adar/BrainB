@@ -13,6 +13,7 @@ import { he, enUS } from "date-fns/locale";
 import HeeboRegular from "@/components/ui/fonts/Heebo-Light.ttf";
 import HeeboBold from "@/components/ui/fonts/Heebo-Medium.ttf";
 
+
 interface MyDocumentProps {
   recommendations: Recommendation[];
   lang: "he" | "en";
@@ -53,7 +54,39 @@ const translations = {
 };
 
 // הקומפוננטה
+function cleanText(str: string) {
+  return str
+    .replace(/[\u200e\u200f\u202f\u2066\u2067\u2068\u2069]/g, "") // סימני RTL/LTR
+    .replace(/\u00A0/g, " ") // רווח קשיח לרווח רגיל
+    .trim();
+}
+
+Font.register({
+  family: "Heebo",
+  src: "/fonts/Heebo/Heebo-Regular.ttf",
+});
+
 const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
+  const firstRecommendation = recommendations[0]?.recommendation;
+const firstDifficulty = recommendations[0]?.difficulty_description;
+
+console.log("======= בדיקת תוכן המלצות =======");
+console.log("✅ JSON.stringify of recommendations:", JSON.stringify(recommendations, null, 2));
+
+if (typeof firstRecommendation === "object" && firstRecommendation !== null && "he" in firstRecommendation) {
+  console.log("✅ המלצה בעברית:", firstRecommendation.he);
+} else {
+  console.log("✅ המלצה בעברית (string):", firstRecommendation);
+}
+
+if (typeof firstDifficulty === "object" && firstDifficulty !== null && "he" in firstDifficulty) {
+  console.log("✅ תיאור קושי בעברית:", firstDifficulty.he);
+} else {
+  console.log("✅ תיאור קושי בעברית (string):", firstDifficulty);
+}
+
+console.log("===================================");
+
   const t = translations[lang];
   const dateStr = format(new Date(), "PPP", {
     locale: lang === "he" ? he : enUS,
@@ -174,7 +207,8 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {getText(rec.diagnosis_type)}
+            {cleanText(getText(rec.diagnosis_type))}
+
             </Text>
 
             <Text
@@ -185,7 +219,8 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {getCategory(rec)}
+              {cleanText(getCategory(rec))}
+
             </Text>
 
             <Text
@@ -196,7 +231,8 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {getText(rec.difficulty_description)}
+              {cleanText(getText(rec.difficulty_description))}
+
             </Text>
 
             <Text
@@ -207,7 +243,7 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {getText(rec.recommendation)}
+              {cleanText(getText(rec.recommendation))}
             </Text>
 
             <Text
@@ -218,7 +254,7 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {getText(rec.example)}
+              {cleanText(getText(rec.example))}
             </Text>
 
             <Text
@@ -229,7 +265,7 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {getText(rec.contribution)}
+              {cleanText(getText(rec.contribution))}
             </Text>
           </View>
         ))}

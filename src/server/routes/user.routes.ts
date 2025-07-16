@@ -15,7 +15,7 @@ const upload = multer({ storage });
 
 const router: Router = express.Router();
 
-// ✅ שליפת משתמש מחובר לפי ה־token
+// שליפת משתמש מחוב־token
 
 
 
