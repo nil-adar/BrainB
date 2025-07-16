@@ -21,7 +21,7 @@ import Recommendations from "./pages/Recommendations";
 import NutritionalRecommendations from "./pages/NutritionalRecommendations";
 import PhysicalRecommendations from "./pages/PhysicalRecommendations";
 import EnvironmentalRecommendations from "./pages/EnvironmentalRecommendations";
-import { ThemeToggle } from "./components/ThemeToggle";
+//import { ThemeToggle } from "./components/ThemeToggle";
 import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
 
@@ -64,11 +64,6 @@ function App() {
       <Toaster position="top-center" expand={true} richColors />
       <SettingsProvider>
         <Router>
-          <div className="fixed bottom-3 right-4 flex space-x-2 z-1000">
-            {/* כפתורי הגלובוס והירח/שמש */}
-            <SettingsToggle />
-            <ThemeToggle />
-          </div>
           <div className="min-h-screen bg-background text-foreground">
             <Routes>
               <Route path="/" element={<LandingPage />} />
