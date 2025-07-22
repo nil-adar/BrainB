@@ -25,6 +25,7 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { authService } from "@/services/authService";
+import { Logo } from "@/components/ui/logo";
 
 const translations = {
   en: {
@@ -809,11 +810,8 @@ const isStudentViewer = loggedUserId === studentId;
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-              <img
-                src="/lovable-uploads/8408577d-8175-422f-aaff-2bc2788f66e3.png"
-                alt="BrainBridge Logo"
-                className="h-12 w-auto"
-              />
+             <Logo size="xs" showText={false} className="h-16 mx-auto mb-6" />
+
             </div>
             <div
               className={`flex items-center gap-4 ${
@@ -831,10 +829,9 @@ const isStudentViewer = loggedUserId === studentId;
               </Button>
             </div>
           </div>
-       {/* <div className="mt-4">
-  <Breadcrumbs items={breadcrumbItems} />
-</div> */}
-
+          <div className="mt-4">
+            <Breadcrumbs items={breadcrumbItems} />
+          </div>
         </div>
       </header>
 
