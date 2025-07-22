@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-
+import { useNavigate } from "react-router-dom";
 import { studentService } from "@/services/studentService";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
@@ -58,6 +58,11 @@ export default function DailyTasks() {
   },
   enabled: !!teacherId,
 });
+const navigate = useNavigate();
+
+const handleBack = () => {
+  navigate(-1);
+};
 
 
  const handleAddTask = async () => {
@@ -131,6 +136,17 @@ export default function DailyTasks() {
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-8">
+    <div className="flex justify-start mb-4">
+
+  <Button
+    variant="outline"
+    className="text-base px-4 py-2"
+    onClick={handleBack}
+  >
+    ← חזרה
+  </Button>
+</div>
+
       <Card className="shadow-md border-slate-200">
         <CardHeader className="bg-slate-50 rounded-t-lg border-b p-8">
           <CardTitle className="text-2xl font-medium text-slate-800">הגדרות שיוך</CardTitle>

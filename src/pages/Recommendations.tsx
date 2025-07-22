@@ -831,9 +831,10 @@ const isStudentViewer = loggedUserId === studentId;
               </Button>
             </div>
           </div>
-          <div className="mt-4">
-            <Breadcrumbs items={breadcrumbItems} />
-          </div>
+       {/* <div className="mt-4">
+  <Breadcrumbs items={breadcrumbItems} />
+</div> */}
+
         </div>
       </header>
 

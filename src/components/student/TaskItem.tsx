@@ -199,11 +199,12 @@ useEffect(() => {
 
         <div className="flex-grow">
           <h3 className="font-medium text-slate-800 dark:text-slate-200">{title}</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+<p className="text-sm text-slate-500 dark:text-slate-400">
   {extraTime && extraTime !== 1
     ? `${Math.floor(parseInt(timeEstimation) * extraTime)} דקות (מותאם)`
-    : `${timeEstimation} דקות`}
+    : `${timeEstimation.replace("דקות", "").trim()} דקות`}
 </p>
+
 
           {renderStars(stars)}
         </div>
