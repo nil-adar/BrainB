@@ -38,7 +38,7 @@ export const StudentCard: React.FC<StudentCardProps> =(props) => {
     he: [
       { text: "צור אבחון חדש", path: (id: string) => `/create-assessment?studentId=${id}` },
       { text: "מילוי שאלון תלמיד", path: (id: string) => `/questionnaire/${formRole}/${id}` },
-      { text: "צפה בהערכות", path: "/statistics" },
+      //{ text: "צפה בהערכות", path: "/statistics" },
       { text: "עדכון משימות יומי", path: "/daily-tasks" },
       { text: "צפה בהמלצות", path: (id: string) => `/recommendations?studentId=${id}` },
     ]
@@ -112,17 +112,18 @@ const getPath = (path: string | ((id: string) => string)) => {
             <span>{action.text}</span>
           </button>
         ))}
-
-        <button
+        {/*
+        <button 
           onClick={handleViewProgress}
           className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-primary text-white rounded hover:opacity-90 transition-opacity text-sm md:text-base flex items-center justify-between"
         >
           <BarChart className="w-4 h-4" />
           <span>{t.viewProgress}</span>
         </button>
+       */ }
 {student.parentIds.length > 0 && (
   <button
-    
+  
     
     onClick={() => onContactParent?.(student.id, student.parentIds[0])}
     

@@ -277,11 +277,10 @@ const MissingFormsPopup = ({
       navigate(`/assessment?studentId=${studentId}`);
     }
   };
-
-  const handleBackToDashboard = () => {
-    console.log("Navigating to student dashboard with studentId:", studentId);
-    navigate(`/student-dashboard?studentId=${studentId}`);
-  };
+//לתקן כאן את הכפתור 
+ const handleBackToDashboard = () => {
+  navigate(-1); // חזרה לדף הקודם
+};
 
   // פונקציה לבדיקה אם המשתמש הנוכחי יכול למלא את הטופס
   const canUserFillForm = (formKey) => {
@@ -488,8 +487,10 @@ const MissingFormsPopup = ({
                     {/* כפתור פעולה משופר לכל טופס */}
                     {!form.completed && (
                       <>
+                      {/*
                         {canUserFillForm(form.key) ? (
                           // אם המשתמש יכול למלא את הטופס - הצג כפתור פעיל
+                        
                           <Button
                             onClick={form.onClick}
                             size="sm"
@@ -498,6 +499,7 @@ const MissingFormsPopup = ({
                             {form.actionIcon}
                             מלא שאלון
                           </Button>
+                        
                         ) : (
                           // אם המשתמש לא יכול למלא - הצג הודעה
                           <div className="text-xs px-3 py-1 text-gray-500 bg-gray-100 rounded flex items-center gap-1">
@@ -505,6 +507,7 @@ const MissingFormsPopup = ({
                             {getButtonText(form.key, form.completed)}
                           </div>
                         )}
+                        */}
                       </>
                     )}
                   </div>
