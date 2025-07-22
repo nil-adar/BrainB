@@ -23,7 +23,8 @@ import RecommendationPdfView from "@/components/RecommendationPdfView";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useSearchParams } from "react-router-dom";
-
+import { useQuery } from "@tanstack/react-query";
+import { authService } from "@/services/authService";
 
 const translations = {
   en: {
@@ -565,17 +566,23 @@ useEffect(() => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const urlStudentId = params.get("studentId");
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  
+const [studentName, setStudentName] = useState<string>("");
 
 
-  const [studentName, setStudentName] = useState<string>("");
-const loggedUser = JSON.parse(localStorage.getItem("user") || "{}");
-const loggedUserId = loggedUser._id;
-const studentId = localStorage.getItem("studentId");
+
+const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+const loggedUserId = localUser._id;
+const viewerRole = localUser?.role;
+const studentId = new URLSearchParams(location.search).get("studentId") || localStorage.getItem("studentId");
+
 
 
 const isStudentViewer = loggedUserId === studentId;
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+
 
   // *** פונקציה לטעינת פרטי המשתמש הנוכחי ***
   const loadCurrentUser = async () => {
@@ -647,7 +654,7 @@ const isStudentViewer = loggedUserId === studentId;
       return { userId: studentId || "unknown", role: "student" };
     }
   };
-
+  
   useEffect(() => {
     const initializeComponent = async () => {
       console.log("🚀 Initializing Recommendations component...");
@@ -760,6 +767,26 @@ const isStudentViewer = loggedUserId === studentId;
     { label: t.title },
   ];
 
+    const getGreetingTitle = () => {
+  if (!viewerRole || !studentId || !studentName) return "👤 משתמש לא מזוהה";
+
+  const isSelf = String(loggedUserId) === String(studentId);
+
+  if (viewerRole === "student" && isSelf) {
+    return `${t.greeting} ${studentName}`;
+  }
+
+  if (viewerRole === "parent") {
+    return `👨‍👧 ${t.greeting} - הנך צופה כהורה עבור ${studentName}`;
+  }
+
+  if (viewerRole === "teacher") {
+    return `🧑‍🏫 ${t.greeting} - הנך צופה כמורה עבור ${studentName}`;
+  }
+
+  return "👤 משתמש לא מזוהה";
+};
+
   return (
     <div
       className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
@@ -809,20 +836,15 @@ const isStudentViewer = loggedUserId === studentId;
 
       <main className="container mx-auto px-4 py-8">
         <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
-          <h1
-            className={`text-3xl font-bold mb-2 ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            {role === "teacher"
-  ? "🧑‍🏫 הנך צופה כהורה "
-  : role === "parent"
-  ? "👨‍👧 הנך צופה כהורה"
-  : role === "student"
-  ? `${t.greeting}${studentName ? ` ${studentName}` : ""}`
-  : "👤 לא מזוהה"}
+  <h1
+  className={`text-3xl font-bold mb-2 ${
+    isRTL ? "text-right" : "text-left"
+  }`}
+>
+  {getGreetingTitle()}
+</h1>
 
-          </h1>
+
           <h2
             className={`text-2xl font-semibold text-gray-700 ${
               isRTL ? "text-right" : "text-left"
@@ -843,7 +865,7 @@ const isStudentViewer = loggedUserId === studentId;
             </p>
           </div>
         )}
-
+      
         {/* ADHD Guide Header */}
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-8 text-center">
           <div className="flex items-center justify-center mb-4">
