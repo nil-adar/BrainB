@@ -98,7 +98,7 @@ const normalizedStudents: Student[] = (displayStudents as Student[]).map(s => ({
               teacherId={teacherId}                   // Pass teacherId
               questionnaireRole={questionnaireRole}   // Pass role
               onViewProgress={() => onViewProgress(student.id)}
-              //onContactParent={() => onContactParent(student)}
+              onContactParent={() => onContactParent(student)}
             />
           ))}
           

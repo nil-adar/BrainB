@@ -15,7 +15,8 @@ interface StudentCardProps {
     viewRecommendations: string;
   };
   onViewProgress: (studentId: string) => void;
-  onContactParent: (parentId: string) => void;
+  onContactParent: (studentId: string, parentId: string) => void;
+
 }
 
 export const StudentCard = ({
@@ -41,6 +42,8 @@ export const StudentCard = ({
       <StudentCardActions 
         studentId={student.id}
         studentName={fullName}
+        classId={student.classId}  
+        teacherId={student.teacherId}  
         translations={{
           createAssessment: t.createAssessment,
           viewPreAssessments: t.viewPreAssessments,
@@ -49,11 +52,13 @@ export const StudentCard = ({
           contactParent: t.contactParent,
           viewProgress: t.viewProgress
         }}
-        onContactParent={() => {
-          if (student.parentIds && student.parentIds.length > 0) {
-            onContactParent(student.parentIds[0]);
-          }
-        }}
+       onContactParent={() => {
+  if (student.parentIds && student.parentIds.length > 0) {
+    onContactParent(student._id
+, student.parentIds[0]);
+  }
+}}
+
         onViewProgress={() => onViewProgress(student.id)}
       />
     </Card>

@@ -28,7 +28,7 @@ const ActionButtons = ({
     <div className="flex flex-col items-center md:items-start gap-3 order-3 md:order-1">
 
       <Link
-  to={`/recommendations?studentId=${studentId}`} // ✅ שינוי חשוב
+  to={`/recommendations?studentId=${studentId}`} // 
   className="w-full max-w-[200px] py-2 px-4 rounded-full text-sm bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 dark:from-blue-900 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-700 text-blue-700 dark:text-blue-200 transition-all duration-300 shadow-sm text-center backdrop-blur-sm"
 >
   {viewRecommendationsText}

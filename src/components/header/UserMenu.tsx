@@ -25,7 +25,7 @@ export const UserMenu = ({ translations }: UserMenuProps) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // You can add logout logic here (e.g., clear tokens/session)
+    
     navigate("/");
   };
 
@@ -64,3 +64,4 @@ export const UserMenu = ({ translations }: UserMenuProps) => {
     </DropdownMenu>
   );
 };
+

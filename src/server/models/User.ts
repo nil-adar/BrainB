@@ -61,7 +61,7 @@ const UserSchema: Schema<IUser> = new Schema(
       enum: [1, 1.25, 1.50],
       default: 1
     },
-    classId:   { type: String },   
+    classId:   { type: String },    
     className: { type: String }, 
     specialNeeds:[{ type: String }],    
     subjects:    [{ type: String }],

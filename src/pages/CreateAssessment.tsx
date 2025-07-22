@@ -31,14 +31,13 @@ const translations = {
     startAssessment: "Start Assessment",
     success: {
       title: "Assessment Created Successfully",
-      description:
-        "The student can start the assessment within the next 24 hours.",
-      button: "Return to Dashboard",
+      description: "The student can start the assessment within the next 24 hours.",
+      button: "Return to Dashboard"
     },
     error: {
       title: "Error",
-      description: "Failed to create assessment",
-    },
+      description: "Failed to create assessment"
+    }
   },
   he: {
     back: "חזור",
@@ -52,23 +51,23 @@ const translations = {
     errorLoading: "שגיאה בטעינת תלמיד",
     externalSystem: "אבחון זה יתבצע במערכת חיצונית",
     externalSystemExplanation:
-      "התלמיד יקבל הרשאה לביצוע אבחון במערכת חיצונית, לאחר השלמת האבחון התוצאות ישלחו בחזרה למערכת. הרשאה לביצוע האבחון תקפה ליום אחד בלבד.\n\nלפני יצירת אבחון חדש, בבקשה למלא שאלון מורה.",
+  "התלמיד יקבל הרשאה לביצוע אבחון במערכת חיצונית, לאחר השלמת האבחון התוצאות ישלחו בחזרה למערכת. הרשאה לביצוע האבחון תקפה ליום אחד בלבד.\n\nלפני יצירת אבחון חדש, בבקשה למלא שאלון מורה.",
     startAssessment: "צור אבחון",
     success: {
       title: "האבחון נוצר בהצלחה",
       description: "התלמיד יוכל להתחיל את האבחון במהלך 24 השעות הקרובות.",
-      button: "חזרה לדף הבית",
+      button: "חזרה לדף הבית"
     },
     error: {
       title: "שגיאה",
-      description: "יצירת האבחון נכשלה",
-    },
+      description: "יצירת האבחון נכשלה"
+    }
   },
 };
 
 export default function CreateAssessment() {
   const navigate = useNavigate();
-
+  
   const [language, setLanguage] = useState<"en" | "he">(
     document.documentElement.dir === "rtl" ? "he" : "en"
   );
@@ -103,20 +102,18 @@ export default function CreateAssessment() {
   const [notes, setNotes] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const toggleLanguage = () =>
-    setLanguage((prev) => (prev === "he" ? "en" : "he"));
+  const toggleLanguage = () => setLanguage((prev) => (prev === "he" ? "en" : "he"));
 
   const breadcrumbItems = [
     { label: t.home, href: "/" },
     {
-      label:
-        studentName ?? (loadingStudent ? t.loadingStudent : t.errorLoading), // Improved label for loading/error
+      label: studentName ?? (loadingStudent ? t.loadingStudent : t.errorLoading), // Improved label for loading/error
       href: student ? `/student/${studentId}` : undefined,
     },
     { label: t.createNewAssessment },
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("📍 נלחץ כפתור צור אבחון");
 
@@ -127,37 +124,14 @@ export default function CreateAssessment() {
       });
       return;
     }
-    /*
-    try {
-      console.log("🧪 בודק האם מולא שאלון מורה...");
-      const { hasTeacherForm } = await studentService.checkFormStatus(
-        studentId
-      );
-      console.log("✔️ תוצאת בדיקה: hasTeacherForm =", hasTeacherForm);
 
-      if (!hasTeacherForm) {
-        toast.error("נדרש שאלון מורה", {
-          description:
-            "לפני יצירת אבחון, יש להשלים את שאלון המורה עבור תלמיד זה.",
-        });
-        return;
-      }
-    } catch (err) {
-      console.error("❌ שגיאה בבדיקת סטטוס שאלון:", err);
-      toast.error("שגיאה", {
-        description: "לא ניתן לבדוק סטטוס השאלון. נסה שוב מאוחר יותר.",
-      });
-      return;
-    }
-    */
+   
+
     console.log("✅ בדיקה עברה, מתחיל יצירת אבחון...");
     setLoading(true);
 
     try {
-      await externalAssessmentService.startExternalAssessment(
-        studentId,
-        "behavioral"
-      );
+      await externalAssessmentService.startExternalAssessment(studentId, "behavioral");
       console.log("✅ האבחון נוצר בהצלחה");
 
       toast.success(t.success.title, {
@@ -200,11 +174,12 @@ export default function CreateAssessment() {
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                 <Check className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold text-green-700">
-                {t.success.title}
-              </h3>
+              <h3 className="text-xl font-semibold text-green-700">{t.success.title}</h3>
               <p className="text-gray-600">{t.success.description}</p>
-              <Button onClick={() => navigate("/")} className="mt-4">
+              <Button 
+                onClick={() => navigate("/")}
+                className="mt-4"
+              >
                 {t.success.button}
               </Button>
             </div>
@@ -213,42 +188,24 @@ export default function CreateAssessment() {
           <Card className="p-6">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t.studentName}
-                </label>
+                <label className="block text-sm font-medium mb-1">{t.studentName}</label>
                 {loadingStudent ? (
                   <p>{t.loadingStudent}</p>
                 ) : studentError || !student ? (
                   <p className="text-red-500">{t.errorLoading}</p>
                 ) : (
-                  <>
-                    <label
-                      htmlFor="assessment-date"
-                      className="block text-sm font-medium mb-1"
-                    >
-                      {t.date}
-                    </label>
-                    <input
-                      id="assessment-date"
-                      type="date"
-                      className="w-full p-2 border rounded-lg"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      required
-                    />
-                  </>
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-lg"
+                    value={`${student.firstName} ${student.lastName}`}
+                    readOnly
+                  />
                 )}
               </div>
 
               <div>
-                <label
-                  htmlFor="assessment-date"
-                  className="block text-sm font-medium mb-1"
-                >
-                  {t.date}
-                </label>
+                <label className="block text-sm font-medium mb-1">{t.date}</label>
                 <input
-                  id="assessment-date"
                   type="date"
                   className="w-full p-2 border rounded-lg"
                   value={date}
@@ -258,9 +215,7 @@ export default function CreateAssessment() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t.notes}
-                </label>
+                <label className="block text-sm font-medium mb-1">{t.notes}</label>
                 <textarea
                   className="w-full p-2 border rounded-lg h-32"
                   placeholder={t.addNotes}
@@ -270,12 +225,8 @@ export default function CreateAssessment() {
               </div>
 
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-semibold text-blue-800">
-                  {t.externalSystem}
-                </h3>
-                <p className="text-blue-700 text-sm mt-2">
-                  {t.externalSystemExplanation}
-                </p>
+                <h3 className="font-semibold text-blue-800">{t.externalSystem}</h3>
+                <p className="text-blue-700 text-sm mt-2">{t.externalSystemExplanation}</p>
               </div>
 
               <Button
@@ -290,7 +241,8 @@ export default function CreateAssessment() {
                 className="w-full bg-blue-200 text-blue-900 py-2 rounded-lg hover:bg-blue-300 transition-opacity"
                 onClick={() => {
                   if (studentId) {
-                    navigate(`/teacher-form?studentId=${studentId}`);
+                    navigate(`/questionnaire/teacher/${studentId}`);
+
                   } else {
                     toast.error("שגיאה", {
                       description: "לא נמצא מזהה תלמיד",

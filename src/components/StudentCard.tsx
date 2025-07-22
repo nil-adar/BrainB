@@ -7,7 +7,8 @@ import { FileText } from "lucide-react";
 interface StudentCardProps {
   student: Student;
   onViewProgress?: (studentId: string) => void;
-  //onContactParent?: () => void;
+  onContactParent?: (studentId: string, parentId: string) => void;
+
   teacherId?: string;
   questionnaireRole?: "student" | "teacher" | "parent"; 
 }
@@ -16,7 +17,7 @@ export const StudentCard: React.FC<StudentCardProps> =(props) => {
   const{
  student,
     onViewProgress,
-    //onContactParent,
+    onContactParent,
     teacherId,
     questionnaireRole,
   } = props;
@@ -28,14 +29,14 @@ export const StudentCard: React.FC<StudentCardProps> =(props) => {
 
   const actionTranslations = {
     en: [
-      { text: "Create new assessment", path: "/create-assessment" },
+        { text: "Create new assessment", path: (id: string) => `/create-assessment?studentId=${id}` },
       { text: "Fill student questionnaire", path: (id: string) => `/questionnaire/${formRole}/${id}` },
       { text: "View Pre-Assessments", path: "/statistics" },
       { text: "Daily Task Update", path: "/daily-tasks" },
       { text: "View recommendations", path: (id: string) => `/recommendations?studentId=${id}` },
     ],
     he: [
-      { text: "צור אבחון חדש", path: "/create-assessment" },
+      { text: "צור אבחון חדש", path: (id: string) => `/create-assessment?studentId=${id}` },
       { text: "מילוי שאלון תלמיד", path: (id: string) => `/questionnaire/${formRole}/${id}` },
       { text: "צפה בהערכות", path: "/statistics" },
       { text: "עדכון משימות יומי", path: "/daily-tasks" },
@@ -119,16 +120,21 @@ const getPath = (path: string | ((id: string) => string)) => {
           <BarChart className="w-4 h-4" />
           <span>{t.viewProgress}</span>
         </button>
+{student.parentIds.length > 0 && (
+  <button
+    
+    
+    onClick={() => onContactParent?.(student.id, student.parentIds[0])}
+    
+    className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-primary text-white rounded hover:opacity-90 transition-opacity text-sm md:text-base flex items-center justify-between"
+  >
+    <MessageCircle className="w-4 h-4" />
+    <span>{t.contactParent}</span>
+  </button>
+)}
 
-        {student.parentIds.length > 0 && (
-          <button
-            onClick={() => {}}
-            className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-primary text-white rounded hover:opacity-90 transition-opacity text-sm md:text-base flex items-center justify-between"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>{t.contactParent}</span>
-          </button>
-        )}
+
+
       </div>
     </Card>
   );

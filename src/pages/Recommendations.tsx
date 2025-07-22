@@ -22,6 +22,8 @@ import { useState, useEffect } from "react";
 import RecommendationPdfView from "@/components/RecommendationPdfView";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { useSearchParams } from "react-router-dom";
+
 
 const translations = {
   en: {
@@ -171,6 +173,7 @@ const MissingFormsPopup = ({
   ].filter(Boolean).length;
 
   const progressPercentage = (completedForms / totalForms) * 100;
+  
 
   // פונקציות טיפול בפעולות
   const handleStudentFormClick = () => {
@@ -533,6 +536,21 @@ export default function Recommendations() {
     diagnosisCompleted: boolean;
   }
 
+const [role, setRole] = useState<string | null>(null);
+
+useEffect(() => {
+  const userData = localStorage.getItem("user");
+  if (userData) {
+    try {
+      const parsedUser = JSON.parse(userData);
+      setRole(parsedUser?.role || null);
+    } catch (error) {
+      console.error("❌ שגיאה בפריסת המשתמש:", error);
+    }
+  }
+}, []);
+
+
   const [currentUserRole, setCurrentUserRole] = useState("student");
   const [currentUserId, setCurrentUserId] = useState(null);
 
@@ -546,9 +564,16 @@ export default function Recommendations() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const studentId = params.get("studentId");
+  const urlStudentId = params.get("studentId");
+
 
   const [studentName, setStudentName] = useState<string>("");
+const loggedUser = JSON.parse(localStorage.getItem("user") || "{}");
+const loggedUserId = loggedUser._id;
+const studentId = localStorage.getItem("studentId");
+
+
+const isStudentViewer = loggedUserId === studentId;
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -789,7 +814,14 @@ export default function Recommendations() {
               isRTL ? "text-right" : "text-left"
             }`}
           >
-            {`${t.greeting}${studentName ? ` ${studentName}` : ""}`}
+            {role === "teacher"
+  ? "🧑‍🏫 הנך צופה כהורה "
+  : role === "parent"
+  ? "👨‍👧 הנך צופה כהורה"
+  : role === "student"
+  ? `${t.greeting}${studentName ? ` ${studentName}` : ""}`
+  : "👤 לא מזוהה"}
+
           </h1>
           <h2
             className={`text-2xl font-semibold text-gray-700 ${

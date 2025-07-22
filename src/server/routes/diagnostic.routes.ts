@@ -16,7 +16,7 @@ router.post("/create", async (req: Request, res: Response): Promise<void> => {
   }
 
   const token = crypto.randomBytes(16).toString("hex");
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // תוקף לשעה
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // תוקף ל־24 שעות
 
   try {
     const session = await DiagnosticSessionModel.create({

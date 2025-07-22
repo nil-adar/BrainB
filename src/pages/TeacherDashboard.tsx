@@ -44,11 +44,12 @@ export default function TeacherDashboard() {
   };
 
   // the shape of what `/users/:teacherId` returns
-  interface TeacherData {
-    _id: string;
-    name: string;
-    // …add any other fields you actually use…
-  }
+interface TeacherData {
+  _id: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+}
 
   // reuse the same shape for classes everywhere
   type ClassOption = {
@@ -316,27 +317,28 @@ export default function TeacherDashboard() {
             classSwitcher={classSwitcherComponent}
           />
         </div>
+{isMessageSheetOpen && (
+  <MessageSheet
+    isOpen={isMessageSheetOpen}
+    onOpenChange={setIsMessageSheetOpen}
+    selectedStudentName={selectedStudentName}
+    senderId={teacherId!}
+    studentId={selectedStudentId!}
+    senderRole="teacher"
+    receiverId={selectedParentId!}
+    messages={messages}
+    messageText={messageText}
+    onMessageChange={setMessageText}
+    onSendMessage={handleSendMessage}
+    translations={{
+      messageToParent: t.messageToParent,
+      writeMessage: t.writeMessage,
+      sendMessage: t.sendMessage,
+    }}
+  />
+)}
 
-        {selectedParentId && (
-          <MessageSheet
-            isOpen={isMessageSheetOpen}
-            onOpenChange={setIsMessageSheetOpen}
-            selectedStudentName={selectedStudentName}
-            senderId={teacherId!}
-            studentId={selectedStudentId!}
-            senderRole="teacher"
-            receiverId={selectedParentId}
-            messages={messages}
-            messageText={messageText}
-            onMessageChange={setMessageText}
-            onSendMessage={handleSendMessage}
-            translations={{
-              messageToParent: t.messageToParent,
-              writeMessage: t.writeMessage,
-              sendMessage: t.sendMessage,
-            }}
-          />
-        )}
+
 
         {teacherId && (
           <TeacherSchedule
@@ -383,13 +385,28 @@ export default function TeacherDashboard() {
             contactMessage: t.contactMessage,
           }}
           onViewProgress={handleViewProgress}
-          onContactParent={(student) =>
-            openMessageSheet(
-              student.id,
-              student.parentIds[0],
-              `${student.firstName} ${student.lastName}`
-            )
-          }
+    onContactParent={(student) => {
+ const parentId = student?.parentIds?.[0] ?? "";
+  const fullName = student.firstName && student.lastName
+    ? `${student.firstName} ${student.lastName}`
+    : student.name ?? "תלמיד";
+
+    const studentId = student._id || student.id;
+
+  console.log("🎯 פתיחת שיחה:", {
+    studentId,
+    parentId,
+    fullName,
+  });
+
+  if (parentId && studentId) {
+    openMessageSheet(studentId, parentId, fullName);
+  } else {
+    console.warn("❌ אין מזהה הורה או תלמיד תקין:", { student });
+  }
+
+}}
+
           teacherId={teacherId}
           questionnaireRole="teacher"
         />
