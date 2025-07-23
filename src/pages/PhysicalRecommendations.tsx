@@ -12,11 +12,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { Breadcrumbs } from "@/components/ui/breadcrumb";
+import { Breadcrumbs } from "@/components/ui/breadcrumb"; // הוחזר לייבוא בשם
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useSettings } from "@/components/SettingsContext";
-import { LanguageToggle } from "@/components/LanguageToggle";
+import { useState, useEffect } from "react"; // הוחזר לייבוא המקורי
+import { useSettings } from "@/components/SettingsContext"; // נשאר ייבוא חיצוני
+import { LanguageToggle } from "@/components/LanguageToggle"; // נשאר ייבוא חיצוני
+import { Logo } from "@/components/ui/logo";
 
 const translations = {
   en: {
@@ -43,6 +44,10 @@ const translations = {
     combined: "Combined",
     hyperactive: "Hyperactive",
     inattentive: "Inattentive",
+    // נוסף עבור עקביות לוגיקת הברכה
+    unidentifiedUser: "Unidentified User",
+    viewingAsParent: "Viewing as Parent for",
+    viewingAsTeacher: "Viewing as Teacher for",
   },
   he: {
     title: "המלצות פעילות גופנית",
@@ -68,6 +73,10 @@ const translations = {
     combined: "משולב",
     hyperactive: "היפראקטיבי",
     inattentive: "קשב",
+    // נוסף עבור עקביות לוגיקת הברכה
+    unidentifiedUser: "👤 משתמש לא מזוהה",
+    viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
+    viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
   },
 };
 
@@ -97,8 +106,11 @@ export default function PhysicalActivityRecommendations() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentName, setStudentName] = useState<string>("");
+  // הוספת מצבים (State) עבור פרטי המשתמש המחובר
+  const [loggedUserId, setLoggedUserId] = useState<string | null>(null);
+  const [viewerRole, setViewerRole] = useState<string | null>(null);
 
-  // החלפנו ל-useSettings
+
   const { language } = useSettings();
   const t = translations[language];
   const isRTL = language === "he";
@@ -118,6 +130,14 @@ export default function PhysicalActivityRecommendations() {
       studentId = pathParts[studentIndex + 1];
     }
   }
+
+  // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
+  useEffect(() => {
+    const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+    setLoggedUserId(localUser._id || null);
+    setViewerRole(localUser.role || null);
+  }, []); // ריצה פעם אחת בהרצת הרכיב
+
 
   useEffect(() => {
     console.log("🏃‍♂️ Physical Activity Recommendations useEffect started");
@@ -270,375 +290,399 @@ export default function PhysicalActivityRecommendations() {
     return result;
   };
 
+  // פונקציה לבניית הודעת הברכה המותאמת אישית
+  const getGreetingTitle = () => {
+    if (!viewerRole || !studentId || !studentName) return t.unidentifiedUser;
+
+    // השווה את ה-ID של המשתמש המחובר ל-ID של התלמיד (ודא שהם מאותו טיפוס)
+    const isSelf = String(loggedUserId) === String(studentId);
+
+    // בנה את הודעת הברכה לפי תפקיד המשתמש
+    if (viewerRole === "student" && isSelf) {
+      return `${t.greeting} ${studentName}`; // לדוגמה: "בוקר טוב דני"
+    }
+
+    if (viewerRole === "parent") {
+      return `${t.greeting} ${t.viewingAsParent} ${studentName}`; // לדוגמה: "בוקר טוב 👨‍👧 הנך צופה כהורה עבור דני"
+    }
+
+    if (viewerRole === "teacher") {
+      return `${t.greeting} ${t.viewingAsTeacher} ${studentName}`; // לדוגמה: "בוקר טוב 🧑‍🏫 הנך צופה כמורה עבור דני"
+    }
+
+    // ברירת מחדל אם התפקיד אינו מוכר
+    return t.unidentifiedUser;
+  };
+
   return (
-    <div
-      className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
-      dir={isRTL ? "rtl" : "ltr"}
-      style={{ direction: isRTL ? "rtl" : "ltr" }}
-    >
-      {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-4">
-          <div
-            className={`flex items-center justify-between ${
-              isRTL ? "flex-row-reverse" : ""
-            }`}
-          >
+    // לא עוטף את הרכיב ב-SettingsContext.Provider כפי שביקשת
+    <div>
+      <div
+        className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
+        dir={isRTL ? "rtl" : "ltr"}
+        style={{ direction: isRTL ? "rtl" : "ltr" }}
+      >
+        {/* Header */}
+        <header className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-4">
             <div
-              className={`flex items-center gap-8 ${
+              className={`flex items-center justify-between ${
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-              <img
-                src="/lovable-uploads/8408577d-8175-422f-aaff-2bc2788f66e3.png"
-                alt="BrainBridge Logo"
-                className="h-12 w-auto"
-              />
-              <div className="relative flex items-center">
-                <Search
-                  className={`absolute ${
-                    isRTL ? "right-3" : "left-3"
-                  } h-5 w-5 text-gray-400`}
-                />
-                <Input
-                  type="search"
-                  placeholder={t.search}
-                  className={`${isRTL ? "pr-10" : "pl-10"} w-[300px]`}
-                />
+              <div
+                className={`flex items-center gap-8 ${
+                  isRTL ? "flex-row-reverse" : ""
+                }`}
+              >
+                <Logo size="xs" showText={false} className="h-10" />
+
+                <div className="relative flex items-center">
+                  <Search
+                    className={`absolute ${
+                      isRTL ? "right-3" : "left-3"
+                    } h-5 w-5 text-gray-400`}
+                  />
+                  <Input
+                    type="search"
+                    placeholder={t.search}
+                    className={`${isRTL ? "pr-10" : "pl-10"} w-[300px]`}
+                  />
+                </div>
+              </div>
+              <div
+                className={`flex items-center gap-4 ${
+                  isRTL ? "flex-row-reverse" : ""
+                }`}
+              >
+                <LanguageToggle variant="button" />
+
+                <span className="text-gray-600">{currentDate}</span>
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <UserCircle className="h-5 w-5" />
+                </Button>
               </div>
             </div>
+            <div className="mt-4">
+              <Breadcrumbs items={breadcrumbItems} />
+            </div>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-8">
+          {/* Header with Back Button */}
+          <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
             <div
               className={`flex items-center gap-4 ${
-                isRTL ? "flex-row-reverse" : ""
+                isRTL ? "flex-row-reverse justify-end" : "justify-start"
               }`}
             >
-              <LanguageToggle variant="button" />
-
-              <span className="text-gray-600">{currentDate}</span>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  navigate(`/recommendations?studentId=${studentId}`)
+                }
+                className={`flex items-center gap-2 ${
+                  isRTL ? "flex-row-reverse" : ""
+                }`}
+              >
+                <ArrowLeft className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
+                {t.back}
               </Button>
-              <Button variant="ghost" size="icon">
-                <UserCircle className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-          <div className="mt-4">
-            <Breadcrumbs items={breadcrumbItems} />
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        {/* Header with Back Button */}
-        <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
-          <div
-            className={`flex items-center gap-4 ${
-              isRTL ? "flex-row-reverse justify-end" : "justify-start"
-            }`}
-          >
-            <Button
-              variant="ghost"
-              onClick={() =>
-                navigate(`/recommendations?studentId=${studentId}`)
-              }
-              className={`flex items-center gap-2 ${
-                isRTL ? "flex-row-reverse" : ""
-              }`}
-            >
-              <ArrowLeft className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
-              {t.back}
-            </Button>
-            <div
-              className={`flex items-center gap-3 ${
-                isRTL ? "flex-row-reverse" : ""
-              }`}
-            >
-              <Activity className="h-8 w-8 text-blue-600" />
-              <h1
-                className={`text-3xl font-bold ${
-                  isRTL ? "text-right" : "text-left"
+              <div
+                className={`flex items-center gap-3 ${
+                  isRTL ? "flex-row-reverse" : ""
                 }`}
               >
-                {t.title}
-              </h1>
-            </div>
-          </div>
-        </div>
-
-        {/* Greeting */}
-        <div className={`mb-6 ${isRTL ? "text-right" : "text-left"}`}>
-          <h2
-            className={`text-2xl font-semibold text-gray-700 ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            {`${t.greeting}${studentName ? `, ${studentName}` : ""}`}
-          </h2>
-        </div>
-
-        {/* Important Note */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-          <div
-            className={`flex items-start gap-3 ${
-              isRTL ? "flex-row-reverse" : ""
-            }`}
-          >
-            <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div className={`w-full ${isRTL ? "text-right" : "text-left"}`}>
-              <h3
-                className={`font-semibold text-blue-900 mb-1 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.importantNote}
-              </h3>
-              <p
-                className={`text-blue-800 text-sm ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.disclaimer}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Debug Info - Remove in production */}
-        {/*process.env.NODE_ENV === "development" && (
-          <div
-            className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            <div>
-              <strong>Debug Info:</strong>
-            </div>
-            <div>Student ID: {studentId || "undefined"}</div>
-            <div>Location: {location.pathname}</div>
-            <div>Search: {location.search}</div>
-            <div>Language: {language}</div>
-            <div>Recommendations: {recommendations.length}</div>
-            <div>Loading: {loading.toString()}</div>
-            <div>
-              Sample recommendation:{" "}
-              {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
-            </div>
-          </div>
-        )*/}
-
-        {/* No Student ID State */}
-        {!loading && !studentId && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3
-              className={`text-xl font-semibold mb-4 ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
-              Missing Student Information
-            </h3>
-            <p
-              className={`text-gray-600 mb-6 ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
-              We need a student ID to load personalized recommendations.
-            </p>
-            <Button
-              onClick={() => navigate("/recommendations")}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Back to Recommendations
-            </Button>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p
-              className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
-            >
-              {t.loading}
-            </p>
-          </div>
-        )}
-
-        {/* No Recommendations State */}
-        {!loading && recommendations.length === 0 && studentId && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🤷‍♂️</div>
-            <p
-              className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
-            >
-              {t.noRecommendations}
-            </p>
-          </div>
-        )}
-
-        {/* Recommendations */}
-        {!loading && recommendations.length > 0 && (
-          <div className="space-y-6">
-            {recommendations.map((rec) => {
-              const examples = formatExamples(rec.example[language]);
-              const difficultyTags = getDifficultyTags(rec.tags, rec.intensity);
-
-              return (
-                <Card
-                  key={rec._id}
-                  className={`overflow-hidden ${
+                <Activity className="h-8 w-8 text-blue-600" />
+                <h1
+                  className={`text-3xl font-bold ${
                     isRTL ? "text-right" : "text-left"
                   }`}
                 >
-                  {/* Header */}
-                  <div
-                    className={`bg-slate-400 p-4 text-white ${
+                  {t.title}
+                </h1>
+              </div>
+            </div>
+          </div>
+
+          {/* Greeting - Updated to use the new function */}
+          <div className={`mb-6 ${isRTL ? "text-right" : "text-left"}`}>
+            <h2
+              className={`text-2xl font-semibold text-gray-700 ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
+              {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
+            </h2>
+          </div>
+
+          {/* Important Note */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+            <div
+              className={`flex items-start gap-3 ${
+                isRTL ? "flex-row-reverse" : ""
+              }`}
+            >
+              <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+              <div className={`w-full ${isRTL ? "text-right" : "text-left"}`}>
+                <h3
+                  className={`font-semibold text-blue-900 mb-1 ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  {t.importantNote}
+                </h3>
+                <p
+                  className={`text-blue-800 text-sm ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  {t.disclaimer}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Debug Info - Remove in production */}
+          {/*process.env.NODE_ENV === "development" && (
+            <div
+              className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
+                isRTL ? "text-right" : "text-left"
+              }`}
+            >
+              <div>
+                <strong>Debug Info:</strong>
+              </div>
+              <div>Student ID: {studentId || "undefined"}</div>
+              <div>Location: {location.pathname}</div>
+              <div>Search: {location.search}</div>
+              <div>Language: {language}</div>
+              <div>Recommendations: {recommendations.length}</div>
+              <div>Loading: {loading.toString()}</div>
+              <div>
+                Sample recommendation:{" "}
+                {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
+              </div>
+            </div>
+          )*/}
+
+          {/* No Student ID State */}
+          {!loading && !studentId && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3
+                className={`text-xl font-semibold mb-4 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                Missing Student Information
+              </h3>
+              <p
+                className={`text-gray-600 mb-6 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                We need a student ID to load personalized recommendations.
+              </p>
+              <Button
+                onClick={() => navigate("/recommendations")}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Back to Recommendations
+              </Button>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p
+                className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
+              >
+                {t.loading}
+              </p>
+            </div>
+          )}
+
+          {/* No Recommendations State */}
+          {!loading && recommendations.length === 0 && studentId && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🤷‍♂️</div>
+              <p
+                className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
+              >
+                {t.noRecommendations}
+              </p>
+            </div>
+          )}
+
+          {/* Recommendations */}
+          {!loading && recommendations.length > 0 && (
+            <div className="space-y-6">
+              {recommendations.map((rec) => {
+                const examples = formatExamples(rec.example[language]);
+                const difficultyTags = getDifficultyTags(rec.tags, rec.intensity);
+
+                return (
+                  <Card
+                    key={rec._id}
+                    className={`overflow-hidden ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
+                    {/* Header */}
                     <div
-                      className={`flex items-center w-full ${
-                        isRTL ? "flex-row-reverse" : ""
+                      className={`bg-slate-400 p-4 text-white ${
+                        isRTL ? "text-right" : "text-left"
                       }`}
                     >
                       <div
-                        className={`flex items-center gap-3 ${
-                          isRTL
-                            ? "flex-1 justify-end flex-row-reverse"
-                            : "flex-1"
+                        className={`flex items-center w-full ${
+                          isRTL ? "flex-row-reverse" : ""
                         }`}
                       >
-                        <Activity className="h-6 w-6" />
-                        <h3
-                          className={`text-xl font-bold ${
+                        <div
+                          className={`flex items-center gap-3 ${
+                            isRTL
+                              ? "flex-1 justify-end flex-row-reverse"
+                              : "flex-1"
+                          }`}
+                        >
+                          <Activity className="h-6 w-6" />
+                          <h3
+                            className={`text-xl font-bold ${
+                              isRTL ? "text-right" : "text-left"
+                            }`}
+                          >
+                            {getText(rec.recommendation, language)}
+                          </h3>
+                        </div>
+                        <div
+                          className={`flex gap-2 ${
+                            isRTL ? "mr-auto" : "ml-auto"
+                          }`}
+                        >
+                          {difficultyTags.map((tag, index) => (
+                            <Badge key={index} className={getIntensityColor(tag)}>
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <CardContent
+                      className={`p-6 ${isRTL ? "text-right" : "text-left"}`}
+                    >
+                      {/* Difficulty Description */}
+                      <div className="mb-6">
+                        <h4
+                          className={`font-semibold text-gray-800 mb-2 ${
                             isRTL ? "text-right" : "text-left"
                           }`}
                         >
-                          {getText(rec.recommendation, language)}
-                        </h3>
+                          {t.difficulty}
+                        </h4>
+                        <p
+                          className={`text-gray-600 ${
+                            isRTL ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {getText(rec.difficulty_description, language)}
+                        </p>
                       </div>
-                      <div
-                        className={`flex gap-2 ${
-                          isRTL ? "mr-auto" : "ml-auto"
-                        }`}
-                      >
-                        {difficultyTags.map((tag, index) => (
-                          <Badge key={index} className={getIntensityColor(tag)}>
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
 
-                  <CardContent
-                    className={`p-6 ${isRTL ? "text-right" : "text-left"}`}
-                  >
-                    {/* Difficulty Description */}
-                    <div className="mb-6">
-                      <h4
-                        className={`font-semibold text-gray-800 mb-2 ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {t.difficulty}
-                      </h4>
-                      <p
-                        className={`text-gray-600 ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {getText(rec.difficulty_description, language)}
-                      </p>
-                    </div>
-
-                    {/* Duration and Intensity */}
-                    {(rec.duration || rec.intensity) && (
-                      <div
-                        className={`flex gap-6 mb-6 ${
-                          isRTL ? "flex-row-reverse justify-end" : ""
-                        }`}
-                      >
-                        {rec.duration && (
-                          <div
-                            className={`flex items-center gap-2 text-gray-700 ${
-                              isRTL ? "flex-row-reverse" : ""
-                            }`}
-                          >
-                            <Clock className="h-4 w-4" />
-                            <span className="font-medium">
-                              {rec.duration} {t.minutes}
-                            </span>
-                          </div>
-                        )}
-                        {rec.intensity && (
-                          <div
-                            className={`flex items-center gap-2 text-gray-700 ${
-                              isRTL ? "flex-row-reverse" : ""
-                            }`}
-                          >
-                            <Activity className="h-4 w-4" />
-                            <span className="font-medium">
-                              {t.intensity} {rec.intensity}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Activity Examples */}
-                    <div className="mb-6">
-                      <h4
-                        className={`font-semibold text-gray-800 mb-3 ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {t.activityExamples}
-                      </h4>
-                      <div className="space-y-2">
-                        {examples.map((example, index) => (
-                          <div
-                            key={index}
-                            className="bg-blue-50 p-3 rounded-lg"
-                          >
-                            <p
-                              className={`text-gray-700 ${
-                                isRTL ? "text-right" : "text-left"
+                      {/* Duration and Intensity */}
+                      {(rec.duration || rec.intensity) && (
+                        <div
+                          className={`flex gap-6 mb-6 ${
+                            isRTL ? "flex-row-reverse justify-end" : ""
+                          }`}
+                        >
+                          {rec.duration && (
+                            <div
+                              className={`flex items-center gap-2 text-gray-700 ${
+                                isRTL ? "flex-row-reverse" : ""
                               }`}
                             >
-                              {example}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                              <Clock className="h-4 w-4" />
+                              <span className="font-medium">
+                                {rec.duration} {t.minutes}
+                              </span>
+                            </div>
+                          )}
+                          {rec.intensity && (
+                            <div
+                              className={`flex items-center gap-2 text-gray-700 ${
+                                isRTL ? "flex-row-reverse" : ""
+                              }`}
+                            >
+                              <Activity className="h-4 w-4" />
+                              <span className="font-medium">
+                                {t.intensity} {rec.intensity}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                    {/* Functional Contribution */}
-                    <div>
-                      <h4
-                        className={`font-semibold text-gray-800 mb-2 ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {t.functionalContribution}
-                      </h4>
-                      <p
-                        className={`text-gray-700 font-medium ${
-                          isRTL ? "text-right" : "text-left"
-                        }`}
-                      >
-                        {getText(rec.contribution, language)}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
-      </main>
+                      {/* Activity Examples */}
+                      <div className="mb-6">
+                        <h4
+                          className={`font-semibold text-gray-800 mb-3 ${
+                            isRTL ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {t.activityExamples}
+                        </h4>
+                        <div className="space-y-2">
+                          {examples.map((example, index) => (
+                            <div
+                              key={index}
+                              className="bg-blue-50 p-3 rounded-lg"
+                            >
+                              <p
+                                className={`text-gray-700 ${
+                                  isRTL ? "text-right" : "text-left"
+                                }`}
+                              >
+                                {example}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Functional Contribution */}
+                      <div>
+                        <h4
+                          className={`font-semibold text-gray-800 mb-2 ${
+                            isRTL ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {t.functionalContribution}
+                        </h4>
+                        <p
+                          className={`text-gray-700 font-medium ${
+                            isRTL ? "text-right" : "text-left"
+                          }`}
+                        >
+                          {getText(rec.contribution, language)}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

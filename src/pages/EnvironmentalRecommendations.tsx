@@ -20,6 +20,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { Logo } from "@/components/ui/logo";
 
 const translations = {
   en: {
@@ -44,6 +45,10 @@ const translations = {
     routine: "Routine",
     environment: "Environment",
     sensory: "Sensory",
+    // נוסף עבור עקביות לוגיקת הברכה
+    unidentifiedUser: "Unidentified User",
+    viewingAsParent: "Viewing as Parent for",
+    viewingAsTeacher: "Viewing as Teacher for",
   },
   he: {
     title: "שינויים סביבתיים",
@@ -67,6 +72,10 @@ const translations = {
     routine: "שגרה",
     environment: "סביבה",
     sensory: "חושי",
+    // נוסף עבור עקביות לוגיקת הברכה
+    unidentifiedUser: "👤 משתמש לא מזוהה",
+    viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
+    viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
   },
 };
 
@@ -96,6 +105,9 @@ export default function EnvironmentalRecommendations() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentName, setStudentName] = useState<string>("");
+  // הוספת מצבים (State) עבור פרטי המשתמש המחובר
+  const [loggedUserId, setLoggedUserId] = useState<string | null>(null);
+  const [viewerRole, setViewerRole] = useState<string | null>(null);
 
   const { language } = useSettings();
   const t = translations[language];
@@ -116,6 +128,13 @@ export default function EnvironmentalRecommendations() {
       studentId = pathParts[studentIndex + 1];
     }
   }
+
+  // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
+  useEffect(() => {
+    const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+    setLoggedUserId(localUser._id || null);
+    setViewerRole(localUser.role || null);
+  }, []); // ריצה פעם אחת בהרצת הרכיב
 
   useEffect(() => {
     console.log("🏠 Environmental Recommendations useEffect started");
@@ -273,6 +292,30 @@ export default function EnvironmentalRecommendations() {
     }
   };
 
+  // פונקציה לבניית הודעת הברכה המותאמת אישית
+  const getGreetingTitle = () => {
+    if (!viewerRole || !studentId || !studentName) return t.unidentifiedUser;
+
+    // השווה את ה-ID של המשתמש המחובר ל-ID של התלמיד (ודא שהם מאותו טיפוס)
+    const isSelf = String(loggedUserId) === String(studentId);
+
+    // בנה את הודעת הברכה לפי תפקיד המשתמש
+    if (viewerRole === "student" && isSelf) {
+      return `${t.greeting} ${studentName}`; // לדוגמה: "בוקר טוב דני"
+    }
+
+    if (viewerRole === "parent") {
+      return `${t.greeting} ${t.viewingAsParent} ${studentName}`; // לדוגמה: "בוקר טוב 👨‍👧 הנך צופה כהורה עבור דני"
+    }
+
+    if (viewerRole === "teacher") {
+      return `${t.greeting} ${t.viewingAsTeacher} ${studentName}`; // לדוגמה: "בוקר טוב 🧑‍🏫 הנך צופה כמורה עבור דני"
+    }
+
+    // ברירת מחדל אם התפקיד אינו מוכר
+    return t.unidentifiedUser;
+  };
+
   return (
     <div
       className={`min-h-screen bg-gradient-to-br from-purple-20 to-purple-100 ${
@@ -294,11 +337,8 @@ export default function EnvironmentalRecommendations() {
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-              <img
-                src="/lovable-uploads/8408577d-8175-422f-aaff-2bc2788f66e3.png"
-                alt="BrainBridge Logo"
-                className="h-12 w-auto"
-              />
+              <Logo size="xs" showText={false} className="h-10" />
+
               <div className="relative flex items-center">
                 <Search
                   className={`absolute ${
@@ -378,7 +418,7 @@ export default function EnvironmentalRecommendations() {
               isRTL ? "text-right" : "text-left"
             }`}
           >
-            {`${t.greeting}${studentName ? `, ${studentName}` : ""}`}
+            {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
           </h2>
         </div>
 
