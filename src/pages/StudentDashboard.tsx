@@ -251,8 +251,13 @@ export default function StudentDashboard() {
       ? `בוקר טוב${fullName ? `, ${fullName}` : ""}`
       : `Good morning${fullName ? `, ${fullName}` : ""}`;
 
+  const motivation =
+    language === "he"
+      ? "יום נהדר להצלחה – יש לך את זה!"
+      : "A wonderful day for success – you've got this!";
+
   console.log("👤 student:", student);
-  
+
   return (
     <SidebarProvider>
       <Dialog open={showHelpModal} onOpenChange={setShowHelpModal}>
@@ -274,8 +279,9 @@ export default function StudentDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
       <div
-        className="min-h-screen flex flex-col w-full bg-background relative overflow-hidden"
+        className="min-h-screen flex flex-col w-full bg-background relative"
         dir={language === "he" ? "rtl" : "ltr"}
       >
         <DashboardBackground>
@@ -283,7 +289,7 @@ export default function StudentDashboard() {
             <div className="flex items-center gap-4">
               <Logo size="xs" showText={false} className="h-10" />
               <h1 className="text-lg font-medium hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                {greeting}
+                {motivation}
               </h1>
             </div>
             <div className="flex items-center gap-3">
@@ -322,49 +328,69 @@ export default function StudentDashboard() {
             </div>
           </header>
 
-          <div className="flex-1 p-4 w-full">
-            <h1 className="text-2xl font-semibold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-              {greeting}
-            </h1>
-            <div className="flex justify-center mb-6">
-              <DateDisplay />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_400px] gap-6 max-w-6xl mx-auto">
-              <ActionButtons
-                viewRecommendationsText={t["viewRecommendations"]}
-                newAssessmentText={t["newAssessment"]}
-                myAssessmentsText={t["myAssessments"]}
-                helpSupportText={t["helpSupport"]}
-                studentFormText={t.fillForm}
-                studentId={studentId} // ← כאן
-                onStartAssessment={handleRedirectToAssessment}
-                onHelpSupportClick={handleOpenHelpSupport}
-                onStudentFormClick={() =>
-                  navigate(`/questionnaire/student/${studentId}`)
-                }
-              />
+          {/* כותרת ראשית */}
+          <div className="px-4 py-6">
+            {/* תוכן המסך המשופר */}
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* כותרת ראשית */}
+              <div className="px-4 py-6">
+                <h1 className="text-3xl font-semibold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                  {greeting}
+                </h1>
+                <div className="flex justify-center">
+                  <DateDisplay />
+                </div>
+              </div>
 
-              <TimerSection
-                showTimer={showTimer}
-                currentTask={currentTask}
-                timeLeft={timeLeft}
-                totalTime={totalTime}
-                progress={progress}
-                noTaskMessage={t.noTaskSelected}
-                minutesLeftText={t.minutesLeft}
-              />
-              <TaskListSection
-                tasks={tasks}
-                currentTask={currentTask}
-                tasksTitle={t.tasks}
-                todayText={t.today}
-                minutesText={t.minutes}
-                onToggleComplete={handleToggleComplete}
-                onSelectTask={handleTaskSelect}
-                onDeleteTask={handleDeleteTask}
-                allowedCategories={allowedCategories}
-                extraTime={student?.extraTime ?? 1}
-              />
+              <div className="flex-1 px-4 pb-8">
+                <div className="max-w-7xl mx-auto h-full">
+                  {/* פריסה חדשה - 2 שורות */}
+                  <div className="grid grid-rows-2 h-full gap-8">
+                    {/* שורה עליונה */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+                      {/* כפתורי פעולות */}
+                      <div className="lg:col-span-1 flex justify-center">
+                        <ActionButtons
+                          viewRecommendationsText={t["viewRecommendations"]}
+                          newAssessmentText={t["newAssessment"]}
+                          helpSupportText={t["helpSupport"]}
+                          studentFormText={t.fillForm}
+                          studentId={studentId}
+                          onStartAssessment={handleRedirectToAssessment}
+                          onHelpSupportClick={handleOpenHelpSupport}
+                          onStudentFormClick={() =>
+                            navigate(`/questionnaire/student/${studentId}`)
+                          }
+                        />
+                      </div>
+
+                      {/* שעון במרכז להוריד */}
+                        <TimerSection
+                          showTimer={showTimer}
+                          currentTask={currentTask}
+                          timeLeft={timeLeft}
+                          totalTime={totalTime}
+                          progress={progress}
+                          noTaskMessage={t.noTaskSelected}
+                          minutesLeftText={t.minutesLeft}
+                        />
+
+                      <TaskListSection
+                        tasks={tasks}
+                        currentTask={currentTask}
+                        tasksTitle={t.tasks}
+                        todayText={t.today}
+                        minutesText={t.minutes}
+                        onToggleComplete={handleToggleComplete}
+                        onSelectTask={handleTaskSelect}
+                        onDeleteTask={handleDeleteTask}
+                        allowedCategories={allowedCategories}
+                        extraTime={student?.extraTime ?? 1}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

@@ -110,7 +110,6 @@ export default function PhysicalActivityRecommendations() {
   const [loggedUserId, setLoggedUserId] = useState<string | null>(null);
   const [viewerRole, setViewerRole] = useState<string | null>(null);
 
-
   const { language } = useSettings();
   const t = translations[language];
   const isRTL = language === "he";
@@ -137,7 +136,6 @@ export default function PhysicalActivityRecommendations() {
     setLoggedUserId(localUser._id || null);
     setViewerRole(localUser.role || null);
   }, []); // ריצה פעם אחת בהרצת הרכיב
-
 
   useEffect(() => {
     console.log("🏃‍♂️ Physical Activity Recommendations useEffect started");
@@ -366,9 +364,10 @@ export default function PhysicalActivityRecommendations() {
                 </Button>
               </div>
             </div>
+            {/*            
             <div className="mt-4">
               <Breadcrumbs items={breadcrumbItems} />
-            </div>
+            </div>*/}
           </div>
         </header>
 
@@ -502,7 +501,9 @@ export default function PhysicalActivityRecommendations() {
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p
-                className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
+                className={`text-gray-600 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
               >
                 {t.loading}
               </p>
@@ -514,7 +515,9 @@ export default function PhysicalActivityRecommendations() {
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🤷‍♂️</div>
               <p
-                className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
+                className={`text-gray-600 ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
               >
                 {t.noRecommendations}
               </p>
@@ -526,7 +529,10 @@ export default function PhysicalActivityRecommendations() {
             <div className="space-y-6">
               {recommendations.map((rec) => {
                 const examples = formatExamples(rec.example[language]);
-                const difficultyTags = getDifficultyTags(rec.tags, rec.intensity);
+                const difficultyTags = getDifficultyTags(
+                  rec.tags,
+                  rec.intensity
+                );
 
                 return (
                   <Card
@@ -568,7 +574,10 @@ export default function PhysicalActivityRecommendations() {
                           }`}
                         >
                           {difficultyTags.map((tag, index) => (
-                            <Badge key={index} className={getIntensityColor(tag)}>
+                            <Badge
+                              key={index}
+                              className={getIntensityColor(tag)}
+                            >
                               {tag}
                             </Badge>
                           ))}

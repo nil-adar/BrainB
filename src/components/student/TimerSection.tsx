@@ -25,11 +25,11 @@ const TimerSection = ({
   minutesLeftText,
 }: TimerSectionProps) => {
   return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-lg border border-blue-100 dark:border-gray-700 shadow-md p-4 h-[250px] flex flex-col items-center order-1 md:order-2">
-      <div className={`flex-1 w-full mb-2 ${showTimer ? 'hidden' : ''}`}>
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-lg border border-blue-100 dark:border-gray-700 shadow-md p-4 h-[350px] flex flex-col items-center order-1 md:order-2">
+      <div className={`flex-1 w-full mb-2 ${showTimer ? "hidden" : ""}`}>
         <Clock currentTask={currentTask} />
       </div>
-      <div className={`flex-1 w-full ${showTimer ? '' : 'hidden'}`}>
+      <div className={`flex-1 w-full ${showTimer ? "" : "hidden"}`}>
         <HourglassTimer
           timeLeft={timeLeft ?? 0}
           totalTime={totalTime}
@@ -40,7 +40,7 @@ const TimerSection = ({
           timerColor="#8B5CF6"
         />
       </div>
-      <div className="w-full mt-auto">
+      <div className="w-full max-w-lg mt-auto px-2">
         <ProgressBar progress={progress} />
       </div>
     </div>

@@ -175,7 +175,6 @@ const MissingFormsPopup = ({
   ].filter(Boolean).length;
 
   const progressPercentage = (completedForms / totalForms) * 100;
-  
 
   // פונקציות טיפול בפעולות
   const handleStudentFormClick = () => {
@@ -278,10 +277,10 @@ const MissingFormsPopup = ({
       navigate(`/assessment?studentId=${studentId}`);
     }
   };
-//לתקן כאן את הכפתור 
- const handleBackToDashboard = () => {
-  navigate(-1); // חזרה לדף הקודם
-};
+  //לתקן כאן את הכפתור
+  const handleBackToDashboard = () => {
+    navigate(-1); // חזרה לדף הקודם
+  };
 
   // פונקציה לבדיקה אם המשתמש הנוכחי יכול למלא את הטופס
   const canUserFillForm = (formKey) => {
@@ -488,7 +487,7 @@ const MissingFormsPopup = ({
                     {/* כפתור פעולה משופר לכל טופס */}
                     {!form.completed && (
                       <>
-                      {/*
+                        {/*
                         {canUserFillForm(form.key) ? (
                           // אם המשתמש יכול למלא את הטופס - הצג כפתור פעיל
                         
@@ -541,20 +540,19 @@ export default function Recommendations() {
     diagnosisCompleted: boolean;
   }
 
-const [role, setRole] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
-useEffect(() => {
-  const userData = localStorage.getItem("user");
-  if (userData) {
-    try {
-      const parsedUser = JSON.parse(userData);
-      setRole(parsedUser?.role || null);
-    } catch (error) {
-      console.error("❌ שגיאה בפריסת המשתמש:", error);
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setRole(parsedUser?.role || null);
+      } catch (error) {
+        console.error("❌ שגיאה בפריסת המשתמש:", error);
+      }
     }
-  }
-}, []);
-
+  }, []);
 
   const [currentUserRole, setCurrentUserRole] = useState("student");
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -571,22 +569,19 @@ useEffect(() => {
   const params = new URLSearchParams(location.search);
   const urlStudentId = params.get("studentId");
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-  
-const [studentName, setStudentName] = useState<string>("");
 
+  const [studentName, setStudentName] = useState<string>("");
 
+  const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const loggedUserId = localUser._id;
+  const viewerRole = localUser?.role;
+  const studentId =
+    new URLSearchParams(location.search).get("studentId") ||
+    localStorage.getItem("studentId");
 
-const localUser = JSON.parse(localStorage.getItem("user") || "{}");
-const loggedUserId = localUser._id;
-const viewerRole = localUser?.role;
-const studentId = new URLSearchParams(location.search).get("studentId") || localStorage.getItem("studentId");
-
-
-
-const isStudentViewer = loggedUserId === studentId;
+  const isStudentViewer = loggedUserId === studentId;
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
-
 
   // *** פונקציה לטעינת פרטי המשתמש הנוכחי ***
   const loadCurrentUser = async () => {
@@ -658,7 +653,7 @@ const isStudentViewer = loggedUserId === studentId;
       return { userId: studentId || "unknown", role: "student" };
     }
   };
-  
+
   useEffect(() => {
     const initializeComponent = async () => {
       console.log("🚀 Initializing Recommendations component...");
@@ -771,25 +766,25 @@ const isStudentViewer = loggedUserId === studentId;
     { label: t.title },
   ];
 
-    const getGreetingTitle = () => {
-  if (!viewerRole || !studentId || !studentName) return "👤 משתמש לא מזוהה";
+  const getGreetingTitle = () => {
+    if (!viewerRole || !studentId || !studentName) return "👤 משתמש לא מזוהה";
 
-  const isSelf = String(loggedUserId) === String(studentId);
+    const isSelf = String(loggedUserId) === String(studentId);
 
-  if (viewerRole === "student" && isSelf) {
-    return `${t.greeting} ${studentName}`;
-  }
+    if (viewerRole === "student" && isSelf) {
+      return `${t.greeting} ${studentName}`;
+    }
 
-  if (viewerRole === "parent") {
-    return `👨‍👧 ${t.greeting} - הנך צופה כהורה עבור ${studentName}`;
-  }
+    if (viewerRole === "parent") {
+      return `👨‍👧 ${t.greeting} - הנך צופה כהורה עבור ${studentName}`;
+    }
 
-  if (viewerRole === "teacher") {
-    return `🧑‍🏫 ${t.greeting} - הנך צופה כמורה עבור ${studentName}`;
-  }
+    if (viewerRole === "teacher") {
+      return `🧑‍🏫 ${t.greeting} - הנך צופה כמורה עבור ${studentName}`;
+    }
 
-  return "👤 משתמש לא מזוהה";
-};
+    return "👤 משתמש לא מזוהה";
+  };
 
   return (
     <div
@@ -810,8 +805,7 @@ const isStudentViewer = loggedUserId === studentId;
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-             <Logo size="xs" showText={false} className="h-16 mx-auto mb-6" />
-
+              <Logo size="xs" showText={false} className="h-16 mx-auto mb-6" />
             </div>
             <div
               className={`flex items-center gap-4 ${
@@ -829,22 +823,23 @@ const isStudentViewer = loggedUserId === studentId;
               </Button>
             </div>
           </div>
-          <div className="mt-4">
+          {/*
+           <div className="mt-4">
             <Breadcrumbs items={breadcrumbItems} />
           </div>
+          */}
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
-  <h1
-  className={`text-3xl font-bold mb-2 ${
-    isRTL ? "text-right" : "text-left"
-  }`}
->
-  {getGreetingTitle()}
-</h1>
-
+          <h1
+            className={`text-3xl font-bold mb-2 ${
+              isRTL ? "text-right" : "text-left"
+            }`}
+          >
+            {getGreetingTitle()}
+          </h1>
 
           <h2
             className={`text-2xl font-semibold text-gray-700 ${
@@ -866,7 +861,7 @@ const isStudentViewer = loggedUserId === studentId;
             </p>
           </div>
         )}
-      
+
         {/* ADHD Guide Header */}
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-8 text-center">
           <div className="flex items-center justify-center mb-4">
