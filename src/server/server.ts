@@ -62,17 +62,18 @@ app.get("/api/status", (req, res) => {
 
 // MongoDB connection
 // Using environment variable for MongoDB URI when available
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://niladar:RX1DRQF36Rsavqgx@schoolsdata.yg5ih.mongodb.net/BrainB";
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  "mongodb+srv://niladar:RX1DRQF36Rsavqgx@schoolsdata.yg5ih.mongodb.net/BrainB?retryWrites=true&w=majority";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI!, {
-      serverSelectionTimeoutMS: 5000, // 5 שניות timeout
-      socketTimeoutMS: 10000, // 10 שניות timeout
+    console.log("🔗 Trying to connect MongoDB:", MONGO_URI);
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
     });
-    console.log("Connected to MongoDB successfully");
+    console.log("✅ Connected to MongoDB successfully");
   } catch (error) {
     console.error("🚨 MongoDB connection error:", error);
     process.exit(1);
