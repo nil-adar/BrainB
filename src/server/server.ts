@@ -17,6 +17,8 @@ import recommendationsRouter from "./controllers/recommendationsController"; //×
 import path from "path";                         //
 import { fileURLToPath } from "url";    
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
@@ -32,15 +34,7 @@ app.use((req, res, next) => {
   console.log(`Headers:`, req.headers);
   next();
 });
-// Logger middleware
-app.use((req, res, next) => {
-  const timestamp = new Date().toISOString();
-  console.log(
-    `ðŸ”¹ [${timestamp}] Request incoming: ${req.method} ${req.originalUrl}`
-  );
-  console.log(`Headers:`, req.headers);
-  next();
-});
+
 
 // Serve static files in /uploads
 app.use('/uploads', express.static('uploads'));
@@ -171,6 +165,18 @@ app.post("/api/mongo/config", (req, res) => {
       });
   }
 });
+// Serve React frontend
+app.use(express.static(path.join(__dirname, "../../dist")));
+
+app.get("*", (req, res): void => {
+  if (req.path.startsWith("/api")) {
+    res.status(404).json({ error: "API route not found" });
+    return;
+  }
+  res.sendFile(path.join(__dirname, "../../dist", "index.html"));
+});
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
