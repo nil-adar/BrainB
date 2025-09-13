@@ -14,6 +14,8 @@ import diagnosticRoutes from "./routes/diagnostic.routes";
 import taskRoutes from "./routes/task.routes";
 import formRouter from "./routes/form.routes";
 import recommendationsRouter from "./controllers/recommendationsController"; //המלצות
+import path from "path";                         //
+import { fileURLToPath } from "url";    
 
 const app = express();
 
