@@ -23,7 +23,7 @@ import { userSettingsService } from "@/services/userSettingsService";
 import { AppToolbar } from "../components/ui/AppToolbar";
 import { LanguageToggle } from "../components/LanguageToggle";
 import { useSettings } from "../components/SettingsContext";
-
+import { API_BASE_URL } from "@/config/api"; // 
 const translations = {
   en: {
     back: "Back",
@@ -127,7 +127,7 @@ const Settings = () => {
   const { mutate: uploadImage } = useMutation({
     mutationFn: userSettingsService.uploadProfileImage,
     onSuccess: (data) => {
-      setProfileImage(`http://localhost:5000${data.imageUrl}`);
+      setProfileImage(`${API_BASE_URL.replace("/api", "")}${data.imageUrl}`);
       toast({
         title: "תמונה עודכנה",
         description: "תמונת הפרופיל נשמרה בהצלחה",
@@ -206,7 +206,7 @@ const Settings = () => {
                         src={
                           profileImage.startsWith("http")
                             ? profileImage
-                            : `http://localhost:5000${profileImage}`
+                            : `${API_BASE_URL.replace("/api", "")}${profileImage}`
                         }
                         alt="Profile"
                       />
