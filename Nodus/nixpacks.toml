@@ -1,2 +1,5 @@
+[build]
+nixPkgs = ["python310"]
+
 [phases.setup]
-nixPkgs = ["libglvnd", "glib"]
+aptPkgs = ["libgl1", "libglib2.0-0"]
