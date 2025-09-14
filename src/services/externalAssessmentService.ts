@@ -1,24 +1,15 @@
-
 import { Assessment, ExternalAssessmentResult } from "@/types/school";
 import { toast } from "@/hooks/use-toast";
-import axios from "axios";
-import { coerce } from "zod";
+import api from "@/services/api"; // 👈 ייבוא מופע axios שלך במקום axios ישיר
 
 export const externalAssessmentService = {
- startExternalAssessment: async (studentId: string, type: string) => {
-  console.log("🚀 שלב 1: התחלת יצירת אבחון לתלמיד:", studentId);
+  startExternalAssessment: async (studentId: string, type: string) => {
+    console.log("🚀 שלב 1: התחלת יצירת אבחון לתלמיד:", studentId);
 
-  const response = await axios.post("http://localhost:5000/api/diagnostic/create", {
-    studentId,
-  });
+    const response = await api.post("/diagnostic/create", { studentId }); // 👈 שימוש ב-baseURL דינמי
 
-  console.log("✅ שלב 2: קיבלנו תגובה מהשרת:", response.data);
+    console.log("✅ שלב 2: קיבלנו תגובה מהשרת:", response.data);
 
-  return response.data;
-}
-
+    return response.data;
+  }
 };
-
-    
-  
-  
