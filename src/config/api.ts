@@ -1,8 +1,12 @@
+// config/api.ts
 
-const isProduction = import.meta.env.PROD;
-// update pro
-// אם זה פרודקשן  משתמשים בשרת בויריילו
-// אם זה פיתוח → נשארים עם localhost כדי שיהיה נוח לבדוק
-export const API_BASE_URL = isProduction
-  ? "https://brainb-production.up.railway.app/api"
-  : "http://localhost:5000/api";
+// קודם כל ננסה לטעון מ-ENV של Vite (בפיתוח ובפרודקשן)
+const baseURLFromEnv = import.meta.env.VITE_API_BASE_URL;
+
+export const API_BASE_URL = baseURLFromEnv || (
+  import.meta.env.PROD
+    ? "https://brainb-production.up.railway.app/api" // fallback לפרודקשן אם env לא מוגדר
+    : "http://localhost:5000/api"                   // fallback לפיתוח אם env לא מוגדר
+);
+
+console.log("🌍 Using API BASE URL:", API_BASE_URL);
