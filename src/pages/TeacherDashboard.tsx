@@ -270,7 +270,11 @@ interface TeacherData {
     : "מורה";
 
   const handleSearchChange = (value: string) => setSearchTerm(value);
-  const handleClassChange = (classData: any) => setCurrentClass(classData);
+ const handleClassChange = (classData: any) => {
+  console.log("🟡 currentClass אחרי בחירה (onClassChange):", classData);
+  setCurrentClass(classData);
+};
+
 
   const classSwitcherComponent = teacherId ? (
     <ClassSwitcher

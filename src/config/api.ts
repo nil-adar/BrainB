@@ -8,7 +8,7 @@ export const API_BASE_URL = isLocalhost
 // כתובת בסיס ל-Nodus
 export const NODUS_BASE_URL = isLocalhost
   ? "http://127.0.0.1:8000"                        // ריצה לוקאלית של Django
-  : "https://nodus-production.up.railway.app";     // כתובת בפרודקשן
+  : "https://acceptable-joy-production-a391.up.railway.app";     // כתובת בפרודקשן
 
 console.log("🌍 Using API BASE URL:", API_BASE_URL);
 console.log("🔗 Using NODUS BASE URL:", NODUS_BASE_URL);
