@@ -1,12 +1,8 @@
 // config/api.ts
+const isLocalhost = window.location.hostname === "localhost";
 
-// קודם כל ננסה לטעון מ-ENV של Vite (בפיתוח ובפרודקשן)
-const baseURLFromEnv = import.meta.env.VITE_API_BASE_URL;
-
-export const API_BASE_URL = baseURLFromEnv || (
-  import.meta.env.PROD
-    ? "https://brainb-production.up.railway.app/api" // fallback לפרודקשן אם env לא מוגדר
-    : "http://localhost:5000/api"                   // fallback לפיתוח אם env לא מוגדר
-);
+export const API_BASE_URL = isLocalhost
+  ? "http://localhost:5000/api" // מקומית
+  : `${window.location.origin}/api`; // בפרודקשן תמיד באותו דומיין שממנו נטען ה-Frontend
 
 console.log("🌍 Using API BASE URL:", API_BASE_URL);
