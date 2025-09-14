@@ -1,8 +1,7 @@
-// config/api.ts
 const isLocalhost = window.location.hostname === "localhost";
 
 export const API_BASE_URL = isLocalhost
-  ? "http://localhost:5000/api" // מקומית
-  : `${window.location.origin}/api`; // בפרודקשן תמיד באותו דומיין שממנו נטען ה-Frontend
+  ? "https://brainb-production.up.railway.app/api" // פיתוח מול Railway
+  : `${window.location.origin}/api`;               // פרודקשן תמיד אותו דומיין
 
 console.log("🌍 Using API BASE URL:", API_BASE_URL);
