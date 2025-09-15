@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
 import { Recommendation } from "@/types/recommendation";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useSettings } from "@/components/SettingsContext";
 import {
   Search,
@@ -13,6 +14,62 @@ import {
   BookOpen,
   Activity,
 } from "lucide-react";
+
+type Lang = "he" | "en";
+
+/** לוקח ערך שיכול להיות: string | {he:string|array, en:string|array} | null
+ *  ומחזיר טקסט בשפה המבוקשת עם fallback לשפה השנייה.
+ */
+function getLangText(val: unknown, lang: Lang): string {
+  const toStr = (v: unknown): string => {
+    if (v == null) return "";
+    if (Array.isArray(v))
+      return v
+        .map((x) => (typeof x === "string" ? x : ""))
+        .join(", ")
+        .trim();
+    return typeof v === "string" ? v.trim() : "";
+  };
+
+  if (val == null) return "";
+  if (typeof val === "string") return val.trim();
+
+  if (typeof val === "object") {
+    const obj = val as Record<string, unknown>;
+    const primary = toStr(obj[lang]);
+    if (primary) return primary;
+    // fallback
+    const otherKey = lang === "he" ? "en" : "he";
+    return toStr(obj[otherKey]);
+  }
+
+  return "";
+}
+const normalizeField = (val: unknown): { he: string; en: string } => {
+  const toStr = (v: unknown): string =>
+    Array.isArray(v)
+      ? v
+          .map((x) => (typeof x === "string" ? x : ""))
+          .join(", ")
+          .trim()
+      : typeof v === "string"
+      ? v.trim()
+      : "";
+
+  if (val == null) return { he: "", en: "" };
+  if (typeof val === "string" || Array.isArray(val)) {
+    const s = toStr(val);
+    return { he: s, en: s };
+  }
+  if (typeof val === "object") {
+    // משלים חוסרים מתוך השפה השנייה
+    return {
+      he: getLangText(val, "he"),
+      en: getLangText(val, "en"),
+    };
+  }
+  return { he: "", en: "" };
+};
 
 interface Props {
   recommendations: Recommendation[];
@@ -36,7 +93,7 @@ const RecommendationPdfView = ({
   console.log("🔍 Total recommendations received:", recommendations.length);
 
   // דיבאג מפורט לכל המלצה
-  recommendations.forEach((r, index) => {
+  /*recommendations.forEach((r, index) => {
     console.log(`🔍 Rec ${index}:`, {
       hasR: !!r,
       hasCategory: !!r?.category,
@@ -47,72 +104,26 @@ const RecommendationPdfView = ({
       languageValue: r?.recommendation?.[language],
       fullRec: r,
     });
-  });
+  });*/
 
-  // פונקציה עזר ליצירת TranslatedField
+  // במקום להציב רק בשפה הנוכחית, נציב בשתיהן
   const createTranslatedField = (
     value: string
   ): { he: string; en: string } => ({
-    he: language === "he" ? value : "",
-    en: language === "en" ? value : "",
+    he: value,
+    en: value,
   });
 
-  // נסה לתקן נתונים שבורים
-  const cleanedRecommendations = recommendations
-    .filter(Boolean) // הסר null/undefined
-    .map((r, index) => {
-      console.log(`🔧 Cleaning rec ${index}:`, r);
-
-      // צור עותק של ההמלצה עם טיפוס מפורש
-      const cleaned: Recommendation = { ...r };
-
-      // תקן מבנה recommendation אם הוא לא אובייקט
-      if (typeof r.recommendation === "string") {
-        console.log(
-          `🔧 Converting recommendation string to object for rec ${index}`
-        );
-        cleaned.recommendation = createTranslatedField(r.recommendation);
-      }
-
-      // תקן מבנה example אם הוא לא אובייקט
-      if (typeof r.example === "string") {
-        console.log(`🔧 Converting example string to object for rec ${index}`);
-        cleaned.example = createTranslatedField(r.example);
-      } else if (Array.isArray(r.example)) {
-        // אם זה מערך, המר למחרוזת ואז לאובייקט
-        console.log(`🔧 Converting example array to object for rec ${index}`);
-        cleaned.example = createTranslatedField(r.example.join(", "));
-      }
-
-      // תקן מבנה diagnosis_type אם הוא לא אובייקט
-      if (typeof r.diagnosis_type === "string") {
-        console.log(
-          `🔧 Converting diagnosis_type string to object for rec ${index}`
-        );
-        cleaned.diagnosis_type = createTranslatedField(r.diagnosis_type);
-      }
-
-      // תקן מבנה contribution אם הוא לא אובייקט
-      if (typeof r.contribution === "string") {
-        console.log(
-          `🔧 Converting contribution string to object for rec ${index}`
-        );
-        cleaned.contribution = createTranslatedField(r.contribution);
-      }
-
-      // תקן מבנה difficulty_description אם הוא לא אובייקט
-      if (typeof r.difficulty_description === "string") {
-        console.log(
-          `🔧 Converting difficulty_description string to object for rec ${index}`
-        );
-        cleaned.difficulty_description = createTranslatedField(
-          r.difficulty_description
-        );
-      }
-
-      console.log(`✅ Cleaned rec ${index}:`, cleaned);
-      return cleaned;
-    });
+  const cleanedRecommendations = useMemo(() => {
+    return recommendations.filter(Boolean).map((r) => ({
+      ...r,
+      recommendation: normalizeField(r.recommendation),
+      example: normalizeField(r.example),
+      diagnosis_type: normalizeField(r.diagnosis_type),
+      contribution: normalizeField(r.contribution),
+      difficulty_description: normalizeField(r.difficulty_description),
+    }));
+  }, [recommendations]);
 
   console.log(
     "🧹 After cleaning:",
@@ -120,35 +131,27 @@ const RecommendationPdfView = ({
     "recommendations"
   );
 
-  // סינון המלצות תקינות לפי שפה
-  const baseFilteredRecommendations = cleanedRecommendations.filter(
-    (r, index) => {
-      // בדוק אם יש category או catagory (שגיאת כתיב בנתונים)
-      const hasCategory = !!(
-        r.category || (r as Recommendation & { catagory?: any }).catagory
-      );
-      const isValid =
-        r &&
-        hasCategory &&
-        r.recommendation &&
-        typeof r.recommendation === "object" &&
-        r.recommendation[language]?.trim();
+  const baseFilteredRecommendations = useMemo(() => {
+    return cleanedRecommendations.filter((r) => {
+      const recText = getLangText(r?.recommendation, language as Lang);
+      return Boolean(r && recText);
+    });
+  }, [cleanedRecommendations, language]);
 
-      console.log(`✅ Rec ${index} is valid:`, isValid, {
-        hasCategory,
-        categoryValue: r.category || (r as any).catagory,
-        hasRecommendation: !!r.recommendation,
-        isObject: typeof r.recommendation === "object",
-        hasLangText: !!r.recommendation?.[language]?.trim(),
-      });
-
-      return isValid;
-    }
-  );
+  // וברינדור:
+  const safeCategory = (r: any) =>
+    (typeof r?.category === "string" && r.category.trim()) || "Uncategorized";
 
   // החלת חיפוש על הנתונים
   const finalRecommendations =
     filteredData.length > 0 ? filteredData : baseFilteredRecommendations;
+
+  const keySig = useMemo(() => {
+    const ids = (finalRecommendations || [])
+      .map((r: any) => r?._id ?? r?.id ?? "")
+      .join("|");
+    return `${language}-${finalRecommendations.length}-${ids}`;
+  }, [language, finalRecommendations]);
 
   console.log(
     "🧾 PDF recs count after filtering:",
@@ -165,33 +168,18 @@ const RecommendationPdfView = ({
 
     setIsSearching(true);
 
-    // חיפוש אמיתי בתוך הנתונים
     const searchResults = baseFilteredRecommendations.filter((rec) => {
-      const searchInText = (text: any): boolean => {
-        if (!text) return false;
-        if (typeof text === "string") {
-          return text.toLowerCase().includes(searchTerm.toLowerCase());
-        }
-        if (typeof text === "object" && text[language]) {
-          const value = text[language];
-          if (Array.isArray(value)) {
-            return value.some((item) =>
-              item.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-          }
-          if (typeof value === "string") {
-            return value.toLowerCase().includes(searchTerm.toLowerCase());
-          }
-        }
-        return false;
-      };
+      const has = (val: any) =>
+        getLangText(val, language as Lang)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
       return (
-        searchInText(rec.recommendation) ||
-        searchInText(rec.example) ||
-        searchInText(rec.contribution) ||
-        searchInText(rec.difficulty_description) ||
-        searchInText(rec.diagnosis_type)
+        has(rec.recommendation) ||
+        has(rec.example) ||
+        has(rec.contribution) ||
+        has(rec.difficulty_description) ||
+        has(rec.diagnosis_type)
       );
     });
 
@@ -329,7 +317,7 @@ const RecommendationPdfView = ({
                   }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   dir={language === "he" ? "rtl" : "ltr"}
                 />
@@ -380,6 +368,7 @@ const RecommendationPdfView = ({
               <PDFDownloadLink
                 document={
                   <MyDocument
+                    key={keySig}
                     recommendations={finalRecommendations}
                     lang={language}
                   />
@@ -445,6 +434,7 @@ const RecommendationPdfView = ({
             showToolbar={true}
           >
             <MyDocument
+              key={keySig}
               recommendations={finalRecommendations}
               lang={language}
             />

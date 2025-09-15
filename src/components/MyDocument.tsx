@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Recommendation } from "@/types/recommendation";
 import React from "react";
 import {
@@ -12,7 +13,6 @@ import { format } from "date-fns";
 import { he, enUS } from "date-fns/locale";
 import HeeboRegular from "@/components/ui/fonts/Heebo-Light.ttf";
 import HeeboBold from "@/components/ui/fonts/Heebo-Medium.ttf";
-
 
 interface MyDocumentProps {
   recommendations: Recommendation[];
@@ -68,24 +68,33 @@ Font.register({
 
 const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
   const firstRecommendation = recommendations[0]?.recommendation;
-const firstDifficulty = recommendations[0]?.difficulty_description;
+  const firstDifficulty = recommendations[0]?.difficulty_description;
 
-console.log("======= בדיקת תוכן המלצות =======");
-console.log("✅ JSON.stringify of recommendations:", JSON.stringify(recommendations, null, 2));
+  /*console.log("======= בדיקת תוכן המלצות =======");
+  console.log(
+    "✅ JSON.stringify of recommendations:",
+    JSON.stringify(recommendations, null, 2)
+  );*/
 
-if (typeof firstRecommendation === "object" && firstRecommendation !== null && "he" in firstRecommendation) {
-  console.log("✅ המלצה בעברית:", firstRecommendation.he);
-} else {
-  console.log("✅ המלצה בעברית (string):", firstRecommendation);
-}
+  if (
+    typeof firstRecommendation === "object" &&
+    firstRecommendation !== null &&
+    "he" in firstRecommendation
+  ) {
+    //console.log("✅ המלצה בעברית:", firstRecommendation.he);
+  } else {
+    //console.log("✅ המלצה בעברית (string):", firstRecommendation);
+  }
 
-if (typeof firstDifficulty === "object" && firstDifficulty !== null && "he" in firstDifficulty) {
-  console.log("✅ תיאור קושי בעברית:", firstDifficulty.he);
-} else {
-  console.log("✅ תיאור קושי בעברית (string):", firstDifficulty);
-}
-
-console.log("===================================");
+  if (
+    typeof firstDifficulty === "object" &&
+    firstDifficulty !== null &&
+    "he" in firstDifficulty
+  ) {
+    //console.log("✅ תיאור קושי בעברית:", firstDifficulty.he);
+  } else {
+    //console.log("✅ תיאור קושי בעברית (string):", firstDifficulty);
+  }
 
   const t = translations[lang];
   const dateStr = format(new Date(), "PPP", {
@@ -149,10 +158,6 @@ console.log("===================================");
   });
 
   console.log("📄 recs for PDF:", recommendations);
-  console.log("🔤 sample text fields:", {
-    firstDiff: recommendations[0]?.difficulty_description,
-    textRead: recommendations[0]?.difficulty_description?.[lang],
-  });
 
   // עזר קטן לשליפת שדות לפי שפה - עם טיפוס נכון
   const getText = (
@@ -173,12 +178,29 @@ console.log("===================================");
     return "-";
   };
 
-  // עזר נוסף לקבלת קטגוריה
-  const getCategory = (rec: any): string => {
-    if (rec.category) return rec.category;
-    if (rec.catagory) return getText(rec.catagory);
-    return "-";
+  const categoryTranslations = {
+    תזונה: "nutrition",
+    "פעילות גופנית": "physical activity",
+    סביבה: "environment",
+    "שינויים סביבתיים": "environmental changes",
   };
+
+  const getTranslatedCategory = (category: string): string => {
+    if (!category) return lang === "he" ? "לא מסווג" : "Uncategorized";
+
+    // אם השפה אנגלית וזה עברית - תרגם
+    if (lang === "en" && categoryTranslations[category]) {
+      return categoryTranslations[category];
+    }
+
+    // אחרת החזר כמו שזה
+    return category;
+  };
+
+  // מניחים שמעתה category הוא מחרוזת תקינה
+  const getCategory = (rec: any): string =>
+    (typeof rec?.category === "string" && rec.category.trim()) ||
+    "Uncategorized";
 
   return (
     <Document>
@@ -207,8 +229,7 @@ console.log("===================================");
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-            {cleanText(getText(rec.diagnosis_type))}
-
+              {cleanText(getText(rec.diagnosis_type))}
             </Text>
 
             <Text
@@ -219,8 +240,7 @@ console.log("===================================");
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {cleanText(getCategory(rec))}
-
+              {cleanText(getTranslatedCategory(getText(rec.category)))}
             </Text>
 
             <Text
@@ -232,7 +252,6 @@ console.log("===================================");
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
               {cleanText(getText(rec.difficulty_description))}
-
             </Text>
 
             <Text

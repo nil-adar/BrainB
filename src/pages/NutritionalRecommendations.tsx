@@ -1,25 +1,21 @@
 import { Search, Bell, UserCircle, ArrowLeft, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Logo } from "@/components/ui/logo";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import RecommendationToggle from "@/components/RecommendationToggle";
 
-interface SettingsContextType {
+/*interface SettingsContextType {
   language: "he" | "en";
   toggleLanguage: () => void;
-}
+}*/
 
 const translations = {
   en: {
@@ -68,15 +64,17 @@ const translations = {
   },
 };
 
+type Translated = { en: string; he: string };
+type Category = string | string[] | [string, string] | Translated;
+
 interface Recommendation {
   _id: string;
-  difficulty_description: { en: string; he: string };
-  recommendation: { en: string; he: string };
+  difficulty_description: Translated;
+  recommendation: Translated;
   example: { en: string[] | string; he: string[] | string };
-  contribution: { en: string; he: string };
+  contribution: Translated;
   tags?: string[];
-  category?: string;
-  catagory?: { en: string; he: string }; // Typo מהקוד המקורי, נשמר לתאימות
+  category?: Translated;
 }
 
 const getText = (
@@ -103,9 +101,6 @@ export default function NutritionalRecommendations() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // הסרת ייבואים ושימוש ב-useQuery לא תקינים (לא קשורים ללוגיקת הברכה וגרמו לשגיאות)
-  // const { data: userData, isLoading: userLoading, error: userError, } = useQuery({ queryKey: ["user", userId], queryFn: () => userService.getUserById(userId), enabled: !!userId, });
-
   // Get studentId from URL params or path
   let studentId = new URLSearchParams(location.search).get("studentId");
   if (!studentId) {
@@ -119,6 +114,95 @@ export default function NutritionalRecommendations() {
   if (!studentId) {
     studentId = localStorage.getItem("studentId");
   }
+
+  const [userPreference, setUserPreference] = useState<"main" | "both" | null>(
+    null
+  );
+  const [hasMultipleTypes, setHasMultipleTypes] = useState(false);
+  const [recommendationData, setRecommendationData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadSavedPreference = async () => {
+      const savedPreference = sessionStorage.getItem(
+        "recommendationPreference"
+      ) as "main" | "both" | null;
+
+      if (savedPreference && studentId) {
+        setUserPreference(savedPreference);
+
+        try {
+          // **תיקון עיקרי: כלול את סינון הסוג בבקשה**
+          const queryParams = new URLSearchParams({
+            lang: language,
+          });
+
+          if (savedPreference) {
+            queryParams.append("view", savedPreference);
+          }
+
+          const response = await fetch(
+            `/api/recommendations/${studentId}?${queryParams.toString()}`
+          );
+
+          /*try {
+          const response = await fetch(
+            `/api/recommendations/${studentId}?lang=${language}&view=${savedPreference}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendationData(data);
+            setHasMultipleTypes(
+              data.multipleTypes && data.subTypes?.length > 0
+            );
+          }
+        } catch (error) {
+          console.error("Failed to load recommendation data:", error);
+        }
+      }
+    };
+
+    loadSavedPreference();
+  }, [studentId, language]);*/
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendationData(data);
+            setHasMultipleTypes(
+              data.multipleTypes && data.subTypes?.length > 0
+            );
+
+            // **תיקון נוסף: סנן את ההמלצות התזונתיות מהנתונים המסוננים כבר**
+            const getCategoryText = (
+              cat: Translated | undefined,
+              lang: "he" | "en"
+            ) =>
+              cat?.[lang]?.trim() || cat?.en?.trim() || cat?.he?.trim() || "";
+
+            type NutriRec = Recommendation & { type?: string };
+            const allRecs = (data.recommendations ?? []) as NutriRec[];
+
+            const nutritionalRecs = allRecs.filter((rec) => {
+              const cat = getCategoryText(rec.category, language).toLowerCase();
+              return (
+                rec.type === "nutrition" ||
+                cat.includes("nutrition") ||
+                cat.includes("תזונה")
+              );
+            });
+
+            console.log(
+              "🥑 Nutritional recommendations found with filtering:",
+              nutritionalRecs.length
+            );
+            setRecommendations(nutritionalRecs);
+          }
+        } catch (error) {
+          console.error("Failed to load recommendation data:", error);
+        }
+      }
+    };
+
+    loadSavedPreference();
+  }, [studentId, language]);
 
   // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
   useEffect(() => {
@@ -135,6 +219,11 @@ export default function NutritionalRecommendations() {
 
     const loadData = async () => {
       setLoading(true); // ודא שטעינה פעילה בתחילת שליפת נתונים
+
+      // **תיקון: טען את ההעדפה השמורה**
+      const savedPreference = sessionStorage.getItem(
+        "recommendationPreference"
+      ) as "main" | "both" | null;
 
       // 1. טעינת שם התלמיד
       if (studentId) {
@@ -166,14 +255,23 @@ export default function NutritionalRecommendations() {
         setStudentName("תלמיד"); // ברירת מחדל אם אין studentId
       }
 
-      // 2. טעינת המלצות
+      // 2. טעינת המלצות עם הסינון הנכון
       if (studentId) {
         try {
           console.log("📡 Fetching recommendations for student:", studentId);
+
+          const queryParams = new URLSearchParams({
+            lang: language,
+          });
+
+          // **תיקון עיקרי: כלול את ההעדפה השמורה**
+          if (savedPreference) {
+            queryParams.append("view", savedPreference);
+          }
+
           const response = await fetch(
-            `/api/recommendations/${studentId}?lang=${language}`
+            `/api/recommendations/${studentId}?${queryParams.toString()}`
           );
-          console.log("📬 Response status:", response.status);
 
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -182,21 +280,21 @@ export default function NutritionalRecommendations() {
           const data = await response.json();
           console.log("📦 Raw data received:", data);
 
-          const allRecs = data.recommendations || [];
-          console.log("📊 Total recommendations:", allRecs.length);
+          const getCategoryText = (
+            cat: Translated | undefined,
+            lang: "he" | "en"
+          ) => cat?.[lang]?.trim() || cat?.en?.trim() || cat?.he?.trim() || "";
 
-          const nutritionalRecs = allRecs.filter((rec: any) => {
-            const category =
-              rec.category ||
-              rec.catagory?.[language] ||
-              rec.catagory?.en ||
-              "";
-            const isNutritional =
-              category.toLowerCase().includes("nutrition") ||
-              category.toLowerCase().includes("תזונה") ||
-              rec.type === "nutrition";
+          type NutriRec = Recommendation & { type?: string };
+          const allRecs = (data.recommendations ?? []) as NutriRec[];
 
-            return isNutritional;
+          const nutritionalRecs = allRecs.filter((rec) => {
+            const cat = getCategoryText(rec.category, language).toLowerCase();
+            return (
+              rec.type === "nutrition" ||
+              cat.includes("nutrition") ||
+              cat.includes("תזונ")
+            );
           });
 
           console.log(
@@ -212,14 +310,14 @@ export default function NutritionalRecommendations() {
           setRecommendations([]);
         }
       } else {
-        setRecommendations([]); // אין studentId, אין המלצות
+        setRecommendations([]);
       }
 
       setLoading(false);
     };
 
     loadData();
-  }, [studentId, language, location]); // תלויות עבור useEffect
+  }, [studentId, language, location]);
 
   const breadcrumbItems = [
     { label: t.home, href: "/dashboard" },
@@ -281,7 +379,7 @@ export default function NutritionalRecommendations() {
     <div
       className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
       dir={isRTL ? "rtl" : "ltr"}
-      style={{ direction: isRTL ? "rtl" : "ltr" }}
+      //style={{ direction: isRTL ? "rtl" : "ltr" }}
     >
       {/* Header */}
       <header className="bg-card border-b border-border">
@@ -381,6 +479,16 @@ export default function NutritionalRecommendations() {
             {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
           </h2>
         </div>
+
+        {hasMultipleTypes && userPreference && recommendationData && (
+          <RecommendationToggle
+            language={language}
+            mainType={recommendationData.mainType || ""}
+            subTypes={recommendationData.subTypes || []}
+            currentSelection={userPreference}
+            readonly={true}
+          />
+        )}
 
         {/* Important Note */}
         <div

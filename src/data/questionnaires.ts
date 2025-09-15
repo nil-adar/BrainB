@@ -14,7 +14,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "seating strategy",
         type: "single",
         text: {
-          he: "האם אתה מרגיש שקל לך להתרכז במקום שאתה יושב בו בכיתה?",
+          he: "האם אתה מרגיש שקל לך להתרכז במקום שאתה יושב/ת בו בכיתה?",
           en: "Do you feel your classroom seat helps you focus?",
         },
         options: [
@@ -170,7 +170,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "low_energy",
         type: "single",
         text: {
-          he: "האם אתה מרגיש שלפעמים קשה לך להתרכז לאורך זמן, אפילו כשאתה מנסה?",
+          he: "האם את/ה מרגיש/ה שלפעמים קשה לך להתרכז לאורך זמן, אפילו כשאת/ה מנסה?",
           en: "Do you sometimes find it hard to pay attention, even when you really try?",
         },
         options: [
@@ -209,7 +209,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "emotional_irritability_mgD",
         type: "single",
         text: {
-          he: "האם אתה מרגיש לפעמים שאתה כועס בקלות או מתעצבן מהר?",
+          he: "האם את/ה מרגיש/ה לפעמים שאת/ה כועס/ת בקלות או מתעצבן/ת מהר?",
           en: "Do you get upset or angry easily?",
         },
         options: [
@@ -248,7 +248,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "vegetables_intake",
         type: "single",
         text: {
-          he: "האם אתה אוכל ירקות במהלך היום?",
+          he: "האם את/ה אוכל/ת ירקות במהלך היום?",
           en: "Do you eat vegetables during the day?",
         },
         options: [
@@ -287,7 +287,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "child_daytime_fatigue",
         type: "single",
         text: {
-          he: "האם אתה מרגיש עייף במהלך היום?",
+          he: "האם את/ה מרגיש/ה עייף/ה במהלך היום?",
           en: "Do you feel tired during the day, even after sleeping?",
         },
         options: [
@@ -326,7 +326,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "child_memory_support_needed",
         type: "single",
         text: {
-          he: "כמה פעמים ביום אתה שוכח מה רצית לעשות?",
+          he: "כמה פעמים ביום את/ה שוכח/ת מה רצית לעשות?",
           en: "How often do you forget what you were about to do?",
         },
         options: [
@@ -1184,7 +1184,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "environmental_distraction",
         type: "single",
         text: {
-          he: "עד כמה קל להסיח את דעתו של התלמיד מגירויים סביבתיים (לדוגמה רעש מבחוץ, תזוזה של תלמיד אחר)?",
+          he: "עד כמה קל להסיח את הדעה של התלמיד/ה מגירויים סביבתיים (לדוגמה רעש מבחוץ, תזוזה של תלמיד אחר)?",
           en: "How easily is your child distracted by environmental stimuli (e.g., outside noise, another student's movement)?",
         },
         options: [
@@ -1259,7 +1259,7 @@ export const questionnaires: Questionnaire[] = [
       },
       {
         id: "q2-11",
-        tag: "sensorimotor_impulsivity",
+        tag: "sensorimotor_Impulsivity",
         type: "single",
         text: {
           he: "האם הילד מתקשה לעצור את עצמו בזמן משחקים שדורשים תנועה או מגע (כגון משחקי כדור, קפיצה, תחרות)?",
@@ -1379,7 +1379,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "attention_during_movement",
         type: "single",
         text: {
-          he: "עד כמה הילד מצליח להתרכז כשנדרש ממנו לעבור בין ישיבה לתנועה (למשל בעת הפסקות פעילות בשיעור)?",
+          he: "עד כמה הילד מצליח/ה להתרכז כשנדרש ממנו לעבור בין ישיבה לתנועה (למשל בעת הפסקות פעילות בשיעור)?",
           en: "How well does your child stay focused when switching between sitting and movement (e.g., during active breaks in class)?",
         },
         options: [
@@ -1418,7 +1418,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "time orientation",
         type: "single",
         text: {
-          he: "האם הילד שוכח לעיתים קרובות משימות שקיבל או מתקשה לעקוב אחרי סדר פעולות?",
+          he: "האם הילד שוכח/ת לעיתים קרובות משימות שקיבל/ה או מתקשה לעקוב אחרי סדר פעולות?",
           en: "Does your child often forget assigned tasks or struggle to follow a sequence of actions?",
         },
         options: [
@@ -1464,14 +1464,14 @@ export const questionnaires: Questionnaire[] = [
           {
             id: "opt1",
             text: {
-              he: " היפראקטיביות: הילד מתקשה לשבת במקום לאורך זמן, קופץ או מתנועע באופן מופרז, מרבה לדבר בלי הפסקה ואינו מצליח להירגע גם כשהסביבה מצפה ממנו להיות שקט.",
+              he: " היפראקטיביות: הילד מתקשה לשבת במקום לאורך זמן, קופץ/ת או מתנועע/ת באופן מופרז, מרבה לדבר בלי הפסקה ואינו מצליח/ה להירגע גם כשהסביבה מצפה ממנו להיות שקט.",
               en: " Hyperactivity: Your child has difficulty sitting still for long periods, fidgets or moves excessively, talks nonstop, and is unable to calm down even when the situation calls for quiet.",
             },
           },
           {
             id: "opt2",
             text: {
-              he: "אימפולסיביות: הילד נוקט בפעולות ללא מחשבה מוקדמת – לוקח צעצועים או מצרכים בלי לבקש רשות, משיב תשובות או מתערב בשיחות ללא סדר, ולעיתים מתקשה לחכות לתורו או לעצור בזמן",
+              he: "אימפולסיביות: הילד נוקט/ת בפעולות ללא מחשבה מוקדמת – לוקח/ת צעצועים או מצרכים בלי לבקש רשות, משיב תשובות או מתערב/ת בשיחות ללא סדר, ולעיתים מתקשה לחכות לתורו או לעצור בזמן",
               en: "Impulsivity: Your child acts without thinking—takes toys or items without asking, blurts out answers or interrupts conversations, and often struggles to wait their turn or stop themselves in time.",
             },
           },
@@ -1493,7 +1493,7 @@ export const questionnaires: Questionnaire[] = [
       },
       {
         id: "q2-17",
-        tag: "",
+        tag: "trauma_suspected",
         type: "single",
         text: {
           he: "האם ההתנהגויות שתיארתם תמיד היו קיימות אצל הילד?",
@@ -3097,7 +3097,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "emotional_dysregulation_relax",
         type: "single",
         text: {
-          he: "עד כמה התלמיד מתקשה להירגע לאחר שהתרגש או כעס בשיעור?",
+          he: "עד כמה התלמיד/ה מתקשה להירגע לאחר שהתרגש או כעס בשיעור?",
           en: "To what extent does the student have difficulty calming down after becoming excited or angry in class?",
         },
         options: [
@@ -3136,7 +3136,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "emotional_reactivity_classroom",
         type: "single",
         text: {
-          he: "האם התלמיד נוטה להגיב בעוצמה רגשית למצבים פשוטים (כגון שינוי במיקום ישיבה או תיקון של טעות)?",
+          he: "האם התלמיד/ה נוטה להגיב בעוצמה רגשית למצבים פשוטים (כגון שינוי במיקום ישיבה או תיקון של טעות)?",
           en: "Does the student tend to react emotionally and intensely to minor situations (such as a change in seating arrangement or a correction of a mistake)?",
         },
         options: [
@@ -3175,7 +3175,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "task_completion_difficulty",
         type: "single",
         text: {
-          he: "האם התלמיד מתחיל משימות בכיתה אך לא מצליח לסיים אותן?",
+          he: "האם התלמיד/ה מתחיל משימות בכיתה אך לא מצליח לסיים אותן?",
           en: "Does the student start tasks in class but fail to complete them?",
         },
         options: [
@@ -3215,7 +3215,7 @@ export const questionnaires: Questionnaire[] = [
         type: "single",
         text: {
           he: "האם אתה שם לב להחמרה בחוסר שקט או בתגובות אימפולסיביות לאחר הפסקות אוכל או חטיפים?",
-          en: "Have you noticed increased restlessness or impulsive behavior after snack or meal breaks?",
+          en: "Have you noticed increased restlessness or Impulsive behavior after snack or meal breaks?",
         },
         options: [
           {
@@ -3253,7 +3253,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "post_meal_fatigue_focus_drop",
         type: "single",
         text: {
-          he: "האם התלמיד מראה ירידה בריכוז או מגלה עייפות במיוחד בשעות שלאחר ארוחת עשר או הצהריים?",
+          he: "האם התלמיד/ה מראה ירידה בריכוז או מגלה עייפות במיוחד בשעות שלאחר ארוחת עשר או הצהריים?",
           en: "Does the student show a drop in focus or appear tired especially after mid-morning or lunch breaks?",
         },
         options: [
@@ -3292,7 +3292,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "attention_instruction_following",
         type: "single",
         text: {
-          he: "האם התלמיד מתקשה להקשיב להוראות מתחילתן ועד סופן?",
+          he: "האם התלמיד/ה מתקשה להקשיב להוראות מתחילתן ועד סופן?",
           en: "Does the student struggle to follow instructions from beginning to end?",
         },
         options: [
@@ -3328,11 +3328,11 @@ export const questionnaires: Questionnaire[] = [
       },
       {
         id: "q3-17",
-        tag: "general_impulsivity",
+        tag: "general_Impulsivity",
         type: "single",
         text: {
-          he: "עד כמה התלמיד פועל באופן אימפולסיבי, מבלי לעצור ולחשוב?",
-          en: "To what extent does the student act impulsively without stopping to think?",
+          he: "עד כמה התלמיד/ה פועל באופן אימפולסיבי, מבלי לעצור ולחשוב?",
+          en: "To what extent does the student act Impulsivity without stopping to think?",
         },
         options: [
           {
@@ -3370,7 +3370,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "sustained_attention_difficulty",
         type: "single",
         text: {
-          he: "האם התלמיד מגלה קושי להתמיד במשימה לאורך זמן, גם כאשר היא מותאמת לרמתו?",
+          he: "האם התלמיד/ה מגלה קושי להתמיד במשימה לאורך זמן, גם כאשר היא מותאמת לרמתו?",
           en: "Does the student have difficulty staying on task for a prolonged period, even when the task is at an appropriate level?",
         },
         options: [
@@ -3604,7 +3604,7 @@ export const questionnaires: Questionnaire[] = [
         tag: "sustained_attention_difficulty",
         type: "single",
         text: {
-          he: "האם הילד מתחיל משימות אך מפסיק לפני סיום, גם כשהן מותאמות לרמתו?",
+          he: "האם הילד מתחיל/ה משימות אך מפסיק/ה לפני סיום, גם כשהן מותאמות לרמתו?",
           en: "Does the child start tasks but stop before completing them, even when they are appropriate for their level?",
         },
         options: [

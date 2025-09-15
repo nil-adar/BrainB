@@ -18,6 +18,38 @@ import { useState, useEffect } from "react"; // הוחזר לייבוא המקו
 import { useSettings } from "@/components/SettingsContext"; // נשאר ייבוא חיצוני
 import { LanguageToggle } from "@/components/LanguageToggle"; // נשאר ייבוא חיצוני
 import { Logo } from "@/components/ui/logo";
+import RecommendationToggle from "@/components/RecommendationToggle";
+
+const getCategoryText = (
+  cat:
+    | [string, string]
+    | string[]
+    | string
+    | { en: string; he: string }
+    | undefined,
+  lang: "he" | "en"
+): string => {
+  if (!cat) return "";
+
+  // אם זה כבר מחרוזת/אובייקט מתורגם
+  if (typeof cat === "string") return cat.trim();
+  if (!Array.isArray(cat)) {
+    const s = (cat[lang] || cat.en || cat.he || "").trim();
+    return s;
+  }
+
+  // cat הוא מערך של מחרוזות (2 פריטים)
+  const isHeb = (s: string) => /[\u0590-\u05FF]/.test(s);
+  const trimmed = cat
+    .map((s) => (typeof s === "string" ? s.trim() : ""))
+    .filter(Boolean);
+
+  if (lang === "he") {
+    return trimmed.find(isHeb) || trimmed[1] || trimmed[0] || "";
+  } else {
+    return trimmed.find((s) => !isHeb(s)) || trimmed[0] || trimmed[1] || "";
+  }
+};
 
 const translations = {
   en: {
@@ -42,8 +74,8 @@ const translations = {
     high: "High",
     low: "Low",
     combined: "Combined",
-    hyperactive: "Hyperactive",
-    inattentive: "Inattentive",
+    Hyperactivity: "Hyperactivity",
+    Inattention: "Inattention",
     // נוסף עבור עקביות לוגיקת הברכה
     unidentifiedUser: "Unidentified User",
     viewingAsParent: "Viewing as Parent for",
@@ -71,24 +103,24 @@ const translations = {
     high: "גבוה",
     low: "נמוך",
     combined: "משולב",
-    hyperactive: "היפראקטיבי",
-    inattentive: "קשב",
+    Hyperactivity: "היפראקטיבי",
+    Inattention: "קשב",
     // נוסף עבור עקביות לוגיקת הברכה
     unidentifiedUser: "👤 משתמש לא מזוהה",
     viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
     viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
   },
 };
+type Translated = { en: string; he: string };
 
 interface Recommendation {
   _id: string;
-  difficulty_description: { en: string; he: string };
-  recommendation: { en: string; he: string };
+  difficulty_description: Translated;
+  recommendation: Translated;
   example: { en: string[] | string; he: string[] | string };
-  contribution: { en: string; he: string };
+  contribution: Translated;
   tags?: string[];
-  category?: string;
-  catagory?: { en: string; he: string };
+  category?: [string, string] | string[] | string | { en: string; he: string };
   duration?: number;
   intensity?: string;
 }
@@ -130,6 +162,89 @@ export default function PhysicalActivityRecommendations() {
     }
   }
 
+  const [userPreference, setUserPreference] = useState<"main" | "both" | null>(
+    null
+  );
+  const [hasMultipleTypes, setHasMultipleTypes] = useState(false);
+  const [recommendationData, setRecommendationData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadSavedPreference = async () => {
+      const savedPreference = sessionStorage.getItem(
+        "recommendationPreference"
+      ) as "main" | "both" | null;
+
+      if (savedPreference && studentId) {
+        setUserPreference(savedPreference);
+        try {
+          const queryParams = new URLSearchParams({
+            lang: language,
+          });
+
+          if (savedPreference) {
+            queryParams.append("view", savedPreference);
+          }
+
+          const response = await fetch(
+            `/api/recommendations/${studentId}?${queryParams.toString()}`
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendationData(data);
+            setHasMultipleTypes(
+              data.multipleTypes && data.subTypes?.length > 0
+            );
+
+            // סנן רק המלצות פעילות גופנית מהנתונים המסוננים
+            const allRecs = data.recommendations || [];
+            const physicalRecs = allRecs.filter((rec: any) => {
+              const category =
+                rec.category ||
+                rec.category?.[language] ||
+                rec.category?.en ||
+                "";
+              return (
+                category.toLowerCase().includes("physical") ||
+                category.toLowerCase().includes("גופנית") ||
+                rec.type === "physical"
+              );
+            });
+
+            console.log(
+              "🏃‍♂️ Physical recommendations with filtering:",
+              physicalRecs.length
+            );
+            setRecommendations(physicalRecs);
+          }
+        } catch (error) {
+          console.error("Failed to load recommendation data:", error);
+        }
+      }
+    };
+
+    loadSavedPreference();
+  }, [studentId, language]);
+  /*try {
+          const response = await fetch(
+            `/api/recommendations/${studentId}?lang=${language}&view=${savedPreference}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendationData(data);
+            setHasMultipleTypes(
+              data.multipleTypes && data.subTypes?.length > 0
+            );
+          }
+        } catch (error) {
+          console.error("Failed to load recommendation data:", error);
+        }
+      }
+    };
+
+    loadSavedPreference();
+  }, [studentId, language]);*/
+
   // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -146,14 +261,49 @@ export default function PhysicalActivityRecommendations() {
     const loadRecommendations = async () => {
       try {
         console.log("🚀 Starting to load physical recommendations...");
-
+        const savedPreference = sessionStorage.getItem(
+          "recommendationPreference"
+        ) as "main" | "both" | null;
         if (!studentId) {
           console.log("❌ No studentId found");
           setRecommendations([]);
           return;
         }
-
         console.log("📡 Fetching recommendations for student:", studentId);
+
+        const queryParams = new URLSearchParams({
+          lang: language,
+        });
+
+        if (savedPreference) {
+          queryParams.append("view", savedPreference);
+        }
+
+        const response = await fetch(
+          `/api/recommendations/${studentId}?${queryParams.toString()}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("📦 Raw data received:", data);
+
+        // Filter only physical activity recommendations from the already filtered data
+        const allRecs = data.recommendations || [];
+        const physicalRecs = allRecs.filter((rec: any) => {
+          const category =
+            rec.category || rec.category?.[language] || rec.category?.en || "";
+          const isPhysical =
+            category.toLowerCase().includes("physical") ||
+            category.toLowerCase().includes("גופנית") ||
+            rec.type === "physical";
+
+          return isPhysical;
+        });
+
+        /*console.log("📡 Fetching recommendations for student:", studentId);
         console.log("🌍 Using language:", language);
 
         const response = await fetch(
@@ -174,7 +324,7 @@ export default function PhysicalActivityRecommendations() {
 
         const physicalRecs = allRecs.filter((rec: any) => {
           const category =
-            rec.category || rec.catagory?.[language] || rec.catagory?.en || "";
+            rec.category || rec.category?.[language] || rec.category?.en || "";
           const isPhysical =
             category.toLowerCase().includes("physical") ||
             category.toLowerCase().includes("גופנית") ||
@@ -190,7 +340,7 @@ export default function PhysicalActivityRecommendations() {
           });
 
           return isPhysical;
-        });
+        });*/
 
         console.log("🏃‍♂️ Physical recommendations found:", physicalRecs.length);
         console.log(
@@ -232,7 +382,7 @@ export default function PhysicalActivityRecommendations() {
 
     loadRecommendations();
     loadStudentName();
-  }, [studentId, language, location]); // הוספנו language ל-dependency array
+  }, [studentId, language, location]);
 
   const breadcrumbItems = [
     { label: t.home, href: "/dashboard" },
@@ -279,10 +429,10 @@ export default function PhysicalActivityRecommendations() {
 
     tags.forEach((tag) => {
       if (tag.includes("combined")) result.push(isRTL ? "משולב" : "Combined");
-      if (tag.includes("hyperactive"))
-        result.push(isRTL ? "היפראקטיבי" : "Hyperactive");
-      if (tag.includes("inattentive"))
-        result.push(isRTL ? "קשב" : "Inattentive");
+      if (tag.includes("Hyperactivity"))
+        result.push(isRTL ? "היפראקטיבי" : "Hyperactivity");
+      if (tag.includes("Inattention"))
+        result.push(isRTL ? "קשב" : "Inattention");
     });
 
     return result;
@@ -418,6 +568,16 @@ export default function PhysicalActivityRecommendations() {
               {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
             </h2>
           </div>
+
+          {hasMultipleTypes && userPreference && recommendationData && (
+            <RecommendationToggle
+              language={language}
+              mainType={recommendationData.mainType || ""}
+              subTypes={recommendationData.subTypes || []}
+              currentSelection={userPreference}
+              readonly={true}
+            />
+          )}
 
           {/* Important Note */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">

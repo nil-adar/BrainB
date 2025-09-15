@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Search,
   Bell,
@@ -18,7 +19,6 @@ import { format } from "date-fns";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
 import RecommendationPdfView from "@/components/RecommendationPdfView";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -26,6 +26,23 @@ import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { authService } from "@/services/authService";
 import { Logo } from "@/components/ui/logo";
+import RecommendationTypeSelectionModal from "@/components/RecommendationTypeSelectionModal";
+import RecommendationToggle from "@/components/RecommendationToggle";
+import { useState, useEffect, useCallback } from "react";
+import { getViewerDashboardUrl } from "@/utils/paths";
+
+interface RecommendationResponseData {
+  recommendations: any[];
+  mainType?: string;
+  multipleTypes?: boolean;
+  subTypes?: string[];
+  answersByTag?: any[];
+  professionalSupport?: boolean;
+  selectedTags?: string[];
+  allergyList?: string[];
+  recommendationTypesList?: string[];
+  message?: string;
+}
 
 const translations = {
   en: {
@@ -277,9 +294,8 @@ const MissingFormsPopup = ({
       navigate(`/assessment?studentId=${studentId}`);
     }
   };
-  //לתקן כאן את הכפתור
   const handleBackToDashboard = () => {
-    navigate(-1); // חזרה לדף הקודם
+    navigate(getViewerDashboardUrl(viewerRole)); // חזרה לדשבורד לפי תפקיד הצופה
   };
 
   // פונקציה לבדיקה אם המשתמש הנוכחי יכול למלא את הטופס
@@ -582,9 +598,82 @@ export default function Recommendations() {
   const isStudentViewer = loggedUserId === studentId;
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTypeSelectionModal, setShowTypeSelectionModal] = useState(false);
+  const [userPreference, setUserPreference] = useState<"main" | "both" | null>(
+    null
+  );
+  const [hasMultipleTypes, setHasMultipleTypes] = useState(false);
+  const [recommendationData, setRecommendationData] =
+    useState<RecommendationResponseData | null>(null);
 
-  // *** פונקציה לטעינת פרטי המשתמש הנוכחי ***
-  const loadCurrentUser = async () => {
+  const goToViewerDashboard = useCallback(() => {
+    navigate(getViewerDashboardUrl(viewerRole));
+  }, [navigate, viewerRole]);
+
+  const fetchRecommendations = async (
+    preference?: "main" | "both"
+  ): Promise<RecommendationResponseData | null> => {
+    try {
+      const queryParams = new URLSearchParams({
+        lang: language,
+      });
+
+      if (preference) {
+        queryParams.append("view", preference);
+      }
+      console.log(
+        "🔍 [Hebrew Debug] Final URL will be:",
+        `/api/recommendations/${studentId}?${queryParams.toString()}`
+      );
+      const recommendationsResponse = await fetch(
+        `/api/recommendations/${studentId}?${queryParams.toString()}`
+      );
+
+      if (recommendationsResponse.ok) {
+        const data: RecommendationResponseData =
+          await recommendationsResponse.json();
+
+        const filteredRecommendations = data.recommendations || [];
+        setRecommendations(filteredRecommendations);
+        setRecommendationData({
+          ...data,
+          recommendations: filteredRecommendations,
+        });
+        console.log(
+          "✅ Recommendations fetched:",
+          filteredRecommendations.length
+        );
+        console.log("🔍 Multiple types:", data.multipleTypes);
+        console.log(
+          "🔍 Filtered recommendations IDs:",
+          filteredRecommendations.map((r) => r._id)
+        );
+
+        return data;
+      } else {
+        console.warn(
+          "⚠️ Failed to fetch recommendations:",
+          recommendationsResponse.status
+        );
+        setRecommendations([]);
+        return null;
+      }
+    } catch (err) {
+      console.error("❌ Failed to load recommendations:", err);
+      setRecommendations([]);
+      return null;
+    }
+  };
+
+  const handlePreferenceSelect = async (preference: "main" | "both") => {
+    setShowTypeSelectionModal(false);
+    setUserPreference(preference);
+    sessionStorage.setItem("recommendationPreference", preference);
+
+    await fetchRecommendations(preference);
+  };
+
+  const loadCurrentUser = useCallback(async () => {
     try {
       console.log("🔍 Loading current user...");
 
@@ -652,7 +741,7 @@ export default function Recommendations() {
       setCurrentUserId(studentId || "unknown");
       return { userId: studentId || "unknown", role: "student" };
     }
-  };
+  }, [studentId]);
 
   useEffect(() => {
     const initializeComponent = async () => {
@@ -667,30 +756,31 @@ export default function Recommendations() {
       const currentUser = await loadCurrentUser();
       console.log("👤 Current user:", currentUser);
 
-      // 2. טען המלצות
-      try {
-        const recommendationsResponse = await fetch(
-          `/api/recommendations/${studentId}?lang=${language}`
-        );
+      // 2. בדוק אם יש העדפה שמורה
+      const savedPreference = sessionStorage.getItem(
+        "recommendationPreference"
+      ) as "main" | "both" | null;
 
-        if (recommendationsResponse.ok) {
-          const data = await recommendationsResponse.json();
-          const recs = data.recommendations || [];
-          setRecommendations(recs);
-          console.log("✅ Recommendations fetched:", recs.length);
-        } else {
-          console.warn(
-            "⚠️ Failed to fetch recommendations:",
-            recommendationsResponse.status
-          );
-          setRecommendations([]);
+      // 3. טען המלצות
+      const data = await fetchRecommendations(savedPreference || undefined);
+
+      // 4. בדוק אם יש כמה סוגים
+      if (data) {
+        const multipleTypes =
+          data.multipleTypes && data.subTypes && data.subTypes.length > 0;
+        setHasMultipleTypes(multipleTypes);
+
+        if (multipleTypes) {
+          if (savedPreference) {
+            // יש העדפה שמורה - השתמש בה
+            setUserPreference(savedPreference);
+          } else {
+            // אין העדפה שמורה - הצג popup פעם אחת
+            setShowTypeSelectionModal(true);
+          }
         }
-      } catch (err) {
-        console.error("❌ Failed to load recommendations:", err);
-        setRecommendations([]);
       }
-
-      // 3. טען סטטוס טפסים
+      // 5. טען סטטוס טפסים
       try {
         const statusResponse = await fetch(
           `/api/forms/check-status/${studentId}`
@@ -717,7 +807,6 @@ export default function Recommendations() {
             "⚠️ Failed to fetch forms status:",
             statusResponse.status
           );
-          // אל תציג פופאפ אם אין מידע על טפסים
           setShowIncompleteFormsPopup(false);
         }
       } catch (err) {
@@ -759,6 +848,21 @@ export default function Recommendations() {
 
     initializeComponent();
   }, [studentId, language]);
+
+  // 4. הוסף פונקציה לטיפול בשינוי העדפה מהtoggle
+  const handleToggleChange = async (preference: "main" | "both") => {
+    console.log("🔍 [Hebrew Debug] User clicked:", preference);
+    console.log("🔍 [Hebrew Debug] Language:", language);
+    console.log(
+      "🔍 [Hebrew Debug] Current mainType:",
+      recommendationData?.mainType
+    );
+    setUserPreference(preference);
+    sessionStorage.setItem("recommendationPreference", preference);
+
+    // טען מחדש את ההמלצות עם ההעדפה החדשה
+    await fetchRecommendations(preference);
+  };
 
   const breadcrumbItems = [
     { label: t.home, href: "/dashboard" },
@@ -805,10 +909,10 @@ export default function Recommendations() {
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-              <Logo size="xs" showText={false} className="h-16 mx-auto mb-6" />
+              <Logo size="xs" showText={false} className="h-4 mx-auto mb-4" />
             </div>
             <div
-              className={`flex items-center gap-4 ${
+              className={`flex items-center gap-8 ${
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
@@ -832,6 +936,17 @@ export default function Recommendations() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center mb-10">
+          <button
+            onClick={goToViewerDashboard}
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className={`w-5 h-5 ${isRTL ? "rotate-0" : ""}`} />
+            <span className={`${isRTL ? "mr-2" : "ml-2"}`}>
+              {isRTL ? "חזרה לדשבורד" : "Back to Dashboard"}
+            </span>
+          </button>
+        </div>
         <div className={`mb-8 ${isRTL ? "text-right" : "text-left"}`}>
           <h1
             className={`text-3xl font-bold mb-2 ${
@@ -849,6 +964,17 @@ export default function Recommendations() {
             {/*t.title*/}
           </h2>
         </div>
+
+        {/* Toggle - רק אם יש כמה סוגים */}
+        {hasMultipleTypes && userPreference && recommendationData && (
+          <RecommendationToggle
+            language={language}
+            mainType={recommendationData.mainType || ""}
+            subTypes={recommendationData.subTypes || []}
+            currentSelection={userPreference}
+            onSelectionChange={handleToggleChange}
+          />
+        )}
 
         {/* No Recommendations State */}
         {!loading && recommendations.length === 0 && studentId && (
@@ -1084,6 +1210,15 @@ export default function Recommendations() {
           </Card>
         </div>
       </main>
+      {showTypeSelectionModal && recommendationData && (
+        <RecommendationTypeSelectionModal
+          isOpen={showTypeSelectionModal}
+          language={language}
+          mainType={recommendationData.mainType}
+          subTypes={recommendationData.subTypes}
+          onSelectPreference={handlePreferenceSelect}
+        />
+      )}
       <MissingFormsPopup
         isVisible={showIncompleteFormsPopup}
         status={status}
@@ -1092,7 +1227,7 @@ export default function Recommendations() {
         studentName={studentName}
         navigate={navigate}
         viewerRole={currentUserRole}
-        viewerId={currentUserId} // הוסף את השורה הזו
+        viewerId={currentUserId}
       />
     </div>
   );

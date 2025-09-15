@@ -10,7 +10,11 @@ const router = express.Router();
  */
 router.get(
   "/diagnostics/:studentId/analyze",
-  async (req: Request<{ studentId: string }>, res: Response, next: NextFunction) => {
+  async (
+    req: Request<{ studentId: string }>,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const { studentId } = req.params;
       if (!mongoose.Types.ObjectId.isValid(studentId)) {
@@ -18,8 +22,9 @@ router.get(
         return;
       }
 
-      const diag = await DiagnosticResultModel
-        .findOne({ studentId: new mongoose.Types.ObjectId(studentId) })
+      const diag = await DiagnosticResultModel.findOne({
+        studentId: new mongoose.Types.ObjectId(studentId),
+      })
         .sort({ createdAt: -1 })
         .exec();
 
@@ -35,10 +40,13 @@ router.get(
       } else if (hyper_pct > inatt_pct) {
         primaryTypes.push("Hyperactivity");
       } else {
-        primaryTypes.push("Inattentive");
+        primaryTypes.push("Inattention");
       }
 
-      res.json({ percentages: [combined_pct, hyper_pct, inatt_pct], primaryTypes });
+      res.json({
+        percentages: [combined_pct, hyper_pct, inatt_pct],
+        primaryTypes,
+      });
     } catch (err) {
       next(err);
     }

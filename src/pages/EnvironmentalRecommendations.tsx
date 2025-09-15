@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Logo } from "@/components/ui/logo";
+import RecommendationToggle from "@/components/RecommendationToggle";
 
 const translations = {
   en: {
@@ -45,7 +46,6 @@ const translations = {
     routine: "Routine",
     environment: "Environment",
     sensory: "Sensory",
-    // נוסף עבור עקביות לוגיקת הברכה
     unidentifiedUser: "Unidentified User",
     viewingAsParent: "Viewing as Parent for",
     viewingAsTeacher: "Viewing as Teacher for",
@@ -72,7 +72,6 @@ const translations = {
     routine: "שגרה",
     environment: "סביבה",
     sensory: "חושי",
-    // נוסף עבור עקביות לוגיקת הברכה
     unidentifiedUser: "👤 משתמש לא מזוהה",
     viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
     viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
@@ -87,8 +86,7 @@ interface Recommendation {
   contribution: { en: string; he: string };
   implementation_methods?: { en: string[] | string; he: string[] | string };
   tags?: string[];
-  category?: string;
-  catagory?: { en: string; he: string };
+  category?: string | { en: string; he: string };
   icon?: string;
 }
 
@@ -129,6 +127,81 @@ export default function EnvironmentalRecommendations() {
     }
   }
 
+  const [userPreference, setUserPreference] = useState<"main" | "both" | null>(
+    null
+  );
+  const [hasMultipleTypes, setHasMultipleTypes] = useState(false);
+  const [recommendationData, setRecommendationData] = useState<any>(null);
+
+  useEffect(() => {
+    const loadSavedPreference = async () => {
+      const savedPreference = sessionStorage.getItem(
+        "recommendationPreference"
+      ) as "main" | "both" | null;
+
+      if (savedPreference && studentId) {
+        setUserPreference(savedPreference);
+        try {
+          const queryParams = new URLSearchParams({
+            lang: language,
+          });
+
+          if (savedPreference) {
+            queryParams.append("view", savedPreference);
+          }
+
+          const response = await fetch(
+            `/api/recommendations/${studentId}?${queryParams.toString()}`
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendationData(data);
+            setHasMultipleTypes(
+              data.multipleTypes && data.subTypes?.length > 0
+            );
+
+            // סנן רק המלצות סביבתיות מהנתונים המסוננים
+            type EnvRecommendation = Recommendation & { type?: string };
+            const allRecs = (data.recommendations ?? []) as EnvRecommendation[];
+            const environmentalRecs = allRecs.filter(
+              (rec) => rec.type === "environment"
+            );
+
+            console.log(
+              "🏠 Environmental recommendations with filtering:",
+              environmentalRecs.length
+            );
+            setRecommendations(environmentalRecs);
+          }
+        } catch (error) {
+          console.error("Failed to load recommendation data:", error);
+        }
+      }
+    };
+
+    loadSavedPreference();
+  }, [studentId, language]);
+  /*try {
+          const response = await fetch(
+            `/api/recommendations/${studentId}?lang=${language}&view=${savedPreference}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setRecommendationData(data);
+            setHasMultipleTypes(
+              data.multipleTypes && data.subTypes?.length > 0
+            );
+          }
+        } catch (error) {
+          console.error("Failed to load recommendation data:", error);
+        }
+      }
+    };
+
+    loadSavedPreference();
+  }, [studentId, language]);*/
+
   // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -145,6 +218,9 @@ export default function EnvironmentalRecommendations() {
     const loadRecommendations = async () => {
       try {
         console.log("🚀 Starting to load environmental recommendations...");
+        const savedPreference = sessionStorage.getItem(
+          "recommendationPreference"
+        ) as "main" | "both" | null;
 
         let finalStudentId = studentId;
         if (!finalStudentId) {
@@ -163,12 +239,18 @@ export default function EnvironmentalRecommendations() {
         }
 
         console.log("📡 Fetching recommendations for student:", finalStudentId);
-        console.log("🌍 Using language:", language);
+
+        const queryParams = new URLSearchParams({
+          lang: language,
+        });
+
+        if (savedPreference) {
+          queryParams.append("view", savedPreference);
+        }
 
         const response = await fetch(
-          `/api/recommendations/${finalStudentId}?lang=${language}`
+          `/api/recommendations/${finalStudentId}?${queryParams.toString()}`
         );
-        console.log("📬 Response status:", response.status);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -177,29 +259,15 @@ export default function EnvironmentalRecommendations() {
         const data = await response.json();
         console.log("📦 Raw data received:", data);
 
-        const allRecs = data.recommendations || [];
-        console.log(
-          "📊 Total recommendations for this student:",
-          allRecs.length
+        // Filter only environmental recommendations from the already filtered data
+        type EnvRecommendation = Recommendation & { type?: string };
+        const allRecs = (data.recommendations ?? []) as EnvRecommendation[];
+        const environmentalRecs = allRecs.filter(
+          (rec) => rec.type === "environment"
         );
 
-        // הפילטר הנכון - רק לפי type
-        const environmentalRecs = allRecs.filter((rec: any) => {
-          const isEnvironmental = rec.type === "environment";
-
-          if (isEnvironmental) {
-            console.log("🏠 Found environmental rec:", {
-              id: rec._id,
-              type: rec.type,
-              title: rec.recommendation?.[language],
-            });
-          }
-
-          return isEnvironmental;
-        });
-
         console.log(
-          "🏠 Environmental recommendations for this student:",
+          "🏠 Environmental recommendations found:",
           environmentalRecs.length
         );
         setRecommendations(environmentalRecs);
@@ -213,6 +281,47 @@ export default function EnvironmentalRecommendations() {
         setLoading(false);
       }
     };
+    /*const response = await fetch(
+          `/api/recommendations/${finalStudentId}?lang=${language}`
+        );
+        console.log("📬 Response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("📦 Raw data received:", data);
+
+        type EnvRecommendation = Recommendation & { type?: string };
+
+        const allRecs = (data.recommendations ?? []) as EnvRecommendation[];
+
+        const environmentalRecs = allRecs.filter(
+          (rec) => rec.type === "environment"
+        );
+
+        console.log(
+          "🏠 Environmental recommendations for this student:",
+          environmentalRecs.length
+        );
+
+        console.log(
+          "🏠 Environmental recommendations for this student:",
+          environmentalRecs
+        );
+
+        setRecommendations(environmentalRecs);
+      } catch (error) {
+        console.error(
+          "❌ Failed to load environmental recommendations:",
+          error
+        );
+        setRecommendations([]);
+      } finally {
+        setLoading(false);
+      }
+    };*/
 
     const loadStudentName = async () => {
       if (!studentId) {
@@ -272,7 +381,7 @@ export default function EnvironmentalRecommendations() {
       return "bg-orange-100 text-orange-800";
     if (tagLower.includes("combined") || tagLower.includes("משולב"))
       return "bg-pink-100 text-pink-800";
-    if (tagLower.includes("inattentive") || tagLower.includes("קשב"))
+    if (tagLower.includes("Inattention") || tagLower.includes("קשב"))
       return "bg-red-100 text-red-800";
     return "bg-gray-100 text-gray-800";
   };
@@ -322,7 +431,6 @@ export default function EnvironmentalRecommendations() {
         isRTL ? "rtl" : "ltr"
       }`}
       dir={isRTL ? "rtl" : "ltr"}
-      style={{ direction: isRTL ? "rtl" : "ltr" }}
     >
       {/* Header */}
       <header className="bg-card border-b border-border">
@@ -421,6 +529,16 @@ export default function EnvironmentalRecommendations() {
             {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
           </h2>
         </div>
+
+        {hasMultipleTypes && userPreference && recommendationData && (
+          <RecommendationToggle
+            language={language}
+            mainType={recommendationData.mainType || ""}
+            subTypes={recommendationData.subTypes || []}
+            currentSelection={userPreference}
+            readonly={true}
+          />
+        )}
 
         {/* Important Note */}
         <Card className="mb-6 border-purple-100 bg-purple-50">

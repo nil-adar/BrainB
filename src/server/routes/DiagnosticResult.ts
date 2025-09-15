@@ -1,10 +1,8 @@
-
-
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IDiagnosticResult extends Document {
   studentId: mongoose.Types.ObjectId;
-  percentages: number[]; // Length 4: [Combined, Hyperactive, Inattentive, None]
+  percentages: number[]; // Length 4: [Combined, Hyperactivity, Inattention, None]
   dominantSubtype: string;
   timestamp: Date;
 }
@@ -15,12 +13,15 @@ const DiagnosticResultSchema: Schema = new Schema<IDiagnosticResult>({
     type: [Number],
     validate: {
       validator: (arr: number[]) => arr.length === 4,
-      message: "Percentages array must contain exactly 4 elements."
+      message: "Percentages array must contain exactly 4 elements.",
     },
-    required: true
+    required: true,
   },
   dominantSubtype: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now }
+  timestamp: { type: Date, default: Date.now },
 });
 
-export const DiagnosticResultModel = mongoose.model<IDiagnosticResult>("DiagnosticResult", DiagnosticResultSchema);
+export const DiagnosticResultModel = mongoose.model<IDiagnosticResult>(
+  "DiagnosticResult",
+  DiagnosticResultSchema
+);

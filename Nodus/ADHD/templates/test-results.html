@@ -459,8 +459,8 @@
                     results_subtitle: "This is what your test results say about you (according to our analysis)",
                     dominant_type: "Your dominant ADHD subtype is:",
                     combined: "Combined",
-                    impulsive_hyperactive: "Impulsive/Hyperactive",
-                    inattentive: "Inattentive",
+                    Impulsivity_Hyperactivity: "Impulsivity/Hyperactivity",
+                    Inattention: "Inattention",
                     no_adhd: "No ADHD",
                     assessment_complete: "The assessment has been successfully completed!",
                     view_results_note: "To view your full results and personalized recommendations, return to the BrainBridge system.",   
@@ -483,7 +483,7 @@
                     results_subtitle: "אלו התוצאות שלך (לפי הניתוח שלנו)",
                     dominant_type: "תת הסוג הדומיננטי שלך הוא:",
                     combined: "משולב",
-                    impulsive_hyperactive: "אימפולסיבי/היפראקטיבי",
+                    Impulsivity_Hyperactivity: "אימפולסיבי/היפראקטיבי",
                     back_to_brainbridge: "  חזור לדף הבית של BrainBridge ",
                     go_to_recommendations: "מעבר להמלצות",
                     assessment_complete: "האבחון הסתיים בהצלחה!",
@@ -491,7 +491,7 @@
 
                     
 
-                    inattentive: "חוסר קשב",
+                    Inattention: "חוסר קשב",
                     no_adhd: "ללא ADHD",
                     back_home: "   חזור ל-BrainBridge  ",
                     incomplete_form: "טופס לא שלם",
@@ -533,21 +533,21 @@
                 const diagnosisLabels = {
                     en: {
                         combined: "Combined",
-                        impulsive: "Impulsive/Hyperactive",
-                        inattentive: "Inattentive",
+                        Impulsivity: "Impulsivity/Hyperactivity",
+                        Inattention: "Inattention",
                         none: "No ADHD"
                     },
                     he: {
                         combined: "משולב",
-                        impulsive: "אימפולסיבי/היפראקטיבי",
-                        inattentive: "חוסר קשב",
+                        Impulsivity: "אימפולסיבי/היפראקטיבי",
+                        Inattention: "חוסר קשב",
                         none: "ללא ADHD"
                     }
                 };
         
                 const comb = document.getElementById('combined');
                 const imp = document.getElementById('impulse');
-                const inat = document.getElementById('inattentive');
+                const inat = document.getElementById('Inattention');
                 const none = document.getElementById('none');
                 const dom = document.getElementById('dominant');
         
@@ -557,14 +557,14 @@
                 const nonePercent = parseFloat(diagnosisDataBackend[3] * 100).toFixed(2);
         
                 comb.textContent = `${diagnosisLabels[currentLanguage].combined} - ${combPercent}%`;
-                imp.textContent = `${diagnosisLabels[currentLanguage].impulsive} - ${impPercent}%`;
-                inat.textContent = `${diagnosisLabels[currentLanguage].inattentive} - ${inatPercent}%`;
+                imp.textContent = `${diagnosisLabels[currentLanguage].Impulsivity} - ${impPercent}%`;
+                inat.textContent = `${diagnosisLabels[currentLanguage].Inattention} - ${inatPercent}%`;
                 none.textContent = `${diagnosisLabels[currentLanguage].none} - ${nonePercent}%`;
         
                 const types = [
                     diagnosisLabels[currentLanguage].combined,
-                    diagnosisLabels[currentLanguage].impulsive,
-                    diagnosisLabels[currentLanguage].inattentive,
+                    diagnosisLabels[currentLanguage].Impulsivity,
+                    diagnosisLabels[currentLanguage].Inattention,
                     diagnosisLabels[currentLanguage].none
                 ];
                 dom.textContent = `${types[index]} - ${parseFloat(diagnosisDataBackend[index] * 100).toFixed(2)}%`;
@@ -583,7 +583,7 @@
             function updateChartLabels() {
                 if (window.myPieChart) {
                     const chartLabels = {
-                        en: ['Combined', 'Impulsive / Hyperactive', 'Inattentive', 'No ADHD'],
+                        en: ['Combined', 'Impulsivity / Hyperactivity', 'Inattention', 'No ADHD'],
                         he: ['משולב', 'אימפולסיבי / היפראקטיבי', 'חוסר קשב', 'ללא ADHD']
                     };
                     window.myPieChart.data.labels = chartLabels[currentLanguage];
@@ -636,7 +636,7 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const ctx = document.getElementById('myPieChart').getContext('2d');
                 const data = {
-                    labels: ['Combined', 'Impulsive / Hyperactive', 'Inattentive', 'No ADHD'],
+                    labels: ['Combined', 'Impulsivity / Hyperactivity', 'Inattention', 'No ADHD'],
                     datasets: [{
                         label: 'Results',
                         data: diagnosisDataBackend,
