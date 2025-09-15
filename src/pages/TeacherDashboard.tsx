@@ -214,47 +214,47 @@ interface TeacherData {
   console.log("🟢 currentClass:", currentClass);
   console.log("🟢 allStudents:", allStudents);
 
-  const filteredStudents = allStudents?.filter((s, index) => {
-    console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
+ const filteredStudents = currentClass
+  ? allStudents?.filter((s, index) => {
+      console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
 
-    const normalize = (val: string) =>
-      (val ?? "")
-        .normalize("NFKC") // Normalize composed characters
-        .replace(/\s+/g, "") // Remove all whitespace
-        .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
+      const normalize = (val: string) =>
+        (val ?? "")
+          .normalize("NFKC") // Normalize composed characters
+          .replace(/\s+/g, "") // Remove all whitespace
+          .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
 
-    const studentClassId = normalize(s.classId);
-    const currentClassId = normalize(currentClass?.classId);
+      // ✅ שימוש ב-s.class במקום s.classId
+      const studentClassId = normalize(s.class);
+      const currentClassId = normalize(currentClass.classId);
 
-    const matchesClass =
-      currentClassId && studentClassId
-        ? studentClassId === currentClassId
-        : true;
+      const matchesClass = studentClassId === currentClassId;
+      const matchesTeacher = s.teacherId === teacherId;
 
-    const matchesTeacher = s.teacherId === teacherId;
+      const unicodeBreakdown = (str: string) =>
+        str
+          .split("")
+          .map((char) => char.charCodeAt(0))
+          .join(",");
 
-    const unicodeBreakdown = (str: string) =>
-      str
-        .split("")
-        .map((char) => char.charCodeAt(0))
-        .join(",");
+      console.log(`👩‍🏫 תלמיד ${index + 1}:`);
+      console.log("🆔 student.class (raw):", s.class);
+      console.log("🎯 currentClass.classId (raw):", currentClass.classId);
+      console.log("🧼 studentClassId (norm):", studentClassId);
+      console.log("🧼 currentClassId (norm):", currentClassId);
+      console.log("🔢 יוניקוד תלמיד:", unicodeBreakdown(studentClassId));
+      console.log("🔢 יוניקוד כיתה נבחרת:", unicodeBreakdown(currentClassId));
+      console.log("🎓 התאמת כיתה:", matchesClass);
+      console.log("📚 teacherId תלמיד:", s.teacherId);
+      console.log("👨‍🏫 teacherId נוכחי:", teacherId);
+      console.log("✅ התאמה מורה:", matchesTeacher);
+      console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
+      console.log("────────────");
 
-    console.log(`👩‍🏫 תלמיד ${index + 1}:`);
-    console.log("🆔 student.classId (raw):", s.classId);
-    console.log("🎯 currentClass.classId (raw):", currentClass?.classId);
-    console.log("🧼 studentClassId (norm):", studentClassId);
-    console.log("🧼 currentClassId (norm):", currentClassId);
-    console.log("🔢 יוניקוד תלמיד:", unicodeBreakdown(studentClassId));
-    console.log("🔢 יוניקוד כיתה נבחרת:", unicodeBreakdown(currentClassId));
-    console.log("🎓 התאמת כיתה:", matchesClass);
-    console.log("📚 teacherId תלמיד:", s.teacherId);
-    console.log("👨‍🏫 teacherId נוכחי:", teacherId);
-    console.log("✅ התאמה מורה:", matchesTeacher);
-    console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
-    console.log("────────────");
+      return matchesClass && matchesTeacher;
+    })
+  : [];
 
-    return matchesClass && matchesTeacher;
-  });
 
   const handleOpenNotification = (
     parentId: string,
