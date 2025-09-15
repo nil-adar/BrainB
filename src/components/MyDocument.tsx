@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { he, enUS } from "date-fns/locale";
 import HeeboRegular from "@/components/ui/fonts/Heebo-Light.ttf";
 import HeeboBold from "@/components/ui/fonts/Heebo-Medium.ttf";
+import { translateDiagnosisType } from "@/utils/translateDiagnosisType";
 
 interface MyDocumentProps {
   recommendations: Recommendation[];
@@ -53,7 +54,6 @@ const translations = {
   },
 };
 
-// הקומפוננטה
 function cleanText(str: string) {
   return str
     .replace(/[\u200e\u200f\u202f\u2066\u2067\u2068\u2069]/g, "") // סימני RTL/LTR
@@ -69,12 +69,6 @@ Font.register({
 const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
   const firstRecommendation = recommendations[0]?.recommendation;
   const firstDifficulty = recommendations[0]?.difficulty_description;
-
-  /*console.log("======= בדיקת תוכן המלצות =======");
-  console.log(
-    "✅ JSON.stringify of recommendations:",
-    JSON.stringify(recommendations, null, 2)
-  );*/
 
   if (
     typeof firstRecommendation === "object" &&
@@ -159,43 +153,72 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
 
   console.log("📄 recs for PDF:", recommendations);
 
-  // עזר קטן לשליפת שדות לפי שפה - עם טיפוס נכון
   const getText = (
     field:
       | string
       | Record<"he" | "en", string | string[]>
       | string[]
-      | undefined
+      | undefined,
+    isdiagnosisType: boolean = false
   ): string => {
     if (!field) return "-";
-    if (typeof field === "string") return field;
-    if (Array.isArray(field)) return field.join(", ");
-    if (typeof field === "object") {
+    let result = "";
+
+    if (typeof field === "string") {
+      result = field;
+    } else if (Array.isArray(field)) {
+      result = field.join(", ");
+    } else if (typeof field === "object") {
       const value = field[lang];
-      if (Array.isArray(value)) return value.join(", ");
-      if (typeof value === "string") return value;
+      if (Array.isArray(value)) {
+        result = value.join(", ");
+      } else if (typeof value === "string") {
+        result = value;
+      }
     }
-    return "-";
+
+    // אם זה diagnosis type, תרגם אותו
+    if (isdiagnosisType && result && result !== "-") {
+      result = translateDiagnosisType(result, lang);
+    }
+
+    return result || "-";
   };
 
-  const categoryTranslations = {
-    תזונה: "nutrition",
-    "פעילות גופנית": "physical activity",
-    סביבה: "environment",
+const getTranslatedCategory = (category: string): string => {
+  if (!category) return lang === "he" ? "לא מסווג" : "Uncategorized";
+
+  const hebrewToEnglish = {
+    "תזונה": "nutrition",
+    "פעילות גופנית": "physical activity", 
+    "סביבה": "environment",
     "שינויים סביבתיים": "environmental changes",
+    "תמיכה מקצועית": "professional support"
   };
 
-  const getTranslatedCategory = (category: string): string => {
-    if (!category) return lang === "he" ? "לא מסווג" : "Uncategorized";
-
-    // אם השפה אנגלית וזה עברית - תרגם
-    if (lang === "en" && categoryTranslations[category]) {
-      return categoryTranslations[category];
-    }
-
-    // אחרת החזר כמו שזה
-    return category;
+  const englishToHebrew = {
+    "nutrition": "תזונה",
+    "physical activity": "פעילות גופנית",
+    "environment": "סביבה", 
+    "environmental changes": "שינויים סביבתיים",
+    "professional support": "תמיכה מקצועית"
   };
+
+  const normalizedCategory = category.trim().toLowerCase();
+  
+  // אם השפה אנגלית ויש תרגום מעברית
+  if (lang === "en" && hebrewToEnglish[category]) {
+    return hebrewToEnglish[category];
+  }
+  
+  // אם השפה עברית ויש תרגום מאנגלית
+  if (lang === "he" && englishToHebrew[normalizedCategory]) {
+    return englishToHebrew[normalizedCategory];
+  }
+
+  // אחרת החזר כמות שזה (בלי לתרגם)
+  return category;
+};
 
   // מניחים שמעתה category הוא מחרוזת תקינה
   const getCategory = (rec: any): string =>
@@ -229,7 +252,7 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
             <Text
               style={[styles.value, isRTL ? styles.rtlText : styles.ltrText]}
             >
-              {cleanText(getText(rec.diagnosis_type))}
+              {cleanText(getText(rec.diagnosis_type, true))}
             </Text>
 
             <Text

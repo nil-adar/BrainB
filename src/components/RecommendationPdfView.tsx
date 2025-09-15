@@ -14,6 +14,7 @@ import {
   BookOpen,
   Activity,
 } from "lucide-react";
+import { translateDiagnosisType } from "@/utils/translateDiagnosisType";
 
 type Lang = "he" | "en";
 
@@ -71,6 +72,17 @@ const normalizeField = (val: unknown): { he: string; en: string } => {
   return { he: "", en: "" };
 };
 
+const translateField = (val: unknown, targetLang: Lang): string => {
+  const text = getLangText(val, targetLang);
+
+  if (text) {
+    const translated = translateDiagnosisType(text, targetLang);
+    return translated;
+  }
+
+  return text;
+};
+
 interface Props {
   recommendations: Recommendation[];
   //language: "he" | "en";
@@ -92,21 +104,6 @@ const RecommendationPdfView = ({
   console.log("🔍 Raw recs for PDF:", recommendations);
   console.log("🔍 Total recommendations received:", recommendations.length);
 
-  // דיבאג מפורט לכל המלצה
-  /*recommendations.forEach((r, index) => {
-    console.log(`🔍 Rec ${index}:`, {
-      hasR: !!r,
-      hasCategory: !!r?.category,
-      hasRecommendation: !!r?.recommendation,
-      recType: typeof r?.recommendation,
-      recKeys: r?.recommendation ? Object.keys(r.recommendation) : [],
-      hasLangText: !!r?.recommendation?.[language],
-      languageValue: r?.recommendation?.[language],
-      fullRec: r,
-    });
-  });*/
-
-  // במקום להציב רק בשפה הנוכחית, נציב בשתיהן
   const createTranslatedField = (
     value: string
   ): { he: string; en: string } => ({

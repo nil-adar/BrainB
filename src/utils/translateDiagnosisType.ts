@@ -2,14 +2,28 @@ export const translateDiagnosisType = (
   type: string,
   lang: "he" | "en"
 ): string => {
+  if (!type) return "";
+  if (type.includes(",")) {
+    return type
+      .split(",")
+      .map((part) => translateDiagnosisType(part.trim(), lang))
+      .join(", ");
+  }
+
   const norm = (s: string) => s?.trim().toLowerCase();
 
   const aliases: Record<string, string> = {
-    Inattention: "Inattention",
+    inattention: "Inattention",
     hyperactive: "Hyperactivity",
     hyperactivity: "Hyperactivity",
     impulsivity: "Impulsivity",
     combined: "Combined",
+    trauma: "Trauma",
+    טראומה: "Trauma",
+    "חוסר קשב": "Inattention",
+    היפראקטיביות: "Hyperactivity",
+    אימפולסיביות: "Impulsivity",
+    משולב: "Combined",
   };
 
   const canonical = aliases[norm(type)] || type;
@@ -19,6 +33,7 @@ export const translateDiagnosisType = (
     Hyperactivity: { he: "היפראקטיביות", en: "Hyperactivity" },
     Inattention: { he: "חוסר קשב", en: "Inattention" },
     Impulsivity: { he: "אימפולסיביות", en: "Impulsivity" },
+    Trauma: { he: "טראומה", en: "Trauma" },
   };
 
   return map[canonical]?.[lang] ?? canonical;

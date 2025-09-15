@@ -59,22 +59,17 @@ interface SettingsProviderProps {
  * Provides language settings to the app
  */
 export const SettingsProvider = ({ children }: SettingsProviderProps) => {
-  // Language state, default 'he'
-  const [language, setLanguage] = useState<Language>("he");
-
+  const [language, setLanguage] = useState<Language>(() => {
+    const savedLanguage = localStorage.getItem("language") as Language;
+    return savedLanguage === "he" || savedLanguage === "en"
+      ? savedLanguage
+      : "he";
+  });
   // פונקציה לעדכון כיוון המסמך
   const updateDocumentDirection = () => {
     document.documentElement.dir = language === "he" ? "rtl" : "ltr";
     document.documentElement.lang = language;
   };
-
-  // טען הגדרות מ-localStorage בטעינה הראשונה
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem("language") as Language;
-    if (savedLanguage && (savedLanguage === "he" || savedLanguage === "en")) {
-      setLanguage(savedLanguage);
-    }
-  }, []);
 
   // עדכן localStorage וכיוון המסמך כאשר השפה משתנה
   useEffect(() => {

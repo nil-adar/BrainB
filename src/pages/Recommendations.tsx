@@ -31,6 +31,25 @@ import RecommendationToggle from "@/components/RecommendationToggle";
 import { useState, useEffect, useCallback } from "react";
 import { getViewerDashboardUrl } from "@/utils/paths";
 
+const getStoredLanguage = () => {
+  const stored = localStorage.getItem("language");
+  if (stored === "en" || stored === "he") {
+    return stored;
+  }
+
+  const contextStored = sessionStorage.getItem("currentLanguage");
+  if (contextStored === "en" || contextStored === "he") {
+    return contextStored;
+  }
+
+  return "he";
+};
+
+const saveLanguage = (currentLanguage: string) => {
+  localStorage.setItem("language", currentLanguage);
+  sessionStorage.setItem("currentLanguage", currentLanguage);
+};
+
 interface RecommendationResponseData {
   recommendations: any[];
   mainType?: string;
@@ -173,7 +192,6 @@ const MissingFormsPopup = ({
 
   const t = translations[language];
   const isRTL = language === "he";
-
   if (!viewerRole) {
     console.error("⚠️ viewerRole is required but not provided!");
     return null;
@@ -549,12 +567,39 @@ const MissingFormsPopup = ({
 };
 
 export default function Recommendations() {
+  const { language: contextLanguage, setLanguage } = useSettings();
+  const [currentLanguage, setCurrentLanguage] = useState(() =>
+    getStoredLanguage()
+  );
+
+  useEffect(() => {
+    const storedLang = localStorage.getItem("language");
+    if (storedLang && (storedLang === "en" || storedLang === "he")) {
+      if (storedLang !== contextLanguage) {
+        setLanguage(storedLang as "en" | "he");
+      }
+      if (storedLang !== currentLanguage) {
+        setCurrentLanguage(storedLang);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    saveLanguage(currentLanguage);
+  }, [currentLanguage]);
+
   interface RecommendationStatus {
     studentFormCompleted: boolean;
     parentFormCompleted: boolean;
     teacherFormCompleted: boolean;
     diagnosisCompleted: boolean;
   }
+  useEffect(() => {
+    if (contextLanguage !== currentLanguage) {
+      setCurrentLanguage(contextLanguage);
+      saveLanguage(contextLanguage as "en" | "he");
+    }
+  }, [contextLanguage, currentLanguage]);
 
   const [role, setRole] = useState<string | null>(null);
 
@@ -576,9 +621,9 @@ export default function Recommendations() {
   const [status, setStatus] = useState<RecommendationStatus | null>(null);
   const [showIncompleteFormsPopup, setShowIncompleteFormsPopup] =
     useState(false);
-  const { language } = useSettings();
-  const t = translations[language];
-  const isRTL = language === "he";
+
+  const t = translations[currentLanguage];
+  const isRTL = currentLanguage === "he";
   const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
   const navigate = useNavigate();
   const location = useLocation();
@@ -610,60 +655,63 @@ export default function Recommendations() {
     navigate(getViewerDashboardUrl(viewerRole));
   }, [navigate, viewerRole]);
 
-  const fetchRecommendations = async (
-    preference?: "main" | "both"
-  ): Promise<RecommendationResponseData | null> => {
-    try {
-      const queryParams = new URLSearchParams({
-        lang: language,
-      });
-
-      if (preference) {
-        queryParams.append("view", preference);
-      }
-      console.log(
-        "🔍 [Hebrew Debug] Final URL will be:",
-        `/api/recommendations/${studentId}?${queryParams.toString()}`
-      );
-      const recommendationsResponse = await fetch(
-        `/api/recommendations/${studentId}?${queryParams.toString()}`
-      );
-
-      if (recommendationsResponse.ok) {
-        const data: RecommendationResponseData =
-          await recommendationsResponse.json();
-
-        const filteredRecommendations = data.recommendations || [];
-        setRecommendations(filteredRecommendations);
-        setRecommendationData({
-          ...data,
-          recommendations: filteredRecommendations,
+  const fetchRecommendations = useCallback(
+    async (
+      preference?: "main" | "both"
+    ): Promise<RecommendationResponseData | null> => {
+      try {
+        const queryParams = new URLSearchParams({
+          lang: currentLanguage,
         });
+
+        if (preference) {
+          queryParams.append("view", preference);
+        }
         console.log(
-          "✅ Recommendations fetched:",
-          filteredRecommendations.length
+          "🔍 [Hebrew Debug] Final URL will be:",
+          `/api/recommendations/${studentId}?${queryParams.toString()}`
         );
-        console.log("🔍 Multiple types:", data.multipleTypes);
-        console.log(
-          "🔍 Filtered recommendations IDs:",
-          filteredRecommendations.map((r) => r._id)
+        const recommendationsResponse = await fetch(
+          `/api/recommendations/${studentId}?${queryParams.toString()}`
         );
 
-        return data;
-      } else {
-        console.warn(
-          "⚠️ Failed to fetch recommendations:",
-          recommendationsResponse.status
-        );
+        if (recommendationsResponse.ok) {
+          const data: RecommendationResponseData =
+            await recommendationsResponse.json();
+
+          const filteredRecommendations = data.recommendations || [];
+          setRecommendations(filteredRecommendations);
+          setRecommendationData({
+            ...data,
+            recommendations: filteredRecommendations,
+          });
+          console.log(
+            "✅ Recommendations fetched:",
+            filteredRecommendations.length
+          );
+          console.log("🔍 Multiple types:", data.multipleTypes);
+          console.log(
+            "🔍 Filtered recommendations IDs:",
+            filteredRecommendations.map((r) => r._id)
+          );
+
+          return data;
+        } else {
+          console.warn(
+            "⚠️ Failed to fetch recommendations:",
+            recommendationsResponse.status
+          );
+          setRecommendations([]);
+          return null;
+        }
+      } catch (err) {
+        console.error("❌ Failed to load recommendations:", err);
         setRecommendations([]);
         return null;
       }
-    } catch (err) {
-      console.error("❌ Failed to load recommendations:", err);
-      setRecommendations([]);
-      return null;
-    }
-  };
+    },
+    [currentLanguage, studentId]
+  );
 
   const handlePreferenceSelect = async (preference: "main" | "both") => {
     setShowTypeSelectionModal(false);
@@ -847,16 +895,10 @@ export default function Recommendations() {
     };
 
     initializeComponent();
-  }, [studentId, language]);
+  }, [studentId, currentLanguage, loadCurrentUser, fetchRecommendations]);
 
   // 4. הוסף פונקציה לטיפול בשינוי העדפה מהtoggle
   const handleToggleChange = async (preference: "main" | "both") => {
-    console.log("🔍 [Hebrew Debug] User clicked:", preference);
-    console.log("🔍 [Hebrew Debug] Language:", language);
-    console.log(
-      "🔍 [Hebrew Debug] Current mainType:",
-      recommendationData?.mainType
-    );
     setUserPreference(preference);
     sessionStorage.setItem("recommendationPreference", preference);
 
@@ -968,7 +1010,7 @@ export default function Recommendations() {
         {/* Toggle - רק אם יש כמה סוגים */}
         {hasMultipleTypes && userPreference && recommendationData && (
           <RecommendationToggle
-            language={language}
+            language={currentLanguage as "en" | "he"}
             mainType={recommendationData.mainType || ""}
             subTypes={recommendationData.subTypes || []}
             currentSelection={userPreference}
@@ -999,17 +1041,33 @@ export default function Recommendations() {
           </p>
 
           {/* Target Audience */}
-          <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
-            <div className="flex items-center">
-              <Users className="h-5 w-5 mr-2 text-blue-500" />
+          <div
+            className={`flex items-center justify-center gap-8 text-sm text-gray-600 ${
+              isRTL ? "flex-row-reverse" : ""
+            }`}
+          >
+            <div
+              className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}
+            >
+              <Users
+                className={`h-5 w-5 text-blue-500 ${isRTL ? "ml-2" : "mr-2"}`}
+              />
               <span>{t.forParents}</span>
             </div>
-            <div className="flex items-center">
-              <BookOpen className="h-5 w-5 mr-2 text-green-500" />
+            <div
+              className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}
+            >
+              <BookOpen
+                className={`h-5 w-5 text-green-500 ${isRTL ? "ml-2" : "mr-2"}`}
+              />
               <span>{t.forTeachers}</span>
             </div>
-            <div className="flex items-center">
-              <Activity className="h-5 w-5 mr-2 text-purple-500" />
+            <div
+              className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}
+            >
+              <Activity
+                className={`h-5 w-5 text-purple-500 ${isRTL ? "ml-2" : "mr-2"}`}
+              />
               <span>{t.forChildren}</span>
             </div>
           </div>
@@ -1213,7 +1271,7 @@ export default function Recommendations() {
       {showTypeSelectionModal && recommendationData && (
         <RecommendationTypeSelectionModal
           isOpen={showTypeSelectionModal}
-          language={language}
+          language={currentLanguage as "en" | "he"}
           mainType={recommendationData.mainType}
           subTypes={recommendationData.subTypes}
           onSelectPreference={handlePreferenceSelect}
@@ -1222,7 +1280,7 @@ export default function Recommendations() {
       <MissingFormsPopup
         isVisible={showIncompleteFormsPopup}
         status={status}
-        language={language}
+        language={currentLanguage}
         studentId={studentId}
         studentName={studentName}
         navigate={navigate}
