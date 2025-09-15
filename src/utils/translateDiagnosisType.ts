@@ -1,6 +1,3 @@
-// הוסף אחרי הimports וlpני הcomponent:
-
-// Move this to a separate utils file or keep here with proper typing
 export const translateDiagnosisType = (
   type: string,
   lang: "he" | "en"
