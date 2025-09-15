@@ -230,18 +230,22 @@ export default function StudentDashboard() {
 
   const navigate = useNavigate();
 
-  const handleRedirectToAssessment = () => {
-    const studentId = localStorage.getItem("studentId");
-    console.log("🧪 Token:", assessmentToken);
-    console.log("🧪 Student ID:", studentId);
+const handleRedirectToAssessment = () => {
+  const studentId = localStorage.getItem("studentId");
+  console.log("🧪 Token:", assessmentToken);
+  console.log("🧪 Student ID:", studentId);
 
-    if (assessmentToken && studentId) {
-      const url = `http://127.0.0.1:8000/?token=${assessmentToken}&studentId=${studentId}`;
-      window.open(url, "_blank"); // פותח בטאב חדש
-    } else {
-      toast.error(t.noAssessmentAvailable);
-    }
-  };
+  if (assessmentToken && studentId) {
+    // שימוש ב־URL דינמי במקום כתובת קשיחה
+    const NODUS_BASE_URL =
+      import.meta.env.VITE_NODUS_URL || "http://127.0.0.1:8000";
+
+    const url = `${NODUS_BASE_URL}/?token=${assessmentToken}&studentId=${studentId}`;
+    window.open(url, "_blank");
+  } else {
+    toast.error(t.noAssessmentAvailable);
+  }
+};
 
   const fullName = student
     ? `${student.firstName ?? ""} ${student.lastName ?? ""}`.trim()

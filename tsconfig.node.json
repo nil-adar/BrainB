@@ -15,6 +15,6 @@
       "@/*": ["*"]
     }
   },
-  "include": ["src/server/**/*"],
+  "include": ["src/server/**/*"], // <-- מחזירים לקומפילציה רק את שרת
   "exclude": ["node_modules"]
 }

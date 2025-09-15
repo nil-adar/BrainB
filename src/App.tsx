@@ -31,7 +31,7 @@ import React from "react";
 import QuestionnaireFormPage from "@/pages/QuestionnaireFormPage";
 import { SettingsProvider } from "@/components/SettingsContext";
 import SettingsToggle from "@/components/SettingsToggle";
-
+import api from "@/services/api"; // 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -43,22 +43,20 @@ const queryClient = new QueryClient({
 
 function App() {
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      // כאן אפשר לקרוא לשרת כדי לבדוק מי המשתמש המחובר
-      axios
-        .get("http://localhost:5000/api/users/me")
-
-        .then((res) => {
-          console.log("🟢 מחובר כ:", res.data);
-        })
-        .catch((err) => {
-          console.error("🔴 שגיאה באימות הטוקן:", err.response?.data?.message);
-        });
-    }
-  }, []);
+  const token = localStorage.getItem("token");
+  if (token) {
+    // ה-token עדיין נכנס ל-axios global אם אתה רוצה,
+    // אבל עדיף לתת לזה להיכנס דרך ה-interceptor ב-api.ts
+    api
+      .get("/users/me")
+      .then((res) => {
+        console.log("🟢 מחובר כ:", res.data);
+      })
+      .catch((err) => {
+        console.error("🔴 שגיאה באימות הטוקן:", err.response?.data?.message);
+      });
+  }
+}, []);
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" expand={true} richColors />

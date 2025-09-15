@@ -14,6 +14,7 @@ import diagnosticRoutes from "./routes/diagnostic.routes";
 import taskRoutes from "./routes/task.routes";
 import formRouter from "./routes/form.routes";
 import recommendationsRouter from "./controllers/recommendationsController"; //המלצות
+import path from "path";                         //
 
 const app = express();
 
@@ -30,15 +31,7 @@ app.use((req, res, next) => {
   console.log(`Headers:`, req.headers);
   next();
 });
-// Logger middleware
-app.use((req, res, next) => {
-  const timestamp = new Date().toISOString();
-  console.log(
-    `🔹 [${timestamp}] Request incoming: ${req.method} ${req.originalUrl}`
-  );
-  console.log(`Headers:`, req.headers);
-  next();
-});
+
 
 // Serve static files in /uploads
 app.use('/uploads', express.static('uploads'));
@@ -62,17 +55,18 @@ app.get("/api/status", (req, res) => {
 
 // MongoDB connection
 // Using environment variable for MongoDB URI when available
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://niladar:RX1DRQF36Rsavqgx@schoolsdata.yg5ih.mongodb.net/BrainB";
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  "mongodb+srv://niladar:RX1DRQF36Rsavqgx@schoolsdata.yg5ih.mongodb.net/BrainB?retryWrites=true&w=majority";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI!, {
-      serverSelectionTimeoutMS: 5000, // 5 שניות timeout
-      socketTimeoutMS: 10000, // 10 שניות timeout
+    
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 10000,
     });
-    console.log("Connected to MongoDB successfully");
+    console.log("✅ Connected to MongoDB successfully");
   } catch (error) {
     console.error("🚨 MongoDB connection error:", error);
     process.exit(1);
@@ -168,6 +162,18 @@ app.post("/api/mongo/config", (req, res) => {
       });
   }
 });
+// Serve React frontend
+app.use(express.static(path.join(__dirname, "../../dist")));
+
+app.get("*", (req, res): void => {
+  if (req.path.startsWith("/api")) {
+    res.status(404).json({ error: "API route not found" });
+    return;
+  }
+  res.sendFile(path.join(__dirname, "../../dist", "index.html"));
+});
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

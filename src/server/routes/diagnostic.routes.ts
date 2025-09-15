@@ -3,6 +3,8 @@ import { DiagnosticSessionModel } from "../models/DiagnosticSession";
 import mongoose from "mongoose";
 import crypto from "crypto";
 import { DiagnosticResultModel } from "../models/DiagnosticResult";
+const NODUS_BASE_URL =
+  process.env.NODUS_BASE_URL || "http://127.0.0.1:8000";
 const router = express.Router();
 
 // יצירת סשן אבחון חיצוני לתלמיד
@@ -28,7 +30,7 @@ router.post("/create", async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json({
       message: "Diagnostic session created",
-      sessionUrl: `http://127.0.0.1:8000?token=${token}`,
+      sessionUrl: `${NODUS_BASE_URL}/?token=${token}&studentId=${studentId}`,
       expiresAt: session.expiresAt,
     });
   } catch (err) {
@@ -105,7 +107,7 @@ router.get("/session/:studentId", async (req: Request, res: Response): Promise<v
     }
 
     res.status(200).json({
-      sessionUrl: `http://127.0.0.1:8000?token=${session.sessionToken}`,
+      sessionUrl: `${NODUS_BASE_URL}/?token=${session.sessionToken}&studentId=${studentId}`,
       expiresAt: session.expiresAt,
     });
   } catch (error) {
