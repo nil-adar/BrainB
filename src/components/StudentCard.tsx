@@ -1,151 +1,144 @@
-import { Bell, BarChart, MessageCircle } from "lucide-react";
+import React from "react";
+import { Bell } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Student } from "@/types/school";
-import { FileText } from "lucide-react";
 
 interface StudentCardProps {
   student: Student;
   onViewProgress?: (studentId: string) => void;
   onContactParent?: (studentId: string, parentId: string) => void;
-
   teacherId?: string;
   questionnaireRole?: "student" | "teacher" | "parent";
+  language: "he" | "en"; // חובה - לא אופציונלי
+  translations: {
+    createAssessment: string;
+    fillQuestionnaire: string;
+    dailyTaskUpdate: string;
+    viewRecommendations: string;
+    viewProgress: string;
+    contactParent: string;
+  };
 }
 
-export const StudentCard: React.FC<StudentCardProps> = (props) => {
-  const {
+// React.memo לביצועים טובים יותר
+export const StudentCard = React.memo<StudentCardProps>(
+  ({
     student,
     onViewProgress,
     onContactParent,
     teacherId,
     questionnaireRole,
-  } = props;
+    language, // השפה מגיעה מ-props - לא מחושבת מחדש
+    translations: t,
+  }) => {
+    const formRole = questionnaireRole ?? (teacherId ? "teacher" : "student");
+    const navigate = useNavigate();
 
-  const formRole = questionnaireRole ?? (teacherId ? "teacher" : "student");
+    // רשימת הפעולות עם התרגומים שמגיעים מה-props
+    const actions = React.useMemo(
+      () => [
+        {
+          text: t.createAssessment,
+          path: (id: string) => `/create-assessment?studentId=${id}`,
+        },
+        {
+          text: t.fillQuestionnaire,
+          path: (id: string) => `/questionnaire/${formRole}/${id}`,
+        },
+        {
+          text: t.dailyTaskUpdate,
+          path: "/daily-tasks",
+        },
+        {
+          text: t.viewRecommendations,
+          path: (id: string) => `/recommendations?studentId=${id}`,
+        },
+      ],
+      [t, formRole]
+    );
 
-  const navigate = useNavigate();
-  const language = document.documentElement.dir === "rtl" ? "he" : "en";
+    const getPath = React.useCallback(
+      (path: string | ((id: string) => string)) => {
+        if (typeof path === "function") {
+          return path(student.id);
+        }
 
-  const actionTranslations = {
-    en: [
-      {
-        text: "Create new assessment",
-        path: (id: string) => `/create-assessment?studentId=${id}`,
+        if (path === "/daily-tasks") {
+          return `/daily-tasks/${teacherId}/${student.classId}`;
+        }
+
+        return path;
       },
-      {
-        text: "Fill student questionnaire",
-        path: (id: string) => `/questionnaire/${formRole}/${id}`,
-      },
-      { text: "View Pre-Assessments", path: "/statistics" },
-      { text: "Daily Task Update", path: "/daily-tasks" },
-      {
-        text: "View recommendations",
-        path: (id: string) => `/recommendations?studentId=${id}`,
-      },
-    ],
-    he: [
-      {
-        text: "צור אבחון חדש",
-        path: (id: string) => `/create-assessment?studentId=${id}`,
-      },
-      {
-        text: "מילוי שאלון תלמיד",
-        path: (id: string) => `/questionnaire/${formRole}/${id}`,
-      },
-      //{ text: "צפה בהערכות", path: "/statistics" },
-      { text: "עדכון משימות יומי", path: "/daily-tasks" },
-      {
-        text: "צפה בהמלצות",
-        path: (id: string) => `/recommendations?studentId=${id}`,
-      },
-    ],
-  };
+      [student.id, student.classId, teacherId]
+    );
 
-  const actions = actionTranslations[language];
+    const handleViewProgress = React.useCallback(() => {
+      if (onViewProgress) {
+        onViewProgress(student.id);
+      } else {
+        navigate("/statistics");
+      }
+    }, [onViewProgress, student.id, navigate]);
 
-  const getPath = (path: string | ((id: string) => string)) => {
-    if (typeof path === "function") {
-      return path(student.id);
-    }
+    const handleContactParent = React.useCallback(() => {
+      if (student.parentIds.length > 0) {
+        onContactParent?.(student.id, student.parentIds[0]);
+      }
+    }, [onContactParent, student.id, student.parentIds]);
 
-    // אם הנתיב הוא "/daily-tasks", נוסיף teacherId ו-classId
-    if (path === "/daily-tasks") {
-      return `/daily-tasks/${teacherId}/${student.classId}`;
-    }
-
-    return path;
-  };
-
-  const handleViewProgress = () => {
-    if (onViewProgress) {
-      onViewProgress(student.id);
-    } else {
-      navigate("/statistics");
-    }
-  };
-
-  const buttonLabels = {
-    en: {
-      viewProgress: "View progress",
-      contactParent: "Contact parent",
-    },
-    he: {
-      viewProgress: "צפה בהתקדמות",
-      contactParent: "צור קשר עם הורה",
-    },
-  };
-  const t = buttonLabels[language];
-
-  return (
-    <Card className="bg-teal-50 p-3 md:p-4 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between">
-        <div
-          className="flex items-center gap-2 md:gap-3 cursor-pointer"
-          onClick={() => navigate(`/recommendations?studentId=${student.id}`)}
-        >
-          <img
-            src={student.avatar}
-            alt={`${student.firstName} ${student.lastName}`}
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
-          />
-          <h3 className="font-semibold text-base md:text-lg">
-            {`${student.firstName} ${student.lastName}`}
-          </h3>
+    return (
+      <Card
+        className={`bg-teal-50 rounded-lg border shadow-sm hover:shadow-md transition-shadow p-3 md:p-4 ${
+          language === "en" ? "text-left" : "text-right"
+        }`}
+        dir={language === "he" ? "rtl" : "ltr"}
+      >
+        {/* פרופיל התלמיד */}
+        <div className="flex items-start justify-between mb-3 md:mb-4">
+          <div
+            className="flex items-center gap-2 md:gap-3 cursor-pointer"
+            onClick={() => navigate(`/recommendations?studentId=${student.id}`)}
+          >
+            <img
+              src={student.avatar}
+              alt={`${student.firstName} ${student.lastName}`}
+              className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
+            />
+            <h3 className="font-semibold text-base md:text-lg">
+              {`${student.firstName} ${student.lastName}`}
+            </h3>
+          </div>
+          <Bell className="text-gray-400 hover:text-zinc-800 cursor-pointer w-5 h-5" />
         </div>
-        <Bell className="text-gray-400 hover:text-zinc-800 cursor-pointer w-5 h-5" />
-      </div>
 
-      <div className="mt-3 md:mt-4 space-y-2">
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => navigate(getPath(action.path))}
-            className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-emerald-200 text-zinc-800 rounded hover:opacity-90 transition-opacity text-sm md:text-base"
-          >
-            {/* OPTIONALLY, show icon for questionnaire */}
-            {/*action.text.includes("שאלון") && <FileText className="w-4 h-4 ml-2" />*/}
-            <span>{action.text}</span>
-          </button>
-        ))}
-        {/*
-        <button 
-          onClick={handleViewProgress}
-          className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-primary text-white rounded hover:opacity-90 transition-opacity text-sm md:text-base flex items-center justify-between"
-        >
-          <BarChart className="w-4 h-4" />
-          <span>{t.viewProgress}</span>
-        </button>
-       */}
-        {student.parentIds.length > 0 && (
-          <button
-            onClick={() => onContactParent?.(student.id, student.parentIds[0])}
-            className="w-full text-right px-2 md:px-3 py-1.5 md:py-2 bg-emerald-200 text-zinc-800 rounded hover:opacity-90 transition-opacity text-sm md:text-base"
-          >
-            <span>{t.contactParent}</span>
-          </button>
-        )}
-      </div>
-    </Card>
-  );
-};
+        {/* כפתורי פעולה */}
+        <div className="space-y-2">
+          {actions.map((action, index) => (
+            <button
+              key={index}
+              onClick={() => navigate(getPath(action.path))}
+              className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-emerald-200 text-zinc-800 rounded hover:opacity-90 transition-opacity text-sm md:text-base"
+              style={{ textAlign: language === "he" ? "right" : "left" }}
+            >
+              <span>{action.text}</span>
+            </button>
+          ))}
+
+          {/* כפתור צור קשר עם הורה */}
+          {student.parentIds.length > 0 && (
+            <button
+              onClick={handleContactParent}
+              className="w-full px-2 md:px-3 py-1.5 md:py-2 bg-emerald-200 text-zinc-800 rounded hover:opacity-90 transition-opacity text-sm md:text-base"
+              style={{ textAlign: language === "he" ? "right" : "left" }}
+            >
+              <span>{t.contactParent}</span>
+            </button>
+          )}
+        </div>
+      </Card>
+    );
+  }
+);
+
+StudentCard.displayName = "StudentCard";

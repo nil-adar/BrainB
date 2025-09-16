@@ -23,6 +23,25 @@ import { useNavigate } from "react-router-dom";
 import { useSettings } from "@/components/SettingsContext";
 import { ChildrenProgressSection } from "@/components/parent/ChildrenProgressSection";
 
+/**
+ * ParentDashboard.tsx
+ *
+ * Displays the parent dashboard interface, including:
+ * - Greeting and notifications
+ * - List of children and their progress
+ * - Messaging interface with teachers
+ * - Calendar with upcoming school events
+ *
+ * 🔍 Responsibilities:
+ * - Fetch logged-in parent and children data
+ * - Display per-student actions: progress view, questionnaires, recommendations
+ * - Handle parent-teacher messaging via MessageSheet
+ * - Support notifications with color tagging and read status
+ *
+ * 🌐 Localization: Hebrew & English (RTL/LTR support)
+ * 📦 UI: ShadCN components, Lucide icons, custom hooks
+ */
+
 const useLoggedInUser = () => {
   return useQuery({
     queryKey: ["user"],
@@ -149,10 +168,6 @@ export default function ParentDashboard({
 
   const t = translations[language];
 
-  // Debug - בואו נראה איזה שפה פעילה ומה יש בתרגומים
-  console.log("Current language:", language);
-  console.log("Current translations:", t);
-
   const {
     data: loggedInUser,
     isLoading,
@@ -278,7 +293,6 @@ export default function ParentDashboard({
       <main className="container mx-auto p-6">
         {/* Header Section: Greeting and Notifications */}
         <div className="flex items-center justify-between mb-8">
-          {/* הצגת הודעה אם אין תלמידים */}
           {isLoading ? (
             <p className="text-lg text-gray-600">{t.loadingParent}</p>
           ) : error || !loggedInUser ? (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { teacherService } from "@/services/teacherService";
@@ -19,6 +20,28 @@ import { useTeacherNotifications } from "@/hooks/useTeacherNotifications";
 import { useSettings } from "@/components/SettingsContext";
 import { getLocalizedDate } from "@/utils/dateTranslations";
 import { format } from "date-fns";
+import { useMemo } from "react";
+
+/**
+ * TeacherDashboard.tsx
+ *
+ * Main dashboard interface for teachers.
+ *
+ * 🔍 Responsibilities:
+ * - Displays teacher's students, schedule, class switching, and notifications
+ * - Supports search and filter of students by class and name
+ * - Allows messaging between teacher and parents via MessageSheet
+ * - Enables progress viewing, assessment initiation, and student management
+ * - Fetches and displays user data, assigned classes, and student list
+ *
+ * ⚙️ Features:
+ * - Class filtering with Unicode normalization
+ * - Notifications with read/check/color support
+ * - Add new student modal per selected class
+ * - Multi-language support (Hebrew/English) with RTL handling
+ *
+ * 📦 UI: ShadCN components, custom hooks (e.g., useTeacherNotifications), react-query for async data
+ */
 
 function getUserIdFromToken(): string | null {
   const token = localStorage.getItem("token");
@@ -68,15 +91,15 @@ export default function TeacherDashboard() {
   const [teacherId, setTeacherId] = useState<string | null>(null);
   const {
     notifications,
-    unreadMessages, // אם תרצה להשתמש בעתיד
+    unreadMessages,
     handleNotificationClick,
     handleNotificationCheckboxChange,
     handleNotificationColorSelection,
   } = useTeacherNotifications(teacherId ?? "");
 
-  const currentDate = getLocalizedDate(
-    format(new Date(), "EEEE, MMM do, yyyy"),
-    language
+  const currentDate = useMemo(
+    () => getLocalizedDate(format(new Date(), "EEEE, MMM do, yyyy"), language),
+    [language]
   );
   const handleSendMessage = async () => {
     if (!messageText.trim() || !selectedStudentId) return;
@@ -85,7 +108,7 @@ export default function TeacherDashboard() {
       id: crypto.randomUUID(),
       senderId: teacherId!,
       receiverId: selectedParentId!,
-      studentId: selectedStudentId, // ← נוסף
+      studentId: selectedStudentId,
       content: messageText,
       senderRole: "teacher",
       isRead: false,
@@ -93,7 +116,7 @@ export default function TeacherDashboard() {
     };
 
     try {
-      await axios.post("/api/messages", newMessage); // ← שליחה לשרת
+      await axios.post("/api/messages", newMessage);
       setMessages((prev) => [...prev, newMessage]);
       setMessageText("");
     } catch (error) {
@@ -230,7 +253,6 @@ export default function TeacherDashboard() {
             .replace(/\s+/g, "") // Remove all whitespace
             .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
 
-        // ✅ שימוש ב-s.class במקום s.classId
         const studentClassId = normalize(s.class);
         const currentClassId = normalize(currentClass.classId);
 
@@ -266,8 +288,8 @@ export default function TeacherDashboard() {
     studentId: string,
     studentName: string
   ) => {
-    handleNotificationClick(parentId, studentId); // מסמן כהודעה נקראה
-    openMessageSheet(studentId, parentId, studentName); // פותח שיחה
+    handleNotificationClick(parentId, studentId);
+    openMessageSheet(studentId, parentId, studentName);
   };
 
   const teacherName = teacherData
@@ -374,6 +396,7 @@ export default function TeacherDashboard() {
         </div>
         <StudentsList
           students={filteredStudents || []}
+          language={language}
           isLoading={isLoading}
           error={error as Error}
           searchTerm={searchTerm}
@@ -427,56 +450,4 @@ export default function TeacherDashboard() {
       </div>
     </div>
   );
-}
-{
-  /* שאלונים זמינים למילוי על ידי המורה */
-}
-{
-  /*<section className="mt-8">
-  <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
-  {filteredStudents?.map((student) => {
-    const id = student.id || (student as any)._id;
-    const name = `${student.firstName} ${student.lastName}`;
-    return (
-      <div
-        key={id}
-        className="mb-2 flex items-center justify-between p-3 border rounded-lg hover:shadow"
-      >
-        <span className="font-medium">{name}</span>
-        <Link
-          to={`/questionnaire/teacher/${id}`}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          למילוי שאלון
-        </Link>
-      </div>
-    );
-  })}
-
-  {/* שאלונים זמינים למילוי על ידי המורה */
-}
-{
-  /*</section>
-<section className="mt-8">
-  <h3 className="text-lg font-semibold mb-2">שאלונים זמינים</h3>
-  {filteredStudents?.map((student) => {
-    const id = student.id || (student as any)._id;
-    const name = `${student.firstName} ${student.lastName}`;
-    return (
-      <div
-        key={id}
-        className="mb-2 flex items-center justify-between p-3 border rounded-lg hover:shadow"
-      >
-        <span className="font-medium">{name}</span>
-        <Link
-          to={`/questionnaire/teacher/${id}`}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          למילוי שאלון
-        </Link>
-      </div>
-    );
-  })}
-</section>
-*/
 }

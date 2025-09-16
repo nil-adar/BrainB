@@ -5,8 +5,23 @@ import QuestionnaireForm from "@/components/QuestionnaireForm";
 import { questionnaires } from "@/data/questionnaires";
 import { translations } from "@/utils/studentDashboardData";
 import { useSettings } from "@/components/SettingsContext";
-
 import { ArrowLeft } from "lucide-react";
+
+/**
+ * QuestionnaireFormPage.tsx
+ *
+ * Renders the questionnaire form for student, parent, or teacher.
+ *
+ * 🔍 Responsibilities:
+ * - Loads the relevant questionnaire based on user role and studentId from URL
+ * - Tracks and updates answers, including conditional logic (e.g., allergy-related questions)
+ * - Filters displayed questions dynamically based on previous answers
+ * - Submits completed form to the server via POST request
+ * - Handles unsaved exit confirmation modal
+ *
+ * 🌐 Localization: Hebrew & English (RTL/LTR support)
+ * 📦 UI: Lucide icons, Toaster (sonner), and internal QuestionnaireForm component
+ */
 
 export default function QuestionnaireFormPage() {
   //Routing hook from react-router

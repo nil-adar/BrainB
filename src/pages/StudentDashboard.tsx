@@ -34,6 +34,27 @@ import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { UserMenu } from "@/components/header/UserMenu";
 
+/**
+ * StudentDashboard.tsx
+ *
+ * Main dashboard interface for students.
+ *
+ * 🔍 Responsibilities:
+ * - Fetches and displays student's daily tasks
+ * - Manages task timers, completion status, and celebratory feedback (fireworks)
+ * - Provides quick actions: view recommendations, fill questionnaire, start external assessment, contact support
+ * - Displays real-time greeting, date, and progress visualization
+ *
+ * ⚙️ Features:
+ * - Task timer and progress bar
+ * - Fireworks celebration on completion
+ * - External assessment redirection with token
+ * - Help/support modal with teacher messaging
+ *
+ * 🌐 Localization: Hebrew & English with RTL/LTR support
+ * 📦 UI: ShadCN components, custom components, Lucide icons
+ */
+
 export default function StudentDashboard() {
   const {
     showAssessment,
@@ -125,7 +146,6 @@ export default function StudentDashboard() {
       }, 3000);
     }
 
-    // ניקוי במעבר בין ימים / תלמידים
     if (!allTasksCompleted && hasCompletedToastShown) {
       setHasCompletedToastShown(false);
     }
@@ -157,7 +177,7 @@ export default function StudentDashboard() {
     const success = await studentService.deleteTask(taskId);
     if (success) {
       toast.success(t.taskDeleted || "Task deleted successfully");
-      refetch(); // עדכון הנתונים מהשרת
+      refetch();
     } else {
       toast.error(t.deleteTaskError);
     }
@@ -239,7 +259,6 @@ export default function StudentDashboard() {
     console.log("🧪 Student ID:", studentId);
 
     if (assessmentToken && studentId) {
-      // שימוש ב־URL דינמי במקום כתובת קשיחה
       const NODUS_BASE_URL =
         import.meta.env.VITE_NODUS_URL || "http://127.0.0.1:8000";
 
@@ -262,8 +281,6 @@ export default function StudentDashboard() {
     language === "he"
       ? "יום נהדר להצלחה – יש לך את זה!"
       : "A wonderful day for success – you've got this!";
-
-  console.log("👤 student:", student);
 
   return (
     <SidebarProvider>
@@ -314,10 +331,8 @@ export default function StudentDashboard() {
             </header>
           </div>
 
-          {/* כותרת ראשית */}
           <div className="px-4 py-10">
             <div className="flex-1 flex flex-col min-h-0">
-              {/* כותרת ראשית */}
               <div className="px-4 py-10">
                 <h1 className="text-3xl font-semibold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                   {greeting}
@@ -357,7 +372,6 @@ export default function StudentDashboard() {
                         />
                       </div>
 
-                      {/* שעון במרכז להוריד */}
                       <div className="lg:col-span-1 flex justify-center items-center px-15">
                         <div className="w-full max-w-sm">
                           <TimerSection

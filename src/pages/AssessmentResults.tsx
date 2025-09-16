@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -8,6 +7,19 @@ import { Assessment, ExternalAssessmentResult, Student } from "@/types/school";
 import { useToast } from "@/hooks/use-toast";
 import { studentService } from "@/services/studentService";
 import { ArrowLeft, CheckCircle, File, Loader2 } from "lucide-react";
+
+/**
+ * AssessmentResults Component
+ * ---------------------------------------------
+ * Renders a localized, read-only view of an external assessment's results for a given student.
+ *
+ * Responsibilities:
+ * - Fetch assessment by route param `assessmentId`.
+ * - Fetch student by `assessment.studentId`.
+ * - Parse JSON results payload into a typed `ExternalAssessmentResult`.
+ * - Render score, strengths, weaknesses, and recommendations.
+ * - Provide UI actions: Back, Download Report (simulated), Return to Dashboard.
+ */
 
 const translations = {
   en: {
@@ -23,7 +35,7 @@ const translations = {
     recommendations: "Recommendations",
     downloadReport: "Download Report",
     returnToDashboard: "Return to Dashboard",
-    errorLoadingResults: "Error loading assessment results"
+    errorLoadingResults: "Error loading assessment results",
   },
   he: {
     back: "חזור",
@@ -38,15 +50,14 @@ const translations = {
     recommendations: "המלצות",
     downloadReport: "הורד דוח",
     returnToDashboard: "חזור לדף הבית",
-    errorLoadingResults: "שגיאה בטעינת תוצאות האבחון"
-  }
+    errorLoadingResults: "שגיאה בטעינת תוצאות האבחון",
+  },
 };
 
-// מפה של שמות סוגי אבחון
 const assessmentTypeNames = {
   reading: { en: "Reading Assessment", he: "אבחון קריאה" },
   behavioral: { en: "Behavioral Assessment", he: "אבחון התנהגותי" },
-  cognitive: { en: "Cognitive Assessment", he: "אבחון קוגניטיבי" }
+  cognitive: { en: "Cognitive Assessment", he: "אבחון קוגניטיבי" },
 };
 
 const AssessmentResults = () => {
@@ -61,7 +72,6 @@ const AssessmentResults = () => {
   const [results, setResults] = useState<ExternalAssessmentResult | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // טעינת פרטי האבחון, התלמיד והתוצאות
   useEffect(() => {
     if (!assessmentId) {
       return;
@@ -70,28 +80,30 @@ const AssessmentResults = () => {
     const loadResults = async () => {
       try {
         setIsLoading(true);
-        // טעינת האבחון
-        const assessmentData = await externalAssessmentService.getAssessmentStatus(assessmentId);
-        
+        const assessmentData =
+          await externalAssessmentService.getAssessmentStatus(assessmentId);
+
         if (!assessmentData) {
           toast({
             title: "שגיאה",
             description: "האבחון לא נמצא",
-            variant: "destructive"
+            variant: "destructive",
           });
           return;
         }
-        
+
         setAssessment(assessmentData);
-        
-        // טעינת פרטי התלמיד
-        const studentData = await studentService.getStudent(assessmentData.studentId);
+
+        const studentData = await studentService.getStudent(
+          assessmentData.studentId
+        );
         setStudent(studentData || null);
-        
-        // פענוח תוצאות האבחון
+
         if (assessmentData.result) {
           try {
-            const parsedResults = JSON.parse(assessmentData.result) as ExternalAssessmentResult;
+            const parsedResults = JSON.parse(
+              assessmentData.result
+            ) as ExternalAssessmentResult;
             setResults(parsedResults);
           } catch (error) {
             console.error("Error parsing assessment results:", error);
@@ -102,32 +114,30 @@ const AssessmentResults = () => {
         toast({
           title: "שגיאה",
           description: t.errorLoadingResults,
-          variant: "destructive"
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadResults();
   }, [assessmentId, toast, t]);
 
-  // פונקציה לסימולציה של הורדת דוח
   const handleDownloadReport = () => {
     toast({
       title: "הורדת דוח",
       description: "הדוח יורד בהצלחה",
     });
   };
-  
-  // חזרה לדף הבית
+
   const handleReturnToDashboard = () => {
-    navigate('/');
+    navigate("/");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-6 hover:bg-gray-100 p-2 rounded-lg"
       >
@@ -145,7 +155,9 @@ const AssessmentResults = () => {
           </Card>
         ) : !assessment || !student || !results ? (
           <Card className="p-6 text-center">
-            <h2 className="text-xl font-bold text-red-500 mb-4">{t.errorLoadingResults}</h2>
+            <h2 className="text-xl font-bold text-red-500 mb-4">
+              {t.errorLoadingResults}
+            </h2>
             <Button onClick={handleReturnToDashboard}>
               {t.returnToDashboard}
             </Button>
@@ -153,7 +165,7 @@ const AssessmentResults = () => {
         ) : (
           <>
             <h1 className="text-2xl font-bold mb-6">{t.title}</h1>
-            
+
             <Card className="p-6 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-gray-50 p-4 rounded-lg">
@@ -161,61 +173,79 @@ const AssessmentResults = () => {
                   <div className="font-medium">{student.name}</div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-500">{t.assessmentType}</div>
+                  <div className="text-sm text-gray-500">
+                    {t.assessmentType}
+                  </div>
                   <div className="font-medium">
-                    {assessmentTypeNames[assessment.type as keyof typeof assessmentTypeNames]?.[language] || assessment.type}
+                    {assessmentTypeNames[
+                      assessment.type as keyof typeof assessmentTypeNames
+                    ]?.[language] || assessment.type}
                   </div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <div className="text-sm text-gray-500">{t.date}</div>
                   <div className="font-medium">
-                    {assessment.completedAt 
-                      ? new Date(assessment.completedAt).toLocaleDateString() 
+                    {assessment.completedAt
+                      ? new Date(assessment.completedAt).toLocaleDateString()
                       : new Date().toLocaleDateString()}
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-blue-50 p-5 rounded-lg border border-blue-100 mb-6 text-center">
                 <div className="text-sm text-blue-700 mb-1">{t.score}</div>
-                <div className="text-3xl font-bold text-blue-800">{results.score}/100</div>
+                <div className="text-3xl font-bold text-blue-800">
+                  {results.score}/100
+                </div>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-semibold text-lg mb-2 text-green-700">{t.strengths}</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-green-700">
+                    {t.strengths}
+                  </h3>
                   <ul className="list-disc list-inside space-y-2 text-green-800">
-                    {results.details.strengths.map((strength: string, index: number) => (
-                      <li key={index} className="flex items-start">
-                        <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0 text-green-600" />
-                        <span>{strength}</span>
-                      </li>
-                    ))}
+                    {results.details.strengths.map(
+                      (strength: string, index: number) => (
+                        <li key={index} className="flex items-start">
+                          <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0 text-green-600" />
+                          <span>{strength}</span>
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
-                
+
                 <div>
-                  <h3 className="font-semibold text-lg mb-2 text-orange-700">{t.weaknesses}</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-orange-700">
+                    {t.weaknesses}
+                  </h3>
                   <ul className="list-disc list-inside space-y-2 text-orange-800">
-                    {results.details.weaknesses.map((weakness: string, index: number) => (
-                      <li key={index}>{weakness}</li>
-                    ))}
+                    {results.details.weaknesses.map(
+                      (weakness: string, index: number) => (
+                        <li key={index}>{weakness}</li>
+                      )
+                    )}
                   </ul>
                 </div>
-                
+
                 <div>
-                  <h3 className="font-semibold text-lg mb-2 text-blue-700">{t.recommendations}</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-blue-700">
+                    {t.recommendations}
+                  </h3>
                   <ul className="list-disc list-inside space-y-2 text-blue-800">
-                    {results.details.recommendations.map((recommendation: string, index: number) => (
-                      <li key={index}>{recommendation}</li>
-                    ))}
+                    {results.details.recommendations.map(
+                      (recommendation: string, index: number) => (
+                        <li key={index}>{recommendation}</li>
+                      )
+                    )}
                   </ul>
                 </div>
               </div>
             </Card>
-            
+
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
+              <Button
                 onClick={handleDownloadReport}
                 className="flex-1"
                 variant="outline"
@@ -223,7 +253,7 @@ const AssessmentResults = () => {
                 <File className="mr-2 h-4 w-4" />
                 {t.downloadReport}
               </Button>
-              <Button 
+              <Button
                 onClick={handleReturnToDashboard}
                 className="flex-1 bg-primary hover:bg-primary/90"
               >

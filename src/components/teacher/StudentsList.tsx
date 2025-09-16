@@ -7,6 +7,7 @@ import { StudentCard } from "@/components/StudentCard";
 
 interface StudentsListProps {
   students: Student[];
+  language: "he" | "en";
   isLoading: boolean;
   error: Error | null;
   searchTerm?: string;
@@ -27,11 +28,12 @@ interface StudentsListProps {
   onViewProgress: (studentId: string) => void;
   onContactParent: (student: Student) => void;
   teacherId?: string;
-  questionnaireRole?: "student"|"teacher"|"parent";
+  questionnaireRole?: "student" | "teacher" | "parent";
 }
 
 export const StudentsList: FC<StudentsListProps> = ({
   students,
+  language,
   isLoading,
   error,
   searchTerm = "",
@@ -41,34 +43,30 @@ export const StudentsList: FC<StudentsListProps> = ({
   teacherId,
   questionnaireRole,
 }) => {
-  const { displayStudents } = useStudentsList(
-    students,
-    isLoading,
-    error,
-    {
-      progressMessage: t.progressMessage,
-      contactMessage: t.contactMessage
-    }
-  );
+  const { displayStudents } = useStudentsList(students, isLoading, error, {
+    progressMessage: t.progressMessage,
+    contactMessage: t.contactMessage,
+  });
 
-    // Filter by search term
+  // Filter by search term
   // Normalize students to match `Student` interface (add _id, classId, className)
-const normalizedStudents: Student[] = (displayStudents as Student[]).map(s => ({
-  ...s,
-  _id: s._id ?? s.id,
-  classId: s.classId ?? s.class,
-  className: s.className ?? s.grade ?? s.class,
-}));
+  const normalizedStudents: Student[] = (displayStudents as Student[]).map(
+    (s) => ({
+      ...s,
+      _id: s._id ?? s.id,
+      classId: s.classId ?? s.class,
+      className: s.className ?? s.grade ?? s.class,
+    })
+  );
 
   // סינון לפי חיפוש
   const filtered = searchTerm
-    ? normalizedStudents.filter(s =>
-        (`${s.firstName} ${s.lastName}`)
+    ? normalizedStudents.filter((s) =>
+        `${s.firstName} ${s.lastName}`
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       )
     : normalizedStudents;
-
 
   return (
     <>
@@ -86,22 +84,34 @@ const normalizedStudents: Student[] = (displayStudents as Student[]).map(s => ({
             <div className="col-span-full text-center py-8 text-gray-500">
               {searchTerm
                 ? `לא נמצאו תלמידים התואמים לחיפוש "${searchTerm}"`
-                : "אין תלמידים בכיתה זו"
-              }
+                : "אין תלמידים בכיתה זו"}
             </div>
           )}
 
-          {!isLoading && !error && filtered.map(student => (
-            <StudentCard
-              key={student.id}
-              student={student}
-              teacherId={teacherId}                   // Pass teacherId
-              questionnaireRole={questionnaireRole}   // Pass role
-              onViewProgress={() => onViewProgress(student.id)}
-              onContactParent={() => onContactParent(student)}
-            />
-          ))}
-          
+          {!isLoading &&
+            !error &&
+            filtered.map((student) => (
+              <StudentCard
+                key={student.id}
+                student={student}
+                language={language}
+                translations={{
+                  createAssessment: t.createAssessment,
+                  fillQuestionnaire:
+                    language === "he"
+                      ? "מילוי שאלון תלמיד"
+                      : "Fill student questionnaire",
+                  dailyTaskUpdate: t.dailyTaskUpdate,
+                  viewRecommendations: t.viewRecommendations,
+                  viewProgress: t.viewProgress,
+                  contactParent: t.contactParent,
+                }}
+                teacherId={teacherId} // Pass teacherId
+                questionnaireRole={questionnaireRole} // Pass role
+                onViewProgress={() => onViewProgress(student.id)}
+                onContactParent={() => onContactParent(student)}
+              />
+            ))}
         </div>
       </div>
     </>

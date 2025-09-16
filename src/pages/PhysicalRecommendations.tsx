@@ -12,13 +12,28 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { Breadcrumbs } from "@/components/ui/breadcrumb"; // הוחזר לייבוא בשם
+import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react"; // הוחזר לייבוא המקורי
-import { useSettings } from "@/components/SettingsContext"; // נשאר ייבוא חיצוני
-import { LanguageToggle } from "@/components/LanguageToggle"; // נשאר ייבוא חיצוני
+import { useState, useEffect } from "react";
+import { useSettings } from "@/components/SettingsContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { Logo } from "@/components/ui/logo";
 import RecommendationToggle from "@/components/RecommendationToggle";
+
+/**
+ * PhysicalActivityRecommendations.tsx
+ *
+ * Displays physical activity recommendations for a specific student.
+ *
+ * 🔍 Responsibilities:
+ * - Loads and filters recommendations of type/category "physical activity"
+ * - Displays per-recommendation details: difficulty, duration, intensity, examples, functional contribution
+ * - Handles multi-type diagnostic filtering (main vs. both)
+ * - Adapts layout and text based on language (Hebrew/English) and user role (student, parent, teacher)
+ *
+ * 🌐 Localization: RTL/LTR support for Hebrew and English
+ * 📦 UI: ShadCN components, Lucide icons, custom toggles and layout
+ */
 
 const getCategoryText = (
   cat:
@@ -31,14 +46,12 @@ const getCategoryText = (
 ): string => {
   if (!cat) return "";
 
-  // אם זה כבר מחרוזת/אובייקט מתורגם
   if (typeof cat === "string") return cat.trim();
   if (!Array.isArray(cat)) {
     const s = (cat[lang] || cat.en || cat.he || "").trim();
     return s;
   }
 
-  // cat הוא מערך של מחרוזות (2 פריטים)
   const isHeb = (s: string) => /[\u0590-\u05FF]/.test(s);
   const trimmed = cat
     .map((s) => (typeof s === "string" ? s.trim() : ""))
@@ -76,7 +89,6 @@ const translations = {
     combined: "Combined",
     Hyperactivity: "Hyperactivity",
     Inattention: "Inattention",
-    // נוסף עבור עקביות לוגיקת הברכה
     unidentifiedUser: "Unidentified User",
     viewingAsParent: "Viewing as Parent for",
     viewingAsTeacher: "Viewing as Teacher for",
@@ -105,7 +117,6 @@ const translations = {
     combined: "משולב",
     Hyperactivity: "היפראקטיבי",
     Inattention: "קשב",
-    // נוסף עבור עקביות לוגיקת הברכה
     unidentifiedUser: "👤 משתמש לא מזוהה",
     viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
     viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
@@ -225,32 +236,12 @@ export default function PhysicalActivityRecommendations() {
 
     loadSavedPreference();
   }, [studentId, language]);
-  /*try {
-          const response = await fetch(
-            `/api/recommendations/${studentId}?lang=${language}&view=${savedPreference}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setRecommendationData(data);
-            setHasMultipleTypes(
-              data.multipleTypes && data.subTypes?.length > 0
-            );
-          }
-        } catch (error) {
-          console.error("Failed to load recommendation data:", error);
-        }
-      }
-    };
 
-    loadSavedPreference();
-  }, [studentId, language]);*/
-
-  // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
     setLoggedUserId(localUser._id || null);
     setViewerRole(localUser.role || null);
-  }, []); // ריצה פעם אחת בהרצת הרכיב
+  }, []);
 
   useEffect(() => {
     console.log("🏃‍♂️ Physical Activity Recommendations useEffect started");
@@ -302,45 +293,6 @@ export default function PhysicalActivityRecommendations() {
 
           return isPhysical;
         });
-
-        /*console.log("📡 Fetching recommendations for student:", studentId);
-        console.log("🌍 Using language:", language);
-
-        const response = await fetch(
-          `/api/recommendations/${studentId}?lang=${language}`
-        );
-        console.log("📬 Response status:", response.status);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("📦 Raw data received:", data);
-
-        // Filter only physical activity recommendations
-        const allRecs = data.recommendations || [];
-        console.log("📊 Total recommendations:", allRecs.length);
-
-        const physicalRecs = allRecs.filter((rec: any) => {
-          const category =
-            rec.category || rec.category?.[language] || rec.category?.en || "";
-          const isPhysical =
-            category.toLowerCase().includes("physical") ||
-            category.toLowerCase().includes("גופנית") ||
-            rec.type === "physical";
-
-          console.log("🔍 Checking rec:", {
-            id: rec._id,
-            category,
-            type: rec.type,
-            isPhysical,
-            difficulty_desc: rec.difficulty_description?.[language],
-            recommendation_text: rec.recommendation?.[language],
-          });
-
-          return isPhysical;
-        });*/
 
         console.log("🏃‍♂️ Physical recommendations found:", physicalRecs.length);
         console.log(
@@ -438,32 +390,27 @@ export default function PhysicalActivityRecommendations() {
     return result;
   };
 
-  // פונקציה לבניית הודעת הברכה המותאמת אישית
   const getGreetingTitle = () => {
     if (!viewerRole || !studentId || !studentName) return t.unidentifiedUser;
 
-    // השווה את ה-ID של המשתמש המחובר ל-ID של התלמיד (ודא שהם מאותו טיפוס)
     const isSelf = String(loggedUserId) === String(studentId);
 
-    // בנה את הודעת הברכה לפי תפקיד המשתמש
     if (viewerRole === "student" && isSelf) {
-      return `${t.greeting} ${studentName}`; // לדוגמה: "בוקר טוב דני"
+      return `${t.greeting} ${studentName}`;
     }
 
     if (viewerRole === "parent") {
-      return `${t.greeting} ${t.viewingAsParent} ${studentName}`; // לדוגמה: "בוקר טוב 👨‍👧 הנך צופה כהורה עבור דני"
+      return `${t.greeting} ${t.viewingAsParent} ${studentName}`;
     }
 
     if (viewerRole === "teacher") {
-      return `${t.greeting} ${t.viewingAsTeacher} ${studentName}`; // לדוגמה: "בוקר טוב 🧑‍🏫 הנך צופה כמורה עבור דני"
+      return `${t.greeting} ${t.viewingAsTeacher} ${studentName}`;
     }
 
-    // ברירת מחדל אם התפקיד אינו מוכר
     return t.unidentifiedUser;
   };
 
   return (
-    // לא עוטף את הרכיב ב-SettingsContext.Provider כפי שביקשת
     <div>
       <div
         className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
@@ -565,7 +512,7 @@ export default function PhysicalActivityRecommendations() {
                 isRTL ? "text-right" : "text-left"
               }`}
             >
-              {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
+              {getGreetingTitle()}
             </h2>
           </div>
 
@@ -605,29 +552,6 @@ export default function PhysicalActivityRecommendations() {
               </div>
             </div>
           </div>
-
-          {/* Debug Info - Remove in production */}
-          {/*process.env.NODE_ENV === "development" && (
-            <div
-              className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
-              <div>
-                <strong>Debug Info:</strong>
-              </div>
-              <div>Student ID: {studentId || "undefined"}</div>
-              <div>Location: {location.pathname}</div>
-              <div>Search: {location.search}</div>
-              <div>Language: {language}</div>
-              <div>Recommendations: {recommendations.length}</div>
-              <div>Loading: {loading.toString()}</div>
-              <div>
-                Sample recommendation:{" "}
-                {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
-              </div>
-            </div>
-          )*/}
 
           {/* No Student ID State */}
           {!loading && !studentId && (

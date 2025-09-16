@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Search,
   Bell,
@@ -30,6 +29,28 @@ import RecommendationTypeSelectionModal from "@/components/RecommendationTypeSel
 import RecommendationToggle from "@/components/RecommendationToggle";
 import { useState, useEffect, useCallback } from "react";
 import { getViewerDashboardUrl } from "@/utils/paths";
+import { getLocalizedDate } from "@/utils/dateTranslations";
+import { useMemo } from "react";
+
+/**
+ * Recommendations Page
+ * ------------------------------------------------------------
+ * Purpose: Displays ADHD recommendations (Nutrition, Physical, Environmental)
+ * for a specific student, with localization (EN/HE), RTL handling, and gating
+ * behind completion of required forms (student, parent, teacher, diagnosis).
+ *
+ * Key features:
+ * - Persists language in localStorage/sessionStorage and syncs with SettingsContext
+ * - Loads current viewer (role/id) from storage or API fallback
+ * - Fetches recommendations with an optional user preference (main-only vs both)
+ * - If multiple diagnosis types exist, prompts for user preference via modal
+ * - Shows a popup with missing-forms status and navigation to the relevant forms
+ * - Renders a PDF preview section via `RecommendationPdfView`
+ *
+ * Security/PII:
+ * - Avoid logging sensitive user data; console logs are kept to debug-level and generic
+ * - Ensure API endpoints are authenticated (handled outside this component)
+ */
 
 const getStoredLanguage = () => {
   const stored = localStorage.getItem("language");
@@ -177,7 +198,6 @@ const translations = {
   },
 };
 
-// רכיב הפופאפ המשודרג
 const MissingFormsPopup = ({
   isVisible,
   status,
@@ -197,10 +217,6 @@ const MissingFormsPopup = ({
     return null;
   }
 
-  console.log("👀 Viewer role in popup:", viewerRole);
-  console.log("👀 Viewer Id in popup:", viewerId);
-
-  // חישוב התקדמות
   const totalForms = 4;
   const completedForms = [
     status?.studentFormCompleted,
@@ -211,7 +227,6 @@ const MissingFormsPopup = ({
 
   const progressPercentage = (completedForms / totalForms) * 100;
 
-  // פונקציות טיפול בפעולות
   const handleStudentFormClick = () => {
     navigate(`/questionnaire/student/${studentId}`);
   };
@@ -224,57 +239,8 @@ const MissingFormsPopup = ({
     navigate(`/questionnaire/teacher/${studentId}`);
   };
 
-  /*const handleParentFormClick = async () => {
-    try {
-      // שלח הודעה לדשבורד של ההורה
-      await fetch("/api/notifications/parent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentId,
-          studentName,
-          type: "parent_form_request",
-          message: `יש שאלון חדש של ${studentName} הממתין להשלמה`,
-        }),
-      });
-
-      // הצג הודעת אישור
-      alert(t.parentNotificationSent);
-    } catch (error) {
-      console.error("Failed to send parent notification:", error);
-      alert(t.errorSendingNotification);
-    }
-  };
-
-  const handleTeacherFormClick = async () => {
-    try {
-      // שלח הודעה לדשבורד של המורה
-      await fetch("/api/notifications/teacher", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentId,
-          studentName,
-          type: "teacher_form_request",
-          message: `יש שאלון חדש של ${studentName} הממתין להשלמה`,
-        }),
-      });
-
-      // הצג הודעת אישור
-      alert(t.teacherNotificationSent);
-    } catch (error) {
-      console.error("Failed to send teacher notification:", error);
-      alert(t.errorSendingNotification);
-    }
-  };*/
-
   const handleDiagnosisClick = async () => {
     try {
-      // בדוק אם יש אבחון זמין
       const response = await fetch(
         `/api/diagnosis/check-availability/${studentId}`
       );
@@ -283,10 +249,8 @@ const MissingFormsPopup = ({
         const data = await response.json();
 
         if (data.available) {
-          // עבור לאבחון - אותו נתיב כמו כפתור newAssessment
           navigate(`/assessment?studentId=${studentId}`);
         } else {
-          // שלח בקשה למורה לפתיחת אבחון
           await fetch("/api/notifications/teacher", {
             method: "POST",
             headers: {
@@ -303,20 +267,17 @@ const MissingFormsPopup = ({
           alert(t.diagnosisRequestSent);
         }
       } else {
-        // אם אין API endpoint, פשוט נווט ישירות לאבחון
         navigate(`/assessment?studentId=${studentId}`);
       }
     } catch (error) {
       console.error("Failed to handle diagnosis:", error);
-      // במקרה של שגיאה, פשוט נווט לאבחון
       navigate(`/assessment?studentId=${studentId}`);
     }
   };
   const handleBackToDashboard = () => {
-    navigate(getViewerDashboardUrl(viewerRole)); // חזרה לדשבורד לפי תפקיד הצופה
+    navigate(getViewerDashboardUrl(viewerRole));
   };
 
-  // פונקציה לבדיקה אם המשתמש הנוכחי יכול למלא את הטופס
   const canUserFillForm = (formKey) => {
     switch (formKey) {
       case "studentForm":
@@ -326,20 +287,18 @@ const MissingFormsPopup = ({
       case "teacherForm":
         return viewerRole === "teacher";
       case "diagnosisForm":
-        return viewerRole === "teacher" || viewerRole === "admin"; // רק מורה/אדמין יכול לפתוח אבחון
+        return viewerRole === "teacher" || viewerRole === "admin";
       default:
         return false;
     }
   };
 
-  // פונקציה לקבלת טקסט הכפתור לפי התפקיד
   const getButtonText = (formKey, completed) => {
     if (completed) return t.completedStatus;
 
     if (canUserFillForm(formKey)) {
-      return "מלא שאלון"; // אם זה השאלון שלי
+      return "מלא שאלון";
     } else {
-      // אם זה לא השאלון שלי, הצג מי צריך למלא
       switch (formKey) {
         case "studentForm":
           return "השאלון ממתין לתלמיד";
@@ -355,7 +314,6 @@ const MissingFormsPopup = ({
     }
   };
 
-  // רשימת הטפסים עם פרטים ופונקציות
   const forms = [
     {
       key: "studentForm",
@@ -411,7 +369,6 @@ const MissingFormsPopup = ({
         }`}
         dir={isRTL ? "rtl" : "ltr"}
       >
-        {/* כותרת */}
         <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white p-6 rounded-t-2xl">
           <div
             className={`flex items-center justify-between ${
@@ -434,9 +391,7 @@ const MissingFormsPopup = ({
           </div>
         </div>
 
-        {/* תוכן */}
         <div className="p-6">
-          {/* פס התקדמות */}
           <div className="mb-6">
             <div
               className={`flex items-center justify-between mb-2 ${
@@ -458,7 +413,6 @@ const MissingFormsPopup = ({
             </div>
           </div>
 
-          {/* רשימת טפסים */}
           <div className="space-y-4">
             {forms.map((form) => (
               <div
@@ -518,39 +472,14 @@ const MissingFormsPopup = ({
                       )}
                     </div>
 
-                    {/* כפתור פעולה משופר לכל טופס */}
-                    {!form.completed && (
-                      <>
-                        {/*
-                        {canUserFillForm(form.key) ? (
-                          // אם המשתמש יכול למלא את הטופס - הצג כפתור פעיל
-                        
-                          <Button
-                            onClick={form.onClick}
-                            size="sm"
-                            className="text-xs px-3 py-1 flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white"
-                          >
-                            {form.actionIcon}
-                            מלא שאלון
-                          </Button>
-                        
-                        ) : (
-                          // אם המשתמש לא יכול למלא - הצג הודעה
-                          <div className="text-xs px-3 py-1 text-gray-500 bg-gray-100 rounded flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {getButtonText(form.key, form.completed)}
-                          </div>
-                        )}
-                        */}
-                      </>
-                    )}
+                    {!form.completed && <></>}
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* כפתורי פעולה */}
+          {/* action Buttons*/}
           <div className={`flex gap-3 mt-6 ${isRTL ? "flex-row-reverse" : ""}`}>
             <Button
               onClick={handleBackToDashboard}
@@ -624,7 +553,14 @@ export default function Recommendations() {
 
   const t = translations[currentLanguage];
   const isRTL = currentLanguage === "he";
-  const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
+  const currentDate = useMemo(
+    () =>
+      getLocalizedDate(
+        format(new Date(), "EEEE, MMM do, yyyy"),
+        currentLanguage as "en" | "he"
+      ),
+    [currentLanguage]
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -667,10 +603,6 @@ export default function Recommendations() {
         if (preference) {
           queryParams.append("view", preference);
         }
-        console.log(
-          "🔍 [Hebrew Debug] Final URL will be:",
-          `/api/recommendations/${studentId}?${queryParams.toString()}`
-        );
         const recommendationsResponse = await fetch(
           `/api/recommendations/${studentId}?${queryParams.toString()}`
         );
@@ -685,15 +617,6 @@ export default function Recommendations() {
             ...data,
             recommendations: filteredRecommendations,
           });
-          console.log(
-            "✅ Recommendations fetched:",
-            filteredRecommendations.length
-          );
-          console.log("🔍 Multiple types:", data.multipleTypes);
-          console.log(
-            "🔍 Filtered recommendations IDs:",
-            filteredRecommendations.map((r) => r._id)
-          );
 
           return data;
         } else {
@@ -724,8 +647,6 @@ export default function Recommendations() {
   const loadCurrentUser = useCallback(async () => {
     try {
       console.log("🔍 Loading current user...");
-
-      // נסה ללוקל סטורג' קודם
       const storedUserId =
         localStorage.getItem("userId") || sessionStorage.getItem("userId");
       const storedUserRole =
@@ -741,7 +662,6 @@ export default function Recommendations() {
         return { userId: storedUserId, role: storedUserRole };
       }
 
-      // אם אין במקומי, נסה API (רק אם endpoint קיים)
       const authToken =
         localStorage.getItem("authToken") ||
         sessionStorage.getItem("authToken");
@@ -760,8 +680,6 @@ export default function Recommendations() {
               console.log("✅ Loaded user from API:", userData);
               setCurrentUserId(userData.userId);
               setCurrentUserRole(userData.role);
-
-              // שמור ללוקל סטורג'
               localStorage.setItem("userId", userData.userId);
               localStorage.setItem("userRole", userData.role);
 
@@ -773,18 +691,15 @@ export default function Recommendations() {
         }
       }
 
-      // Fallback: ברירת מחדל אם הכל נכשל
       console.log("⚠️ Using fallback - setting as student");
       setCurrentUserRole("student");
 
-      // צור userId זמני אם אין
       const fallbackUserId = studentId || "temp-user-" + Date.now();
       setCurrentUserId(fallbackUserId);
 
       return { userId: fallbackUserId, role: "student" };
     } catch (error) {
       console.error("❌ Failed to load current user:", error);
-      // ברירת מחדל במקרה של שגיאה
       setCurrentUserRole("student");
       setCurrentUserId(studentId || "unknown");
       return { userId: studentId || "unknown", role: "student" };
@@ -800,19 +715,15 @@ export default function Recommendations() {
         return;
       }
 
-      // 1. טען פרטי המשתמש הנוכחי
       const currentUser = await loadCurrentUser();
       console.log("👤 Current user:", currentUser);
 
-      // 2. בדוק אם יש העדפה שמורה
       const savedPreference = sessionStorage.getItem(
         "recommendationPreference"
       ) as "main" | "both" | null;
 
-      // 3. טען המלצות
       const data = await fetchRecommendations(savedPreference || undefined);
 
-      // 4. בדוק אם יש כמה סוגים
       if (data) {
         const multipleTypes =
           data.multipleTypes && data.subTypes && data.subTypes.length > 0;
@@ -820,15 +731,12 @@ export default function Recommendations() {
 
         if (multipleTypes) {
           if (savedPreference) {
-            // יש העדפה שמורה - השתמש בה
             setUserPreference(savedPreference);
           } else {
-            // אין העדפה שמורה - הצג popup פעם אחת
             setShowTypeSelectionModal(true);
           }
         }
       }
-      // 5. טען סטטוס טפסים
       try {
         const statusResponse = await fetch(
           `/api/forms/check-status/${studentId}`
@@ -838,7 +746,6 @@ export default function Recommendations() {
           const statusData = await statusResponse.json();
           setStatus(statusData);
 
-          // בדוק אם יש טפסים חסרים
           const hasIncompleteForm =
             !statusData.studentFormCompleted ||
             !statusData.parentFormCompleted ||
@@ -862,7 +769,6 @@ export default function Recommendations() {
         setShowIncompleteFormsPopup(false);
       }
 
-      // 4. טען שם תלמיד
       try {
         const studentResponse = await fetch(`/api/users/${studentId}`);
 
@@ -877,8 +783,6 @@ export default function Recommendations() {
           } else {
             setStudentName("תלמיד");
           }
-
-          console.log("✅ Student name loaded:", user);
         } else {
           console.warn(
             "⚠️ Failed to fetch student data:",
@@ -897,12 +801,10 @@ export default function Recommendations() {
     initializeComponent();
   }, [studentId, currentLanguage, loadCurrentUser, fetchRecommendations]);
 
-  // 4. הוסף פונקציה לטיפול בשינוי העדפה מהtoggle
   const handleToggleChange = async (preference: "main" | "both") => {
     setUserPreference(preference);
     sessionStorage.setItem("recommendationPreference", preference);
 
-    // טען מחדש את ההמלצות עם ההעדפה החדשה
     await fetchRecommendations(preference);
   };
 
@@ -951,7 +853,7 @@ export default function Recommendations() {
                 isRTL ? "flex-row-reverse" : ""
               }`}
             >
-              <Logo size="xs" showText={false} className="h-4 mx-auto mb-4" />
+              <Logo size="sm" showText={false} className="h-20 mx-auto mb-1" />
             </div>
             <div
               className={`flex items-center gap-8 ${
@@ -969,11 +871,6 @@ export default function Recommendations() {
               </Button>
             </div>
           </div>
-          {/*
-           <div className="mt-4">
-            <Breadcrumbs items={breadcrumbItems} />
-          </div>
-          */}
         </div>
       </header>
 
@@ -1007,7 +904,6 @@ export default function Recommendations() {
           </h2>
         </div>
 
-        {/* Toggle - רק אם יש כמה סוגים */}
         {hasMultipleTypes && userPreference && recommendationData && (
           <RecommendationToggle
             language={currentLanguage as "en" | "he"}

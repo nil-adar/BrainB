@@ -10,7 +10,7 @@ import { Login } from "@/pages/Login";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import CreateAssessment from "./pages/CreateAssessment";
 import DailyTasks from "./pages/DailyTasks";
-import Statistics from "./pages/Statistics";
+//import Statistics from "./pages/Statistics";
 import StudentDetails from "./pages/StudentDetails";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -91,12 +91,9 @@ function App() {
 <Route
   path="/daily-tasks"
   element={<DailyTasks />}
-/>
-              <Route path="/statistics" element={<Statistics />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route
+/>              <Route
                 path="/questionnaire/:role/:studentId"
-                element={<QuestionnaireFormPage />} /* דף השאלון הגנרי */
+                element={<QuestionnaireFormPage />} 
               />
               <Route path="*" element={<NotFound />} />
             </Routes>

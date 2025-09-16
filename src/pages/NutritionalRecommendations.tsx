@@ -12,10 +12,21 @@ import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import RecommendationToggle from "@/components/RecommendationToggle";
 
-/*interface SettingsContextType {
-  language: "he" | "en";
-  toggleLanguage: () => void;
-}*/
+/**
+ * NutritionalRecommendations.tsx
+ *
+ * Displays nutrition-related recommendations for a specific student.
+ *
+ * 🔍 Responsibilities:
+ * - Extracts student ID from URL, path, or localStorage
+ * - Loads student profile and recommendations
+ * - Filters and displays only nutritional recommendations
+ * - Supports RTL/LTR layout and translations (Hebrew/English)
+ * - Handles viewer context (student, parent, teacher)
+ *
+ * 🌐 Localization: Hebrew & English
+ * 📦 UI: ShadCN components, Lucide icons, date-fns
+ */
 
 const translations = {
   en: {
@@ -110,7 +121,6 @@ export default function NutritionalRecommendations() {
       studentId = pathParts[studentIndex + 1];
     }
   }
-  // Fallback to localStorage if still no studentId (פחות אידיאלי אך שומר על התנהגות קיימת)
   if (!studentId) {
     studentId = localStorage.getItem("studentId");
   }
@@ -131,7 +141,6 @@ export default function NutritionalRecommendations() {
         setUserPreference(savedPreference);
 
         try {
-          // **תיקון עיקרי: כלול את סינון הסוג בבקשה**
           const queryParams = new URLSearchParams({
             lang: language,
           });
@@ -144,25 +153,6 @@ export default function NutritionalRecommendations() {
             `/api/recommendations/${studentId}?${queryParams.toString()}`
           );
 
-          /*try {
-          const response = await fetch(
-            `/api/recommendations/${studentId}?lang=${language}&view=${savedPreference}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setRecommendationData(data);
-            setHasMultipleTypes(
-              data.multipleTypes && data.subTypes?.length > 0
-            );
-          }
-        } catch (error) {
-          console.error("Failed to load recommendation data:", error);
-        }
-      }
-    };
-
-    loadSavedPreference();
-  }, [studentId, language]);*/
           if (response.ok) {
             const data = await response.json();
             setRecommendationData(data);
@@ -170,7 +160,6 @@ export default function NutritionalRecommendations() {
               data.multipleTypes && data.subTypes?.length > 0
             );
 
-            // **תיקון נוסף: סנן את ההמלצות התזונתיות מהנתונים המסוננים כבר**
             const getCategoryText = (
               cat: Translated | undefined,
               lang: "he" | "en"
@@ -204,7 +193,6 @@ export default function NutritionalRecommendations() {
     loadSavedPreference();
   }, [studentId, language]);
 
-  // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
     setLoggedUserId(localUser._id || null);
@@ -215,17 +203,15 @@ export default function NutritionalRecommendations() {
     console.log("🔍 NutritionalRecommendations useEffect started");
     console.log("📍 Current location:", location);
     console.log("🆔 Student ID from params/path/localStorage:", studentId);
-    console.log("🌍 Current language:", language); // נוסף debug
+    console.log("🌍 Current language:", language);
 
     const loadData = async () => {
-      setLoading(true); // ודא שטעינה פעילה בתחילת שליפת נתונים
+      setLoading(true);
 
-      // **תיקון: טען את ההעדפה השמורה**
       const savedPreference = sessionStorage.getItem(
         "recommendationPreference"
       ) as "main" | "both" | null;
 
-      // 1. טעינת שם התלמיד
       if (studentId) {
         try {
           const studentResponse = await fetch(`/api/users/${studentId}`);
@@ -237,7 +223,7 @@ export default function NutritionalRecommendations() {
             } else if (user.name) {
               setStudentName(user.name);
             } else {
-              setStudentName("תלמיד"); // שם ברירת מחדל אם לא נמצא
+              setStudentName("תלמיד");
             }
             console.log("✅ Student name loaded:", user);
           } else {
@@ -245,17 +231,16 @@ export default function NutritionalRecommendations() {
               "⚠️ Failed to fetch student data:",
               studentResponse.status
             );
-            setStudentName("תלמיד"); // שם ברירת מחדל במקרה של שגיאה
+            setStudentName("תלמיד");
           }
         } catch (err) {
           console.error("❌ Failed to load student name:", err);
-          setStudentName("תלמיד"); // שם ברירת מחדל במקרה של שגיאה
+          setStudentName("תלמיד");
         }
       } else {
-        setStudentName("תלמיד"); // ברירת מחדל אם אין studentId
+        setStudentName("תלמיד");
       }
 
-      // 2. טעינת המלצות עם הסינון הנכון
       if (studentId) {
         try {
           console.log("📡 Fetching recommendations for student:", studentId);
@@ -264,7 +249,6 @@ export default function NutritionalRecommendations() {
             lang: language,
           });
 
-          // **תיקון עיקרי: כלול את ההעדפה השמורה**
           if (savedPreference) {
             queryParams.append("view", savedPreference);
           }
@@ -352,11 +336,9 @@ export default function NutritionalRecommendations() {
     return "recommended";
   };
 
-  // פונקציית הברכה החדשה, בדומה לרכיב הקודם
   const getGreetingTitle = () => {
     if (!viewerRole || !studentId || !studentName) return t.unidentifiedUser;
 
-    // המר למחרוזת להשוואה עקבית, מכיוון ש-ID יכולים להיות מספרים או מחרוזות
     const isSelf = String(loggedUserId) === String(studentId);
 
     if (viewerRole === "student" && isSelf) {
@@ -375,11 +357,9 @@ export default function NutritionalRecommendations() {
   };
 
   return (
-    // עוטף את הרכיב ב-SettingsContext.Provider
     <div
       className={`min-h-screen bg-background ${isRTL ? "rtl" : "ltr"}`}
       dir={isRTL ? "rtl" : "ltr"}
-      //style={{ direction: isRTL ? "rtl" : "ltr" }}
     >
       {/* Header */}
       <header className="bg-card border-b border-border">
@@ -476,7 +456,7 @@ export default function NutritionalRecommendations() {
               isRTL ? "text-right" : "text-left"
             }`}
           >
-            {getGreetingTitle()} {/* שימוש בפונקציית הברכה החדשה */}
+            {getGreetingTitle()}
           </h2>
         </div>
 
@@ -518,41 +498,6 @@ export default function NutritionalRecommendations() {
             </div>
           </div>
         </div>
-
-        {/* Debug Info - Remove in production */}
-        {/*process.env.NODE_ENV === "development" && (
-            <div
-              className={`bg-gray-100 p-4 rounded-lg mb-6 text-sm font-mono ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
-              <div>
-                <strong>Debug Info:</strong>
-              </div>
-              <div>Student ID: {studentId || "undefined"}</div>
-              <div>Location: {location.pathname}</div>
-              <div>Search: {location.search}</div>
-              <div>Full URL: {window.location.href}</div>
-              <div>Language: {language}</div>
-              <div>Recommendations: {recommendations.length}</div>
-              <div>Loading: {loading.toString()}</div>
-              <div>
-                Sample recommendation:{" "}
-                {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
-              </div>
-              <Button
-                onClick={() =>
-                  navigate(
-                    `/nutritional-recommendations?studentId=68049245b67e1cc4d080bfc25`
-                  )
-                }
-                className="mt-2 text-xs"
-                variant="outline"
-              >
-                Test with Sample Student ID
-              </Button>
-            </div>
-          )*/}
 
         {/* No Student ID State */}
         {!loading && !studentId && (

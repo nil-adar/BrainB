@@ -72,21 +72,19 @@ const RecommendationToggle: React.FC<RecommendationToggleProps> = ({
       {/* Dropdown Container */}
       <div className="flex justify-center">
         {readonly ? (
-          // תצוגה פסיבית
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-2 py-1 shadow-sm border">
             <span className="text-sm font-medium text-gray-800">
               {currentSelection === "main" ? t.mainOnly : t.both}
             </span>
           </div>
         ) : (
-          // Dropdown אינטראקטיבי
           <div className="relative">
             <select
               value={currentSelection}
               onChange={(e) =>
                 onSelectionChange?.(e.target.value as "main" | "both")
               }
-              className={`appearance-none bg-gradient-to-r from-blue-50 to-purple-100 rounded-lg px-2 py-2 pr-8 text-sm font-medium text-gray-800 shadow-sm hover:border-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-100 min-w-[150px] ${
+              className={`appearance-none bg-gradient-to-r from-blue-50 to-purple-100 rounded-lg px-2 py-2 pr-10 text-sm font-medium text-gray-800 shadow-sm hover:border-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-100 min-w-[150px] ${
                 isRTL ? "text-right" : "text-left"
               }`}
               dir={isRTL ? "rtl" : "ltr"}
@@ -106,7 +104,7 @@ const RecommendationToggle: React.FC<RecommendationToggleProps> = ({
         )}
       </div>
 
-      {/* הודעה לתתי המסכים */}
+      {/* for category recommendations*/}
       {readonly && (
         <div className="text-center mt-3">
           <p className="text-xs text-gray-500">{t.changeNote}</p>

@@ -23,6 +23,27 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { Logo } from "@/components/ui/logo";
 import RecommendationToggle from "@/components/RecommendationToggle";
 
+/**
+ * EnvironmentalRecommendations Page
+ * ---------------------------------------------------------------------
+ * Purpose: Display environment-focused ADHD recommendations for a student,
+ * localized (EN/HE) with full RTL support, and filtered to the "environment"
+ * recommendation type. The page reads language from SettingsContext and
+ * accepts a studentId via querystring or path.
+ *
+ * Key behaviors
+ * - Derive studentId from URL (query param or /student/:id segment)
+ * - Persist viewer info from localStorage (role/id) for greeting context
+ * - Load recommendation preference ("main"|"both") from sessionStorage
+ * - Fetch recommendations for the student and filter to environment type
+ * - Show helpful states: loading / empty / missing student id
+ * - Present a read-only RecommendationToggle if multiple types exist
+ *
+ * Security/PII
+ * - Avoid logging sensitive personal data (console logs are kept minimal)
+ * - Server-side auth/authorization is assumed for API calls
+ */
+
 const translations = {
   en: {
     title: "Environmental Changes",
@@ -103,7 +124,6 @@ export default function EnvironmentalRecommendations() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [studentName, setStudentName] = useState<string>("");
-  // הוספת מצבים (State) עבור פרטי המשתמש המחובר
   const [loggedUserId, setLoggedUserId] = useState<string | null>(null);
   const [viewerRole, setViewerRole] = useState<string | null>(null);
 
@@ -161,7 +181,6 @@ export default function EnvironmentalRecommendations() {
               data.multipleTypes && data.subTypes?.length > 0
             );
 
-            // סנן רק המלצות סביבתיות מהנתונים המסוננים
             type EnvRecommendation = Recommendation & { type?: string };
             const allRecs = (data.recommendations ?? []) as EnvRecommendation[];
             const environmentalRecs = allRecs.filter(
@@ -182,32 +201,12 @@ export default function EnvironmentalRecommendations() {
 
     loadSavedPreference();
   }, [studentId, language]);
-  /*try {
-          const response = await fetch(
-            `/api/recommendations/${studentId}?lang=${language}&view=${savedPreference}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            setRecommendationData(data);
-            setHasMultipleTypes(
-              data.multipleTypes && data.subTypes?.length > 0
-            );
-          }
-        } catch (error) {
-          console.error("Failed to load recommendation data:", error);
-        }
-      }
-    };
 
-    loadSavedPreference();
-  }, [studentId, language]);*/
-
-  // Effect לטעינת ה-ID והתפקיד של המשתמש המחובר מ-localStorage
   useEffect(() => {
     const localUser = JSON.parse(localStorage.getItem("user") || "{}");
     setLoggedUserId(localUser._id || null);
     setViewerRole(localUser.role || null);
-  }, []); // ריצה פעם אחת בהרצת הרכיב
+  }, []);
 
   useEffect(() => {
     console.log("🏠 Environmental Recommendations useEffect started");
@@ -281,47 +280,6 @@ export default function EnvironmentalRecommendations() {
         setLoading(false);
       }
     };
-    /*const response = await fetch(
-          `/api/recommendations/${finalStudentId}?lang=${language}`
-        );
-        console.log("📬 Response status:", response.status);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("📦 Raw data received:", data);
-
-        type EnvRecommendation = Recommendation & { type?: string };
-
-        const allRecs = (data.recommendations ?? []) as EnvRecommendation[];
-
-        const environmentalRecs = allRecs.filter(
-          (rec) => rec.type === "environment"
-        );
-
-        console.log(
-          "🏠 Environmental recommendations for this student:",
-          environmentalRecs.length
-        );
-
-        console.log(
-          "🏠 Environmental recommendations for this student:",
-          environmentalRecs
-        );
-
-        setRecommendations(environmentalRecs);
-      } catch (error) {
-        console.error(
-          "❌ Failed to load environmental recommendations:",
-          error
-        );
-        setRecommendations([]);
-      } finally {
-        setLoading(false);
-      }
-    };*/
 
     const loadStudentName = async () => {
       if (!studentId) {
@@ -570,29 +528,6 @@ export default function EnvironmentalRecommendations() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Debug Info - Remove in production */}
-        {/*process.env.NODE_ENV === "development" && (
-          <div
-            className={`bg-blue-50 p-4 rounded-lg mb-6 text-sm font-mono ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            <div>
-              <strong>Debug Info:</strong>
-            </div>
-            <div>Student ID: {studentId || "undefined"}</div>
-            <div>Location: {location.pathname}</div>
-            <div>Search: {location.search}</div>
-            <div>Language: {language}</div>
-            <div>Recommendations: {recommendations.length}</div>
-            <div>Loading: {loading.toString()}</div>
-            <div>
-              Sample recommendation:{" "}
-              {JSON.stringify(recommendations[0]?.recommendation, null, 2)}
-            </div>
-          </div>
-        )*/}
 
         {/* No Student ID State */}
         {!loading && !studentId && (

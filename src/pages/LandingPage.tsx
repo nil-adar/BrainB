@@ -201,7 +201,6 @@ const translations = {
 };
 
 export default function LandingPage() {
-  //const [language, setLanguage] = useState<"en" | "he">("he");
   const { language } = useSettings();
   const t = translations[language];
   const isRTL = language === "he";
@@ -228,9 +227,7 @@ export default function LandingPage() {
       dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Header */}
-      <HeaderSection
-        loginText={t.login}
-      />
+      <HeaderSection loginText={t.login} />
 
       {/* Hero Section */}
       <HeroSection

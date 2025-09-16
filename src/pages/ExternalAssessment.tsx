@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -9,13 +8,28 @@ import { useToast } from "@/hooks/use-toast";
 import { studentService } from "@/services/studentService";
 import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
 
+/**
+ * ExternalAssessment.tsx
+ *
+ * Component for managing the external assessment process:
+ * - Loads assessment and student data by ID
+ * - Displays current status (loading, ready, in progress, completed, error)
+ * - Redirects to external assessment system
+ * - Simulates result retrieval and updates UI accordingly
+ *
+ * Localization: Supports both English and Hebrew based on document direction
+ * Dependencies: externalAssessmentService, studentService, React Router, Lucide icons, ShadCN UI
+ */
+
 const translations = {
   en: {
     back: "Back",
     loading: "Loading assessment details...",
     title: "External Assessment System",
-    subtitle: "You are about to be redirected to the external assessment system",
-    readyToStart: "When you're ready, click the button below to start the assessment",
+    subtitle:
+      "You are about to be redirected to the external assessment system",
+    readyToStart:
+      "When you're ready, click the button below to start the assessment",
     startAssessment: "Start Assessment",
     assessmentInProgress: "Assessment in progress",
     waitingForResults: "Waiting for assessment results...",
@@ -27,7 +41,7 @@ const translations = {
     assessmentType: "Assessment Type",
     startDate: "Start Date",
     assessmentId: "Assessment ID",
-    errorNoAssessment: "Assessment not found"
+    errorNoAssessment: "Assessment not found",
   },
   he: {
     back: "חזור",
@@ -46,15 +60,14 @@ const translations = {
     assessmentType: "סוג אבחון",
     startDate: "תאריך התחלה",
     assessmentId: "מזהה אבחון",
-    errorNoAssessment: "האבחון לא נמצא"
-  }
+    errorNoAssessment: "האבחון לא נמצא",
+  },
 };
 
-// מפה של שמות סוגי אבחון
 const assessmentTypeNames = {
   reading: { en: "Reading Assessment", he: "אבחון קריאה" },
   behavioral: { en: "Behavioral Assessment", he: "אבחון התנהגותי" },
-  cognitive: { en: "Cognitive Assessment", he: "אבחון קוגניטיבי" }
+  cognitive: { en: "Cognitive Assessment", he: "אבחון קוגניטיבי" },
 };
 
 const ExternalAssessment = () => {
@@ -68,103 +81,102 @@ const ExternalAssessment = () => {
   const [student, setStudent] = useState<Student | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'in_progress' | 'completed' | 'error'>('loading');
+  const [status, setStatus] = useState<
+    "loading" | "ready" | "in_progress" | "completed" | "error"
+  >("loading");
   const [resultsReceived, setResultsReceived] = useState<boolean>(false);
 
-  // טעינת פרטי האבחון והתלמיד
   useEffect(() => {
     if (!assessmentId) {
-      setStatus('error');
+      setStatus("error");
       return;
     }
 
     const loadAssessmentData = async () => {
       try {
         setIsLoading(true);
-        // טעינת האבחון
-        const assessmentData = await externalAssessmentService.getAssessmentStatus(assessmentId);
-        
+        const assessmentData =
+          await externalAssessmentService.getAssessmentStatus(assessmentId);
+
         if (!assessmentData) {
           toast({
             title: "שגיאה",
             description: t.errorNoAssessment,
-            variant: "destructive"
+            variant: "destructive",
           });
-          setStatus('error');
+          setStatus("error");
           return;
         }
-        
+
         setAssessment(assessmentData);
-        
-        // טעינת פרטי התלמיד
-        const studentData = await studentService.getStudent(assessmentData.studentId);
+
+        const studentData = await studentService.getStudent(
+          assessmentData.studentId
+        );
         setStudent(studentData || null);
-        
-        // קביעת סטטוס האבחון
-        if (assessmentData.status === 'completed' || assessmentData.status === 'evaluated') {
-          setStatus('completed');
+
+        if (
+          assessmentData.status === "completed" ||
+          assessmentData.status === "evaluated"
+        ) {
+          setStatus("completed");
           setResultsReceived(true);
-        } else if (assessmentData.status === 'in_progress') {
-          setStatus('in_progress');
+        } else if (assessmentData.status === "in_progress") {
+          setStatus("in_progress");
         } else {
-          setStatus('ready');
+          setStatus("ready");
         }
       } catch (error) {
         console.error("Error loading assessment data:", error);
         toast({
           title: "שגיאה",
           description: t.errorLoadingAssessment,
-          variant: "destructive"
+          variant: "destructive",
         });
-        setStatus('error');
+        setStatus("error");
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadAssessmentData();
   }, [assessmentId, toast, t]);
 
-  // פונקציה להפניית המשתמש למערכת החיצונית
   const handleStartAssessment = () => {
     if (!assessment || !assessment.externalSystemUrl) return;
-    
+
     setIsRedirecting(true);
-    
-    // פתיחת המערכת החיצונית בחלון חדש
-    window.open(assessment.externalSystemUrl, '_blank');
-    
-    // עדכון הסטטוס לאחר הפניה למערכת החיצונית
-    setStatus('in_progress');
+
+    window.open(assessment.externalSystemUrl, "_blank");
+
+    setStatus("in_progress");
     setIsRedirecting(false);
-    
-    // סימולציה לקבלת תוצאות מהמערכת החיצונית אחרי זמן מה
-    // במציאות, המערכת החיצונית תודיע לנו כשהאבחון הושלם
     simulateExternalSystemCompletion();
   };
-  
-  // פונקציה לסימולציה של השלמת האבחון במערכת החיצונית
+
   const simulateExternalSystemCompletion = () => {
     if (!assessment) return;
-    
-    // במציאות, ההודעה על סיום האבחון תגיע מהמערכת החיצונית
-    // כרגע נדמה את התהליך עם טיימר
+
     const timer = setTimeout(async () => {
       try {
-        // קבלת תוצאות מהמערכת החיצונית
         if (assessment.externalSystemId) {
-          const results = await externalAssessmentService.receiveExternalResults(assessment.externalSystemId);
+          const results =
+            await externalAssessmentService.receiveExternalResults(
+              assessment.externalSystemId
+            );
           if (results) {
-            // עדכון סטטוס האבחון
-            const updatedAssessment = await externalAssessmentService.getAssessmentStatus(assessmentId!);
+            const updatedAssessment =
+              await externalAssessmentService.getAssessmentStatus(
+                assessmentId!
+              );
             if (updatedAssessment) {
               setAssessment(updatedAssessment);
-              setStatus('completed');
+              setStatus("completed");
               setResultsReceived(true);
-              
+
               toast({
                 title: "האבחון הושלם",
-                description: `תוצאות האבחון מסוג ${assessment.type} התקבלו`
+                description: `תוצאות האבחון מסוג ${assessment.type} התקבלו`,
               });
             }
           }
@@ -172,29 +184,31 @@ const ExternalAssessment = () => {
       } catch (error) {
         console.error("Error receiving assessment results:", error);
       }
-    }, 10000); // סימולציה של 10 שניות לאבחון
-    
+    }, 10000); 
+
     return () => clearTimeout(timer);
   };
-  
-  // מעבר לדף תוצאות האבחון
+
   const handleViewResults = () => {
     if (!assessment) return;
     navigate(`/assessment-results/${assessment.id}`);
   };
-  
-  // חזרה לדף הבית
+
   const handleReturnToDashboard = () => {
-    navigate('/');
+    navigate("/");
   };
 
-  // תצוגת פרטי האבחון
   const renderAssessmentDetails = () => {
     if (!assessment || !student) return null;
-    
-    const typeName = assessmentTypeNames[assessment.type as keyof typeof assessmentTypeNames]?.[language] || assessment.type;
-    const startDate = assessment.startedAt ? new Date(assessment.startedAt).toLocaleDateString() : "-";
-    
+
+    const typeName =
+      assessmentTypeNames[
+        assessment.type as keyof typeof assessmentTypeNames
+      ]?.[language] || assessment.type;
+    const startDate = assessment.startedAt
+      ? new Date(assessment.startedAt).toLocaleDateString()
+      : "-";
+
     return (
       <div className="space-y-3 mt-4">
         <div className="grid grid-cols-2 gap-2">
@@ -220,10 +234,10 @@ const ExternalAssessment = () => {
       </div>
     );
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-6 hover:bg-gray-100 p-2 rounded-lg"
       >
@@ -239,9 +253,11 @@ const ExternalAssessment = () => {
               <p>{t.loading}</p>
             </div>
           </Card>
-        ) : status === 'error' ? (
+        ) : status === "error" ? (
           <Card className="p-6 text-center">
-            <h2 className="text-xl font-bold text-red-500 mb-4">{t.errorLoadingAssessment}</h2>
+            <h2 className="text-xl font-bold text-red-500 mb-4">
+              {t.errorLoadingAssessment}
+            </h2>
             <Button onClick={handleReturnToDashboard}>
               {t.returnToDashboard}
             </Button>
@@ -249,14 +265,14 @@ const ExternalAssessment = () => {
         ) : (
           <Card className="p-6">
             <h1 className="text-2xl font-bold mb-2">{t.title}</h1>
-            
-            {status === 'ready' && (
+
+            {status === "ready" && (
               <>
                 <p className="text-gray-600 mb-4">{t.subtitle}</p>
                 {renderAssessmentDetails()}
                 <div className="mt-6 text-center">
                   <p className="mb-4">{t.readyToStart}</p>
-                  <Button 
+                  <Button
                     onClick={handleStartAssessment}
                     className="bg-primary hover:bg-primary/90"
                     disabled={isRedirecting}
@@ -271,8 +287,8 @@ const ExternalAssessment = () => {
                 </div>
               </>
             )}
-            
-            {status === 'in_progress' && (
+
+            {status === "in_progress" && (
               <>
                 <p className="text-gray-600 mb-4">{t.assessmentInProgress}</p>
                 {renderAssessmentDetails()}
@@ -282,19 +298,21 @@ const ExternalAssessment = () => {
                 </div>
               </>
             )}
-            
-            {status === 'completed' && (
+
+            {status === "completed" && (
               <>
-                <p className="text-green-600 font-semibold mb-4">{t.assessmentCompleted}</p>
+                <p className="text-green-600 font-semibold mb-4">
+                  {t.assessmentCompleted}
+                </p>
                 {renderAssessmentDetails()}
                 <div className="mt-6 space-y-4">
-                  <Button 
+                  <Button
                     onClick={handleViewResults}
                     className="w-full bg-primary hover:bg-primary/90"
                   >
                     {t.viewResults}
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleReturnToDashboard}
                     variant="outline"
                     className="w-full"

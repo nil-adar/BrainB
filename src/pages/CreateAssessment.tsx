@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Check } from "lucide-react"; // Combined Check import
-import { useNavigate, useSearchParams } from "react-router-dom"; // Removed unused useParams
+import { ArrowLeft, Check } from "lucide-react"; 
+import { useNavigate, useSearchParams } from "react-router-dom"; 
 import { Card } from "@/components/ui/card";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { toast } from "sonner";
@@ -8,11 +8,9 @@ import { toast } from "sonner";
 import { externalAssessmentService } from "@/services/externalAssessmentService";
 import { Button } from "@/components/ui/button";
 import { studentService } from "@/services/studentService";
-// import { parentService as authService } from "@/services/parentService"; // Removed unused authService
-import { Student } from "@/types/school"; // Removed unused User type
+import { Student } from "@/types/school"; 
 import { useQuery } from "@tanstack/react-query";
 import { LanguageToggle } from "@/components/LanguageToggle";
-// import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"; // Removed unused Alert components
 
 const translations = {
   en: {
@@ -148,7 +146,7 @@ export default function CreateAssessment() {
       setLoading(false);
       console.log("🔚 סיום תהליך יצירת האבחון");
     }
-  }; // <<< Added closing brace and semicolon for the handleSubmit function definition
+  }; 
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">

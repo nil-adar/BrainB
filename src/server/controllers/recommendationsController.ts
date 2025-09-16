@@ -12,6 +12,33 @@ import { allergyMapping } from "../../data/foodAllergyMapping";
 import { filterExamplesByAllergy } from "../../utils/filterExamplesByAllergy";
 import { StudentRecommendationsModel } from "../models/StudentRecommendations";
 import { translateDiagnosisType } from "../../utils/translateDiagnosisType";
+import { filterRecommendationsByType } from "../../utils/filterRecommendationsByType";
+
+/**
+ * recommendationsController.ts
+ *
+ * Implements the full ADHD recommendation generation pipeline (11 stages),
+ * based on diagnostic data, questionnaire responses, tags, and allergy filtering.
+ *
+ * 🔍 Responsibilities:
+ * - Dynamically computes personalized recommendations for a student
+ * - Checks if recalculation is needed based on form updates or diagnostic changes
+ * - Filters recommendations by diagnosis subtype, tags, and allergy exclusions
+ * - Supports fallback to previously saved recommendations if no data changed
+ * - Provides translated output (Hebrew/English) with multi-type support
+ *
+ * 📦 Endpoints:
+ * - GET /api/recommendations/:studentId
+ *     → Main 11-stage pipeline (with optional `?view=main|both` and `?lang=en|he`)
+ * - GET /api/recommendations/:studentId/latest
+ *     → Returns last saved recommendations for student
+ * - GET /api/recommendations/:studentId/debug
+ *     → Returns diagnostic and classification logic details for debugging
+ *
+ * 🌐 Localization: Supported via `lang` query param and translation utilities
+ * 🧠 Diagnosis logic: Based on diagnostic result model (percentages), form answers, and tag mappings
+ * 🛡️ Safety: Falls back to recomputation if error occurs or data is missing
+ */
 
 const checkIfRecalculationNeeded = async (
   studentId: string
@@ -26,7 +53,6 @@ const checkIfRecalculationNeeded = async (
       return true;
     }
 
-    // בדוק אם השאלונים השתנו מאז החישוב האחרון
     const lastCalculation = existingRecs.createdAt;
 
     const [studentForm, parentForm, teacherForm, diagResult] =
@@ -55,7 +81,6 @@ const checkIfRecalculationNeeded = async (
             { updatedAt: { $gt: lastCalculation } },
           ],
         }),
-        //  בדיקת אבחון חדש
         DiagnosticResultModel.findOne({
           studentId: new mongoose.Types.ObjectId(studentId),
           createdAt: { $gt: lastCalculation },
@@ -78,7 +103,7 @@ const checkIfRecalculationNeeded = async (
     return hasNewData;
   } catch (error) {
     console.error("❌ Error checking recalculation need:", error);
-    return true; // במקרה של שגיאה, חשב מחדש
+    return true;
   }
 };
 
@@ -174,7 +199,6 @@ const normalizeRecommendation = (
   if (typeof cat === "string") {
     flatCategory = cat;
   } else if (cat && typeof cat === "object") {
-    // תמיד קח את השפה הנכונה תחילה
     const categoryObj = cat as any;
     if (language === "he") {
       flatCategory = categoryObj.he || categoryObj.en;
@@ -202,10 +226,12 @@ const normalizeRecommendation = (
 
 /**
  * GET /api/recommendations/:studentId
- * Implements the complete 11-stage recommendation pipeline:
- * Stages 1-6: ADHD Classification Logic (Figure 1)
- * Stages 7-11: Environmental and Recommendation Filtering (Figure 2)
+ * Executes the full recommendation pipeline:
+ * - Stages 1–6: Diagnosis classification (Combined, Inattention, Hyperactivity, Impulsivity)
+ * - Stages 7–11: Recommendation filtering by tags, allergies, and view preferences
+ * Returns structured recommendation payload, or falls back to cached result if no new data.
  */
+
 router.get(
   "/recommendations/:studentId",
   async (
@@ -231,13 +257,13 @@ router.get(
 
       console.log("🔍 Checking if recalculation needed...");
       console.log("🔍 View parameter:", viewParam);
-      // בדוק אם יש המלצות קיימות
+      // check if there are avaliable recommendations
       const existingRecs = await StudentRecommendationsModel.findOne({
         studentId: new mongoose.Types.ObjectId(studentId),
       }).sort({ createdAt: -1 });
 
       if (existingRecs) {
-        // בדוק אם השאלונים השתנו מאז
+        // Check if the questionnaires were updated
         const lastCalculation = existingRecs.createdAt;
 
         const [studentForm, parentForm, teacherForm] = await Promise.all([
@@ -274,10 +300,32 @@ router.get(
             "🎯 No changes detected - using existing recommendations"
           );
 
-          // החל את הסינון גם על ההמלצות הקיימות
+          // Apply the filtering to the existing recommendations as well
           let filteredRecommendations = existingRecs.recommendations || [];
 
           if (viewParam === "main" && existingRecs.diagnosisTypes?.length > 1) {
+            const typeToUse =
+              existingRecs.mainDiagnosisType || existingRecs.diagnosisTypes[0];
+
+            if (typeToUse) {
+              console.log(
+                "🔍 Filtering existing recommendations for type:",
+                typeToUse
+              );
+              filteredRecommendations = filterRecommendationsByType(
+                filteredRecommendations,
+                typeToUse
+              );
+              console.log(
+                `🔍 Filtered from ${existingRecs.recommendations.length} to ${filteredRecommendations.length} recommendations`
+              );
+            } else {
+              console.error(
+                "❌ No valid diagnosis types found, skipping filtering"
+              );
+            }
+          }
+          /*if (viewParam === "main" && existingRecs.diagnosisTypes?.length > 1) {
             const mainType = existingRecs.mainDiagnosisType;
 
             if (!mainType) {
@@ -291,7 +339,7 @@ router.get(
 
                 filteredRecommendations = filteredRecommendations.filter(
                   (rec: any) => {
-                    // בדוק אם זו המלצה מיוחדת (טראומה/הערכה מקצועית)
+                    // Check if this is a special recommendation (trauma/professional assessment)
                     const hasSpecialTag = (rec.tags || []).some((tag: string) =>
                       ["trauma_suspected", "professional_assessment"].includes(
                         tag
@@ -299,10 +347,10 @@ router.get(
                     );
 
                     if (hasSpecialTag) {
-                      return true; // תמיד כלול המלצות מיוחדות
+                      return true; // Always include special recommendations
                     }
 
-                    // בדוק אם ההמלצה שייכת לסוג העיקרי
+                    // Check if the recommendation belongs to the main type
                     const diagnosisType = rec.diagnosis_type;
                     let diagnosisArray: string[] = [];
 
@@ -329,7 +377,7 @@ router.get(
                 console.error(
                   "❌ No valid diagnosis types found, skipping filtering"
                 );
-                // לא מסנן כלום אם אין נתונים תקינים
+                // Do not filter anything if there is no valid data
               }
             } else {
               console.log(
@@ -339,7 +387,7 @@ router.get(
 
               filteredRecommendations = filteredRecommendations.filter(
                 (rec: any) => {
-                  // בדוק אם זו המלצה מיוחדת (טראומה/הערכה מקצועית)
+                  // Check if this is a special recommendation (trauma/professional assessment)
                   const hasSpecialTag = (rec.tags || []).some((tag: string) =>
                     ["trauma_suspected", "professional_assessment"].includes(
                       tag
@@ -347,7 +395,7 @@ router.get(
                   );
 
                   if (hasSpecialTag) {
-                    return true; // תמיד כלול המלצות מיוחדות
+                    return true;
                   }
 
                   // בדוק אם ההמלצה שייכת לסוג העיקרי
@@ -375,8 +423,7 @@ router.get(
 
             console.log(
               `🔍 Filtered from ${existingRecs.recommendations.length} to ${filteredRecommendations.length} recommendations`
-            );
-          }
+            );*/
 
           const response = {
             recommendations: filteredRecommendations,
@@ -520,24 +567,20 @@ router.get(
           dominantFromPercentages
         );
 
-        // הגדרת דגלים ראשוניים לפי הספים
         if (dominantFromPercentages === "Hyperactivity") {
           if (inatt_pct < MIN_INATT_VAL) {
-            flags.add("Hyperactivity"); // רק כשאין Inattention מספיק
+            flags.add("Hyperactivity");
           }
-          // אחרת לא נוסיף Hyperactivity כלל בשלב זה
         } else {
-          flags.add("Inattention"); // תמיד בנתיב Inattention
+          flags.add("Inattention");
         }
 
         if (dominantFromPercentages === "Hyperactivity") {
           // Hyperactivity dominant path
           if (inatt_pct >= MIN_INATT_VAL) {
-            flags.add("Inattention"); // רק Inattention נוסף, לא Hyperactivity!
+            flags.add("Inattention");
           }
-          // אחרת flags נשאר עם Hyperactivity (שנוסף למעלה)
         }
-        // בנתיב Inattention, flags כבר מכיל רק ["Inattention"]
 
         // STAGE 4 & 5: Parent Questionnaire Processing
         const subtypeAnswer = answersByTag.find(
@@ -573,26 +616,26 @@ router.get(
             // Inattention dominant path - רק אם hyper_pct >= MIN_HYPER_VAL
             if (hyper_pct >= MIN_HYPER_VAL) {
               switch (subtypeAnswer) {
-                case "opt1": // Hyperactivity
+                case "opt1":
                   flags.add("Hyperactivity");
                   console.log(
                     "🔍 Stage 5: Added Hyperactivity (Inattention path)"
                   );
                   break;
-                case "opt2": // Impulsivity
+                case "opt2":
                   flags.add("Impulsivity");
                   console.log(
                     "🔍 Stage 5: Added Impulsivity (Inattention path)"
                   );
                   break;
-                case "opt3": // Both
+                case "opt3":
                   flags.add("Hyperactivity");
                   flags.add("Impulsivity");
                   console.log(
                     "🔍 Stage 5: Added both Hyperactivity and Impulsivity (Inattention path)"
                   );
                   break;
-                case "opt4": // None
+                case "opt4":
                   console.log(
                     "🔍 Stage 5: Parent chose none (Inattention path)"
                   );
@@ -614,27 +657,22 @@ router.get(
           dominantFromPercentages
         );
 
-        // בדיקה מוקדמת של 3 דגלים
         const hasHyper = flags.has("Hyperactivity");
         const hasImpuls = flags.has("Impulsivity");
         const hasInatt = flags.has("Inattention");
 
-        // אם יש 3 דגלים פעילים - זה Combined חובה
         if (hasHyper && hasImpuls && hasInatt) {
           console.log("🔍 Stage 6: 3 flags detected - forcing Combined type");
           recommendationTypesList = ["Combined"];
         } else if (flagArray.length === 1) {
           recommendationTypesList = flagArray;
         } else if (flagArray.length > 1) {
-          // קביעת סדר עדיפויות לכמה flags
           let mainType: string;
 
           if (parentDefinedMainType) {
-            // אם ההורה הגדיר mainType ספציפי (כמו Impulsivity), הוא מקבל עדיפות
             mainType = parentDefinedMainType;
             console.log("🔍 Stage 6: Using parent-defined mainType:", mainType);
           } else {
-            // אחרת, נשתמש בדומיננטי מהאחוזים (Hyperactivity או Inattention)
             mainType = dominantFromPercentages;
             console.log(
               "🔍 Stage 6: Using percentage-based mainType:",
@@ -642,7 +680,6 @@ router.get(
             );
           }
 
-          // בניית רשימת הסוגים עם mainType ראשון
           recommendationTypesList = [
             mainType,
             ...flagArray.filter((type) => type !== mainType),
@@ -699,7 +736,6 @@ router.get(
           }
         }
 
-        // לוגיקה מיוחדת לשאלת הטראומה q2-17
         if (
           questionId.includes("q2-17") &&
           (response === "opt2" || response === "opt3")
@@ -712,7 +748,6 @@ router.get(
           console.log("🔍 Trauma suspected based on q2-17 answer:", response);
         }
 
-        // לוגיקה מיוחדת לשאלת האירוע q2-18
         if (
           questionId.includes("q2-18") &&
           ["opt2", "opt3", "opt4"].includes(response as string)
@@ -755,8 +790,6 @@ router.get(
       allergyList = Array.from(new Set(allergyList));
       console.log("🏷️ Stage 9 selectedTags:", selectedTags);
 
-      // בדיקה מיוחדת להמלצות טראומה
-      // בדיקה מיוחדת להמלצות טראומה והערכה מקצועית
       const hasTraumaTag = selectedTags.includes("trauma_suspected");
       const hasProfessionalAssessmentTag = selectedTags.includes(
         "professional_assessment"
@@ -774,7 +807,6 @@ router.get(
         needsSpecialRecommendations
       );
 
-      // שמירת המלצות מיוחדות לפני סינון (ללא תלות ב-diagnosis_type!)
       const specialRecommendations = needsSpecialRecommendations
         ? await RecommendationModel.find({
             tags: { $in: ["trauma_suspected", "professional_assessment"] },
@@ -800,7 +832,6 @@ router.get(
         );
       }
 
-      // הוספת המלצות מיוחדות בחזרה אחרי הסינון (לא יכולות ליפול!)
       if (needsSpecialRecommendations && specialRecommendations.length > 0) {
         const existingIds = new Set(
           mongoRecommendations.map((r) => r._id.toString())
@@ -826,7 +857,6 @@ router.get(
         );
       }
 
-      // שמור את ה-diagnosis_type המקורי לפני התרגום לצורך סינון (אחרי הוספת המלצות מיוחדות!)
       const originalRecommendations = mongoRecommendations.map((rec) => ({
         ...rec,
         originalDiagnosisType: rec.diagnosis_type,
@@ -1039,8 +1069,8 @@ router.get(
           updatedAt: new Date(),
         },
         {
-          upsert: true, // יצירה אם לא קיים, עדכון אם כן
-          new: true, // החזר את המסמך המעודכן
+          upsert: true,
+          new: true,
           setDefaultsOnInsert: true,
         }
       );
