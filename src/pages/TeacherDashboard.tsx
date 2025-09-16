@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useTeacherNotifications } from "@/hooks/useTeacherNotifications";
 import { useSettings } from "@/components/SettingsContext";
+import { getLocalizedDate } from "@/utils/dateTranslations";
+import { format } from "date-fns";
 
 function getUserIdFromToken(): string | null {
   const token = localStorage.getItem("token");
@@ -44,12 +46,12 @@ export default function TeacherDashboard() {
   };
 
   // the shape of what `/users/:teacherId` returns
-interface TeacherData {
-  _id: string;
-  name: string;
-  firstName?: string;
-  lastName?: string;
-}
+  interface TeacherData {
+    _id: string;
+    name: string;
+    firstName?: string;
+    lastName?: string;
+  }
 
   // reuse the same shape for classes everywhere
   type ClassOption = {
@@ -72,6 +74,10 @@ interface TeacherData {
     handleNotificationColorSelection,
   } = useTeacherNotifications(teacherId ?? "");
 
+  const currentDate = getLocalizedDate(
+    format(new Date(), "EEEE, MMM do, yyyy"),
+    language
+  );
   const handleSendMessage = async () => {
     if (!messageText.trim() || !selectedStudentId) return;
 
@@ -214,47 +220,46 @@ interface TeacherData {
   console.log("🟢 currentClass:", currentClass);
   console.log("🟢 allStudents:", allStudents);
 
- const filteredStudents = currentClass
-  ? allStudents?.filter((s, index) => {
-      console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
+  const filteredStudents = currentClass
+    ? allStudents?.filter((s, index) => {
+        console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
 
-      const normalize = (val: string) =>
-        (val ?? "")
-          .normalize("NFKC") // Normalize composed characters
-          .replace(/\s+/g, "") // Remove all whitespace
-          .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
+        const normalize = (val: string) =>
+          (val ?? "")
+            .normalize("NFKC") // Normalize composed characters
+            .replace(/\s+/g, "") // Remove all whitespace
+            .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
 
-      // ✅ שימוש ב-s.class במקום s.classId
-      const studentClassId = normalize(s.class);
-      const currentClassId = normalize(currentClass.classId);
+        // ✅ שימוש ב-s.class במקום s.classId
+        const studentClassId = normalize(s.class);
+        const currentClassId = normalize(currentClass.classId);
 
-      const matchesClass = studentClassId === currentClassId;
-      const matchesTeacher = s.teacherId === teacherId;
+        const matchesClass = studentClassId === currentClassId;
+        const matchesTeacher = s.teacherId === teacherId;
 
-      const unicodeBreakdown = (str: string) =>
-        str
-          .split("")
-          .map((char) => char.charCodeAt(0))
-          .join(",");
+        const unicodeBreakdown = (str: string) =>
+          str
+            .split("")
+            .map((char) => char.charCodeAt(0))
+            .join(",");
 
-      console.log(`👩‍🏫 תלמיד ${index + 1}:`);
-      console.log("🆔 student.class (raw):", s.class);
-      console.log("🎯 currentClass.classId (raw):", currentClass.classId);
-      console.log("🧼 studentClassId (norm):", studentClassId);
-      console.log("🧼 currentClassId (norm):", currentClassId);
-      console.log("🔢 יוניקוד תלמיד:", unicodeBreakdown(studentClassId));
-      console.log("🔢 יוניקוד כיתה נבחרת:", unicodeBreakdown(currentClassId));
-      console.log("🎓 התאמת כיתה:", matchesClass);
-      console.log("📚 teacherId תלמיד:", s.teacherId);
-      console.log("👨‍🏫 teacherId נוכחי:", teacherId);
-      console.log("✅ התאמה מורה:", matchesTeacher);
-      console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
-      console.log("────────────");
+        console.log(`👩‍🏫 תלמיד ${index + 1}:`);
+        console.log("🆔 student.class (raw):", s.class);
+        console.log("🎯 currentClass.classId (raw):", currentClass.classId);
+        console.log("🧼 studentClassId (norm):", studentClassId);
+        console.log("🧼 currentClassId (norm):", currentClassId);
+        console.log("🔢 יוניקוד תלמיד:", unicodeBreakdown(studentClassId));
+        console.log("🔢 יוניקוד כיתה נבחרת:", unicodeBreakdown(currentClassId));
+        console.log("🎓 התאמת כיתה:", matchesClass);
+        console.log("📚 teacherId תלמיד:", s.teacherId);
+        console.log("👨‍🏫 teacherId נוכחי:", teacherId);
+        console.log("✅ התאמה מורה:", matchesTeacher);
+        console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
+        console.log("────────────");
 
-      return matchesClass && matchesTeacher;
-    })
-  : [];
-
+        return matchesClass && matchesTeacher;
+      })
+    : [];
 
   const handleOpenNotification = (
     parentId: string,
@@ -270,11 +275,10 @@ interface TeacherData {
     : "מורה";
 
   const handleSearchChange = (value: string) => setSearchTerm(value);
- const handleClassChange = (classData: any) => {
-  console.log("🟡 currentClass אחרי בחירה (onClassChange):", classData);
-  setCurrentClass(classData);
-};
-
+  const handleClassChange = (classData: any) => {
+    console.log("🟡 currentClass אחרי בחירה (onClassChange):", classData);
+    setCurrentClass(classData);
+  };
 
   const classSwitcherComponent = teacherId ? (
     <ClassSwitcher
@@ -294,6 +298,7 @@ interface TeacherData {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TeacherHeader
+        currentDate={currentDate}
         language={language}
         notifications={notifications}
         onNotificationClick={(parentId, studentId, studentName) =>
@@ -321,28 +326,26 @@ interface TeacherData {
             classSwitcher={classSwitcherComponent}
           />
         </div>
-{isMessageSheetOpen && (
-  <MessageSheet
-    isOpen={isMessageSheetOpen}
-    onOpenChange={setIsMessageSheetOpen}
-    selectedStudentName={selectedStudentName}
-    senderId={teacherId!}
-    studentId={selectedStudentId!}
-    senderRole="teacher"
-    receiverId={selectedParentId!}
-    messages={messages}
-    messageText={messageText}
-    onMessageChange={setMessageText}
-    onSendMessage={handleSendMessage}
-    translations={{
-      messageToParent: t.messageToParent,
-      writeMessage: t.writeMessage,
-      sendMessage: t.sendMessage,
-    }}
-  />
-)}
-
-
+        {isMessageSheetOpen && (
+          <MessageSheet
+            isOpen={isMessageSheetOpen}
+            onOpenChange={setIsMessageSheetOpen}
+            selectedStudentName={selectedStudentName}
+            senderId={teacherId!}
+            studentId={selectedStudentId!}
+            senderRole="teacher"
+            receiverId={selectedParentId!}
+            messages={messages}
+            messageText={messageText}
+            onMessageChange={setMessageText}
+            onSendMessage={handleSendMessage}
+            translations={{
+              messageToParent: t.messageToParent,
+              writeMessage: t.writeMessage,
+              sendMessage: t.sendMessage,
+            }}
+          />
+        )}
 
         {teacherId && (
           <TeacherSchedule
@@ -361,7 +364,7 @@ interface TeacherData {
         <div className="flex items-center justify-between mb-4 mt-10">
           <h2 className="text-xl font-semibold">{t.classStudents}</h2>
           <Button
-            className={`rounded-xl shadow px-3 py-2 text-sm ${
+            className={`rounded-xl shadow px-3 py-2 text-sm text-gray-200 bg-emerald-200 hover:opacity-80 text-zinc-800 ${
               language === "he" ? "ml-6" : "mr-6"
             }`}
             onClick={() => setIsAddStudentOpen(true)}
@@ -389,28 +392,27 @@ interface TeacherData {
             contactMessage: t.contactMessage,
           }}
           onViewProgress={handleViewProgress}
-    onContactParent={(student) => {
- const parentId = student?.parentIds?.[0] ?? "";
-  const fullName = student.firstName && student.lastName
-    ? `${student.firstName} ${student.lastName}`
-    : student.name ?? "תלמיד";
+          onContactParent={(student) => {
+            const parentId = student?.parentIds?.[0] ?? "";
+            const fullName =
+              student.firstName && student.lastName
+                ? `${student.firstName} ${student.lastName}`
+                : student.name ?? "תלמיד";
 
-    const studentId = student._id || student.id;
+            const studentId = student._id || student.id;
 
-  console.log("🎯 פתיחת שיחה:", {
-    studentId,
-    parentId,
-    fullName,
-  });
+            console.log("🎯 פתיחת שיחה:", {
+              studentId,
+              parentId,
+              fullName,
+            });
 
-  if (parentId && studentId) {
-    openMessageSheet(studentId, parentId, fullName);
-  } else {
-    console.warn("❌ אין מזהה הורה או תלמיד תקין:", { student });
-  }
-
-}}
-
+            if (parentId && studentId) {
+              openMessageSheet(studentId, parentId, fullName);
+            } else {
+              console.warn("❌ אין מזהה הורה או תלמיד תקין:", { student });
+            }
+          }}
           teacherId={teacherId}
           questionnaireRole="teacher"
         />

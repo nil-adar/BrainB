@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { NotificationsDropdown } from "@/components/parent/NotificationsDropdown";
 import type { ParentNotification } from "@/hooks/useParentNotifications";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { getLocalizedDate } from "@/utils/dateTranslations";
 
 interface ParentHeaderProps {
   language: "en" | "he";
@@ -21,7 +22,7 @@ interface ParentHeaderProps {
   onNotificationCheckboxChange: (notificationId: string) => void;
   onColorSelection: (notificationId: string, color: string) => void;
   translations: {
-    search: string;
+    //search: string;
     settings?: string;
     logout?: string;
     profile?: string;
@@ -41,13 +42,23 @@ export const ParentHeader = ({
   translations,
 }: ParentHeaderProps) => {
   const navigate = useNavigate();
-  const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
+  const currentDate = getLocalizedDate(
+    format(new Date(), "EEEE, MMM do, yyyy"),
+    language
+  );
 
   return (
     <header className="bg-card border-b border-border">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* לוגו + חיפוש */}
+          {/* צד שמאל - תאריך */}
+          <div className="flex items-center">
+            <span className="text-gray-600">{currentDate}</span>
+          </div>
+          {/* מרכז - ריק לפיזור */}
+          <div className="flex-1"></div>
+          {/*
+          //LOGO + SEARCH
           <div className="flex items-center gap-8">
             <Logo size="md" />
             <div className="relative flex items-center">
@@ -59,20 +70,12 @@ export const ParentHeader = ({
               />
             </div>
           </div>
+          */}
 
-          {/* כלים נוספים כולל התראות */}
+          {/* צד ימין - כלים */}
           <div className="flex items-center gap-4">
-            <span className="text-gray-600">{currentDate}</span>
             <LanguageToggle variant="button" />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/settings")}
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
-
-            {/* תפריט התראות כמו אצל המורה */}
+            {/* תפריט התראות */}
             <NotificationsDropdown
               notifications={notifications}
               onNotificationClick={onNotificationClick}
@@ -85,14 +88,15 @@ export const ParentHeader = ({
                 viewAssessment: translations.viewAssessment || "צפה בהערכה",
               }}
             />
-
-            <UserMenu
-              translations={{
-                profile: translations.profile || "פרופיל",
-                settings: translations.settings || "הגדרות",
-                logout: translations.logout || "התנתק",
-              }}
-            />
+            <div className="rounded-md hover:bg-emerald-100 transition-colors">
+              <UserMenu
+                translations={{
+                  profile: translations.profile || "פרופיל",
+                  settings: translations.settings || "הגדרות",
+                  logout: translations.logout || "התנתק",
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

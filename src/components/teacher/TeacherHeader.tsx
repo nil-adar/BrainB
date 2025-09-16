@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Search, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
 import { NotificationsDropdown } from "@/components/teacher/NotificationsDropdown";
 import { Notification } from "@/types/school";
 import { Logo } from "@/components/ui/logo";
@@ -11,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { LanguageToggle } from "@/components/LanguageToggle";
 
 interface TeacherHeaderProps {
+  currentDate?: string;
   language: "en" | "he";
   notifications: Notification[];
   onNotificationClick: (
@@ -19,8 +19,8 @@ interface TeacherHeaderProps {
     studentName: string
   ) => void;
 
-  onNotificationCheckboxChange: (notificationId: String) => void;
-  onNotificationColorSelection: (notificationId: String, color: string) => void;
+  onNotificationCheckboxChange: (notificationId: string) => void;
+  onNotificationColorSelection: (notificationId: string, color: string) => void;
   searchTerm: string;
   onSearchChange: (value: string) => void;
   translations: {
@@ -35,6 +35,7 @@ interface TeacherHeaderProps {
 }
 
 export const TeacherHeader = ({
+  currentDate,
   language,
   notifications,
   onNotificationClick,
@@ -45,7 +46,6 @@ export const TeacherHeader = ({
   translations: t,
 }: TeacherHeaderProps) => {
   const navigate = useNavigate();
-  const currentDate = format(new Date(), "EEEE, MMM do, yyyy");
 
   return (
     <header className="bg-card border-b border-border">
@@ -53,7 +53,7 @@ export const TeacherHeader = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Logo
-              size="md"
+              size="sm"
               onClick={() => navigate("/teacher-dashboard")}
               className="cursor-pointer"
             />
@@ -72,7 +72,7 @@ export const TeacherHeader = ({
             <span className="text-gray-600">{currentDate}</span>
             <LanguageToggle variant="button" />
             <NotificationsDropdown
-              notifications={notifications}
+              notifications={notifications as any}
               translations={{
                 notifications: t.notifications,
                 noNotifications: t.noNotifications,
@@ -83,13 +83,7 @@ export const TeacherHeader = ({
               onNotificationCheckboxChange={onNotificationCheckboxChange}
               onColorSelection={onNotificationColorSelection}
             />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/settings")}
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
+
             <UserMenu
               translations={{
                 settings: t.settings || "הגדרות",

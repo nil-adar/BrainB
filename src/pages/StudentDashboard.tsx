@@ -19,6 +19,8 @@ import DateDisplay from "@/components/student/DateDisplay";
 import { useQuery } from "@tanstack/react-query";
 import { studentService } from "@/services/studentService";
 import { Task } from "@/types/task";
+import { format } from "date-fns";
+import { getLocalizedDate } from "@/utils/dateTranslations";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { UserMenu } from "@/components/header/UserMenu";
 
 export default function StudentDashboard() {
   const {
@@ -112,7 +115,7 @@ export default function StudentDashboard() {
     if (allTasksCompleted && !showFireworks && !hasCompletedToastShown) {
       setFireworksKey((prev) => prev + 1);
       setShowFireworks(true);
-      setHasCompletedToastShown(true); // ✅ פעם אחת בלבד
+      setHasCompletedToastShown(true);
 
       toast.success(t.allTasksCompleted || "All tasks completed! Great job!");
 
@@ -230,22 +233,22 @@ export default function StudentDashboard() {
 
   const navigate = useNavigate();
 
-const handleRedirectToAssessment = () => {
-  const studentId = localStorage.getItem("studentId");
-  console.log("🧪 Token:", assessmentToken);
-  console.log("🧪 Student ID:", studentId);
+  const handleRedirectToAssessment = () => {
+    const studentId = localStorage.getItem("studentId");
+    console.log("🧪 Token:", assessmentToken);
+    console.log("🧪 Student ID:", studentId);
 
-  if (assessmentToken && studentId) {
-    // שימוש ב־URL דינמי במקום כתובת קשיחה
-    const NODUS_BASE_URL =
-      import.meta.env.VITE_NODUS_URL || "http://127.0.0.1:8000";
+    if (assessmentToken && studentId) {
+      // שימוש ב־URL דינמי במקום כתובת קשיחה
+      const NODUS_BASE_URL =
+        import.meta.env.VITE_NODUS_URL || "http://127.0.0.1:8000";
 
-    const url = `${NODUS_BASE_URL}/?token=${assessmentToken}&studentId=${studentId}`;
-    window.open(url, "_blank");
-  } else {
-    toast.error(t.noAssessmentAvailable);
-  }
-};
+      const url = `${NODUS_BASE_URL}/?token=${assessmentToken}&studentId=${studentId}`;
+      window.open(url, "_blank");
+    } else {
+      toast.error(t.noAssessmentAvailable);
+    }
+  };
 
   const fullName = student
     ? `${student.firstName ?? ""} ${student.lastName ?? ""}`.trim()
@@ -289,71 +292,57 @@ const handleRedirectToAssessment = () => {
         dir={language === "he" ? "rtl" : "ltr"}
       >
         <DashboardBackground>
-          <header className="border-b backdrop-blur-sm bg-white/70 dark:bg-gray-900/70 dark:border-gray-800 px-4 h-16 flex items-center justify-between shadow-sm z-10">
-            <div className="flex items-center gap-4">
-              <Logo size="xs" showText={false} className="h-10" />
-              <h1 className="text-lg font-medium hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                {motivation}
-              </h1>
-            </div>
-            <div className="flex items-center gap-3">
-              <LanguageToggle variant="button" />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-600 hover:bg-blue-100 dark:hover:bg-blue-700"
-              >
-                <Search size={18} />
-              </Button>
-              <Link to="/settings">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-gray-600 hover:bg-blue-100 dark:hover:bg-blue-700"
-                >
-                  <Settings size={18} />
-                </Button>
-              </Link>
-              <Link to="/">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-gray-600 hover:bg-blue-100 dark:hover:bg-blue-700"
-                >
-                  <LogOut size={18} />
-                </Button>
-              </Link>
-              <Avatar className="h-9 w-9 border-2 border-blue-200 dark:border-blue-600">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback>
-                  <User size={16} />
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          </header>
+          <div className="border-b dark:border-gray-800">
+            <header className="backdrop-blur-sm bg-white/70 dark:bg-gray-900/70 px-4 container mx-auto h-16 flex items-center justify-between shadow-sm z-10">
+              {" "}
+              <div className="flex items-center gap-4">
+                <Logo size="xs" showText={false} className="h-10" />
+                <h1 className="text-lg font-medium hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 ">
+                  {motivation}
+                </h1>
+              </div>
+              <div className="flex items-center gap-3">
+                <LanguageToggle variant="button" />
+                <UserMenu
+                  translations={{
+                    profile: "פרופיל",
+                    settings: "הגדרות",
+                    logout: "התנתק",
+                  }}
+                />
+              </div>
+            </header>
+          </div>
 
           {/* כותרת ראשית */}
-          <div className="px-4 py-6">
-            {/* תוכן המסך המשופר */}
+          <div className="px-4 py-10">
             <div className="flex-1 flex flex-col min-h-0">
               {/* כותרת ראשית */}
-              <div className="px-4 py-6">
-                <h1 className="text-3xl font-semibold text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+              <div className="px-4 py-10">
+                <h1 className="text-3xl font-semibold text-center mb-10 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                   {greeting}
                 </h1>
                 <div className="flex justify-center">
-                  <DateDisplay />
+                  <div className="px-4 py-8">
+                    <div className="flex justify-center">
+                      <div className="bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+                        <span className="text-blue-700 font-medium">
+                          {getLocalizedDate(
+                            format(new Date(), "EEEE, MMM do, yyyy"),
+                            language
+                          )}{" "}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="flex-1 px-4 pb-8">
                 <div className="max-w-7xl mx-auto h-full">
-                  {/* פריסה חדשה - 2 שורות */}
-                  <div className="grid grid-rows-2 h-full gap-8">
-                    {/* שורה עליונה */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-                      {/* כפתורי פעולות */}
-                      <div className="lg:col-span-1 flex justify-center">
+                  <div className="grid grid-rows-2 h-full gap-5">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                      <div className="lg:col-span-1 flex justify-center items-center ">
                         <ActionButtons
                           viewRecommendationsText={t["viewRecommendations"]}
                           newAssessmentText={t["newAssessment"]}
@@ -369,28 +358,36 @@ const handleRedirectToAssessment = () => {
                       </div>
 
                       {/* שעון במרכז להוריד */}
-                        <TimerSection
-                          showTimer={showTimer}
-                          currentTask={currentTask}
-                          timeLeft={timeLeft}
-                          totalTime={totalTime}
-                          progress={progress}
-                          noTaskMessage={t.noTaskSelected}
-                          minutesLeftText={t.minutesLeft}
-                        />
+                      <div className="lg:col-span-1 flex justify-center items-center px-15">
+                        <div className="w-full max-w-sm">
+                          <TimerSection
+                            showTimer={showTimer}
+                            currentTask={currentTask}
+                            timeLeft={timeLeft}
+                            totalTime={totalTime}
+                            progress={progress}
+                            noTaskMessage={t.noTaskSelected}
+                            minutesLeftText={t.minutesLeft}
+                          />
+                        </div>
+                      </div>
 
-                      <TaskListSection
-                        tasks={tasks}
-                        currentTask={currentTask}
-                        tasksTitle={t.tasks}
-                        todayText={t.today}
-                        minutesText={t.minutes}
-                        onToggleComplete={handleToggleComplete}
-                        onSelectTask={handleTaskSelect}
-                        onDeleteTask={handleDeleteTask}
-                        allowedCategories={allowedCategories}
-                        extraTime={student?.extraTime ?? 1}
-                      />
+                      <div className="lg:col-span-1 flex justify-start items-start pl-15">
+                        <div className="w-full">
+                          <TaskListSection
+                            tasks={tasks}
+                            currentTask={currentTask}
+                            tasksTitle={t.tasks}
+                            todayText={t.today}
+                            minutesText={t.minutes}
+                            onToggleComplete={handleToggleComplete}
+                            onSelectTask={handleTaskSelect}
+                            onDeleteTask={handleDeleteTask}
+                            allowedCategories={allowedCategories}
+                            extraTime={student?.extraTime ?? 1}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -441,13 +441,13 @@ const RecommendationPdfView = ({
 
       {/* Target Audience Footer */}
       <div className="bg-white rounded-lg p-4 shadow-sm border mt-4">
-        <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
+        <div className="flex items-center justify-between text-sm text-gray-500 max-w-md mx-auto">
           <div
             className="flex items-center"
             dir={language === "he" ? "rtl" : "ltr"}
           >
-            <Users className="h-4 w-4 ml-2" />
-            <span>{language === "he" ? "להורים" : "For Parents"}</span>
+            <Activity className="h-4 w-4 ml-2" />
+            <span>{language === "he" ? "לילדים" : "For Children"}</span>
           </div>
           <div
             className="flex items-center"
@@ -460,8 +460,8 @@ const RecommendationPdfView = ({
             className="flex items-center"
             dir={language === "he" ? "rtl" : "ltr"}
           >
-            <Activity className="h-4 w-4 ml-2" />
-            <span>{language === "he" ? "לילדים" : "For Children"}</span>
+            <Users className="h-4 w-4 ml-2" />
+            <span>{language === "he" ? "להורים" : "For Parents"}</span>
           </div>
         </div>
       </div>

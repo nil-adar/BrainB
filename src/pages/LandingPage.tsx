@@ -206,10 +206,6 @@ export default function LandingPage() {
   const t = translations[language];
   const isRTL = language === "he";
 
-  /*const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "he" : "en"));
-  };*/
-
   // Icons for different sections
   const featureIcons = {
     monitoring: <BarChart2 size={24} />,
@@ -234,7 +230,6 @@ export default function LandingPage() {
       {/* Header */}
       <HeaderSection
         loginText={t.login}
-        //toggleLanguage={toggleLanguage}
       />
 
       {/* Hero Section */}
@@ -275,7 +270,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <FooterSection
-        description={t.description}
+        //description={t.description}
         contact={t.contact}
         forTeachers={t.forTeachers}
         login={t.login}

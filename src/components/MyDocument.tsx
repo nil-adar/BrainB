@@ -31,7 +31,7 @@ Font.register({
 // תרגומים
 const translations = {
   en: {
-    title: " Recommendations Guide",
+    title: "Formal Recommendations Guide",
     subTitle: "Evidence-based strategies for ADHD and behavioral support",
     dateLabel: "Generated on",
     diagnosisType: "Diagnosis Type",
@@ -42,7 +42,7 @@ const translations = {
     contribution: "Contribution",
   },
   he: {
-    title: "מדריך המלצות ",
+    title: "מדריך המלצות רשמי",
     subTitle: "אסטרטגיות מבוססות ראיות להפרעת קשב ותמיכה רגשית",
     dateLabel: "תאריך",
     diagnosisType: "סוג אבחנה",
@@ -132,7 +132,7 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
       textAlign: isRTL ? "right" : "left",
     },
     label: {
-      fontWeight: "bold", // הכותרות בBOLD
+      fontWeight: "bold", 
       marginTop: 4,
       textAlign: isRTL ? "right" : "left",
     },
@@ -185,40 +185,40 @@ const MyDocument: React.FC<MyDocumentProps> = ({ recommendations, lang }) => {
     return result || "-";
   };
 
-const getTranslatedCategory = (category: string): string => {
-  if (!category) return lang === "he" ? "לא מסווג" : "Uncategorized";
+  const getTranslatedCategory = (category: string): string => {
+    if (!category) return lang === "he" ? "לא מסווג" : "Uncategorized";
 
-  const hebrewToEnglish = {
-    "תזונה": "nutrition",
-    "פעילות גופנית": "physical activity", 
-    "סביבה": "environment",
-    "שינויים סביבתיים": "environmental changes",
-    "תמיכה מקצועית": "professional support"
+    const hebrewToEnglish = {
+      תזונה: "nutrition",
+      "פעילות גופנית": "physical activity",
+      סביבה: "environment",
+      "שינויים סביבתיים": "environmental changes",
+      "תמיכה מקצועית": "professional support",
+    };
+
+    const englishToHebrew = {
+      nutrition: "תזונה",
+      "physical activity": "פעילות גופנית",
+      environment: "סביבה",
+      "environmental changes": "שינויים סביבתיים",
+      "professional support": "תמיכה מקצועית",
+    };
+
+    const normalizedCategory = category.trim().toLowerCase();
+
+    // אם השפה אנגלית ויש תרגום מעברית
+    if (lang === "en" && hebrewToEnglish[category]) {
+      return hebrewToEnglish[category];
+    }
+
+    // אם השפה עברית ויש תרגום מאנגלית
+    if (lang === "he" && englishToHebrew[normalizedCategory]) {
+      return englishToHebrew[normalizedCategory];
+    }
+
+    // אחרת החזר כמות שזה (בלי לתרגם)
+    return category;
   };
-
-  const englishToHebrew = {
-    "nutrition": "תזונה",
-    "physical activity": "פעילות גופנית",
-    "environment": "סביבה", 
-    "environmental changes": "שינויים סביבתיים",
-    "professional support": "תמיכה מקצועית"
-  };
-
-  const normalizedCategory = category.trim().toLowerCase();
-  
-  // אם השפה אנגלית ויש תרגום מעברית
-  if (lang === "en" && hebrewToEnglish[category]) {
-    return hebrewToEnglish[category];
-  }
-  
-  // אם השפה עברית ויש תרגום מאנגלית
-  if (lang === "he" && englishToHebrew[normalizedCategory]) {
-    return englishToHebrew[normalizedCategory];
-  }
-
-  // אחרת החזר כמות שזה (בלי לתרגם)
-  return category;
-};
 
   // מניחים שמעתה category הוא מחרוזת תקינה
   const getCategory = (rec: any): string =>

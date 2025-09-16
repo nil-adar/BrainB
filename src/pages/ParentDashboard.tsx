@@ -32,9 +32,9 @@ const useLoggedInUser = () => {
 
 const translations = {
   en: {
-    childProgress: "Children Progress",
+    childProgress: "Children Details",
     contactTeacher: "Contact Teacher",
-    search: "Search",
+    //search: "Search",
     settings: "Settings",
     notifications: "Notifications",
     noNotifications: "No new notifications",
@@ -46,7 +46,7 @@ const translations = {
     upcomingEvents: "Upcoming Events",
     loadingParent: "Loading parent data...",
     errorParent: "Error loading parent data",
-    welcome: "Welcome back",
+    //welcome: "Welcome back",
     logout: "Logout",
     profile: "Profile",
     viewConversation: "View Conversation",
@@ -78,7 +78,7 @@ const translations = {
     viewRecommendationsFor: "View recommendations for",
   },
   he: {
-    childProgress: "התקדמות הילדים",
+    childProgress: "פרטי הילדים ",
     contactTeacher: "צור קשר עם המורה",
     notifications: "התראות",
     settings: "הגדרות",
@@ -90,9 +90,9 @@ const translations = {
     calendar: "לוח שנה",
     upcomingEvents: "אירועים קרובים",
     loadingParent: "טוען נתוני הורה...",
-    search: "חיפוש",
+    //search: "חיפוש",
     errorParent: "שגיאה בטעינת נתוני הורה",
-    welcome: "ברוך שובך",
+    // welcome: "ברוך שובך",
     logout: "התנתק",
     profile: "פרופיל",
     viewConversation: "פתח שיחה",
@@ -266,7 +266,7 @@ export default function ParentDashboard({
           )
         }
         translations={{
-          search: t.search,
+          //search: t.search,
           settings: t.settings,
           logout: t.logout,
           profile: t.profile,
@@ -288,7 +288,7 @@ export default function ParentDashboard({
               <h1 className="text-3xl font-bold text-primary">
                 {t.hello}, {loggedInUser?.name || t.dearParent} 👋
               </h1>
-              <p className="text-sm text-gray-600">{t.welcome}</p>
+              {/*<p className="text-sm text-gray-600">{t.welcome}</p>*/}
             </div>
           )}
         </div>
@@ -350,7 +350,7 @@ export default function ParentDashboard({
         {/* Available Questionnaires Section */}
         <section className="mt-4">
           <h3 className="text-lg font-semibold mb-2">
-            {t.availableQuestionnaires}
+            {/*t.availableQuestionnaires*/}
           </h3>
           {students.map((child) => (
             <div key={child.id || child._id} className="mb-2">
@@ -361,10 +361,10 @@ export default function ParentDashboard({
 
         {/* Calendar Section */}
         <aside className="mt-10">
-          <Card className="bg-gradient-to-br from-indigo-100 via-blue-50 to-teal-50 shadow-xl mb-6 rounded-2xl border-2 border-indigo-200">
+          <Card className="bg-gradient-to-br from-emerald-100 to-fuchsia-50 shadow-xl mb-6 rounded-2xl border-2 border-indigo-200">
             <CardHeader className="flex flex-row items-center justify-between p-4 pb-0">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <CalendarIcon className="w-5 h-5 text-indigo-400" />
+                <CalendarIcon className="w-5 h-5 text-lime-400" />
                 {t.calendar}
               </CardTitle>
             </CardHeader>
@@ -380,17 +380,17 @@ export default function ParentDashboard({
                 />
               </div>
 
-              <div className="mt-6 bg-blue-50 rounded-xl p-4">
+              <div className="mt-6 rounded-xl p-4">
                 <h3 className="font-semibold mb-2">{t.upcomingEvents}</h3>
                 {upcomingEvents.map((event, index) => (
                   <div
                     key={index}
-                    className="bg-yellow-50 border border-yellow-200 rounded-md p-2 mb-2"
+                    className="bg-black-50 border border-violet-200 rounded-md p-2 mb-2"
                   >
-                    <div className="font-bold text-yellow-700">
+                    <div className="font-bold text-violet-700">
                       {event.title}
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-neutral-600">
                       {format(event.date, "d MMMM yyyy", {
                         locale: language === "he" ? he : enUS,
                       })}

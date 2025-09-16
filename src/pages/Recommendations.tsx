@@ -1031,7 +1031,7 @@ export default function Recommendations() {
         )}
 
         {/* ADHD Guide Header */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-8 text-center">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-4 text-center">
           <div className="flex items-center justify-center mb-4">
             <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
             <h1 className="text-3xl font-bold text-gray-800">{t.guideTitle}</h1>
@@ -1042,7 +1042,7 @@ export default function Recommendations() {
 
           {/* Target Audience */}
           <div
-            className={`flex items-center justify-center gap-8 text-sm text-gray-600 ${
+            className={`flex items-center justify-center gap-10 text-sm text-gray-600 ${
               isRTL ? "flex-row-reverse" : ""
             }`}
           >
@@ -1073,16 +1073,16 @@ export default function Recommendations() {
           </div>
         </div>
 
-        {/* Recommendation Type Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Recommendation Type Cards - Fixed Height */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
           {/* Nutrition Card */}
           <Card
-            className={`p-6 hover:shadow-lg transition-shadow ${
+            className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
               isRTL ? "text-right" : "text-left"
             }`}
           >
             <div
-              className={`bg-green-100 rounded-lg p-6 mb-4 ${
+              className={`bg-green-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
                 isRTL ? "text-right" : "text-left"
               }`}
             >
@@ -1101,14 +1101,14 @@ export default function Recommendations() {
                 {t.nutritionTitle}
               </h3>
               <p
-                className={`text-gray-600 text-sm mb-4 ${
+                className={`text-gray-600 text-sm mb-4 flex-1 ${
                   isRTL ? "text-right" : "text-left"
                 }`}
               >
                 {t.nutritionDescription}
               </p>
               <Button
-                className="w-full bg-green-600 hover:bg-green-700"
+                className="w-full bg-green-600 hover:bg-green-700 mt-auto"
                 onClick={() =>
                   navigate(
                     `/nutritional-recommendations?studentId=${studentId}`
@@ -1122,12 +1122,12 @@ export default function Recommendations() {
 
           {/* Physical Activity Card */}
           <Card
-            className={`p-6 hover:shadow-lg transition-shadow ${
+            className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
               isRTL ? "text-right" : "text-left"
             }`}
           >
             <div
-              className={`bg-blue-100 rounded-lg p-6 mb-4 ${
+              className={`bg-blue-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
                 isRTL ? "text-right" : "text-left"
               }`}
             >
@@ -1146,14 +1146,14 @@ export default function Recommendations() {
                 {t.physicalTitle}
               </h3>
               <p
-                className={`text-gray-600 text-sm mb-4 ${
+                className={`text-gray-600 text-sm mb-4 flex-1 ${
                   isRTL ? "text-right" : "text-left"
                 }`}
               >
                 {t.physicalDescription}
               </p>
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 mt-auto"
                 onClick={() =>
                   navigate(`/physical-recommendations?studentId=${studentId}`)
                 }
@@ -1165,12 +1165,12 @@ export default function Recommendations() {
 
           {/* Environmental Card */}
           <Card
-            className={`p-6 hover:shadow-lg transition-shadow ${
+            className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
               isRTL ? "text-right" : "text-left"
             }`}
           >
             <div
-              className={`bg-purple-100 rounded-lg p-6 mb-4 ${
+              className={`bg-purple-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
                 isRTL ? "text-right" : "text-left"
               }`}
             >
@@ -1189,14 +1189,14 @@ export default function Recommendations() {
                 {t.environmentalTitle}
               </h3>
               <p
-                className={`text-gray-600 text-sm mb-4 ${
+                className={`text-gray-600 text-sm mb-4 flex-1 ${
                   isRTL ? "text-right" : "text-left"
                 }`}
               >
                 {t.environmentalDescription}
               </p>
               <Button
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full bg-purple-600 hover:bg-purple-700 mt-auto"
                 onClick={() =>
                   navigate(
                     `/Environmental-recommendations?studentId=${studentId}`
@@ -1210,7 +1210,7 @@ export default function Recommendations() {
         </div>
 
         {/* How to Use Guide */}
-        <div className="bg-white rounded-lg p-8 shadow-sm border mb-8">
+        <div className="bg-white rounded-lg p-3 shadow-sm border mb-8">
           <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
             {t.howToUse}
           </h3>
@@ -1253,12 +1253,10 @@ export default function Recommendations() {
             className={`text-xl font-semibold mb-4 ${
               isRTL ? "text-right" : "text-left"
             }`}
-          >
-            {t.formalRecommendations}
-          </h3>
+          ></h3>
           <Card className="p-6">
             {(() => {
-              console.log("🐞 PDF Recommendations Preview:", recommendations);
+              /*console.log("🐞 PDF Recommendations Preview:", recommendations);*/
               return null;
             })()}
             <RecommendationPdfView

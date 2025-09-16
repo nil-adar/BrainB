@@ -24,6 +24,21 @@ interface ChildrenProgressSectionProps {
     viewRecommendationsFor: string;
     noChildrenData: string;
     class: string;
+    contactTeacherButton?: string;
+    viewProgressButton?: string;
+    viewProgressDetails?: string;
+    studentFormFill?: string;
+    viewConversation?: string;
+    viewAssessment?: string;
+    viewRecommendations?: string;
+    teacher?: string;
+    student?: string;
+    progress?: string;
+    assessment?: string;
+    form?: string;
+    available?: string;
+    questionnaire?: string;
+    questionnaires?: string;
   };
 }
 
@@ -45,7 +60,10 @@ export const ChildrenProgressSection = ({
 
       {/* מעבר על כל תלמיד במערך ויצירת כרטיס עבורו */}
       {students.map((child) => (
-        <Card key={child._id} className="bg-secondary mb-4">
+        <Card
+          key={child._id}
+          className="bg-slate-50 rounded-2xl border-2 border-stone-200 shadow mb-4"
+        >
           <CardHeader>
             <CardTitle className="flex justify-between">
               {/* הצגת שם מלא של הילד */}
@@ -62,8 +80,8 @@ export const ChildrenProgressSection = ({
           </CardHeader>
           <CardContent className="p-4 pt-2 space-y-2">
             <Button
-              variant="outline"
-              className="w-full border-primary text-primary hover:bg-primary/10"
+              variant="ghost"
+              className="w-full text-emerald-700 hover:underline hover:bg-emerald-100"
               onClick={() =>
                 child.teacherId
                   ? onContactTeacher(
@@ -81,8 +99,8 @@ export const ChildrenProgressSection = ({
 
             {/* כפתור שאלון */}
             <Button
-              variant="secondary"
-              className="w-full text-emerald-700 hover:underline hover:bg-emerald-200"
+              variant="ghost"
+              className="w-full text-emerald-700 hover:underline hover:bg-emerald-100"
               onClick={() => navigate(`/questionnaire/parent/${child.id}`)}
             >
               📋 {t.fillQuestionnaireFor || "Fill questionnaire for"}{" "}
@@ -91,7 +109,7 @@ export const ChildrenProgressSection = ({
 
             <Button
               variant="ghost"
-              className="w-full text-emerald-700 hover:underline hover:bg-emerald-200"
+              className="w-full text-emerald-700 hover:underline hover:bg-emerald-100"
               onClick={() =>
                 (window.location.href = `http://localhost:8080/recommendations?studentId=${child.id}`)
               }
