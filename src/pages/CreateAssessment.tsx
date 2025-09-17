@@ -152,7 +152,8 @@ export default function CreateAssessment() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
         <Breadcrumbs items={breadcrumbItems} />
-        <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
+        <LanguageToggle showIcon={true} showText={true} variant="toolbar" />
+    
       </div>
 
       <button

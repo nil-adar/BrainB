@@ -17,8 +17,11 @@ import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
  * - Redirects to external assessment system
  * - Simulates result retrieval and updates UI accordingly
  *
- * Localization: Supports both English and Hebrew based on document direction
- * Dependencies: externalAssessmentService, studentService, React Router, Lucide icons, ShadCN UI
+ * NOTE:
+ * The API calls to `externalAssessmentService.getAssessmentStatus` and
+ * `receiveExternalResults` are currently commented out to avoid TS errors
+ * (if these functions are not yet implemented). 
+ * Replace the mock data with real calls once the backend is ready.
  */
 
 const translations = {
@@ -95,9 +98,12 @@ const ExternalAssessment = () => {
     const loadAssessmentData = async () => {
       try {
         setIsLoading(true);
-        const assessmentData =
-          await externalAssessmentService.getAssessmentStatus(assessmentId);
 
+        /**
+         * 🚧 TODO: Replace with real API call once implemented
+         */
+        /*
+        const assessmentData = await externalAssessmentService.getAssessmentStatus(assessmentId);
         if (!assessmentData) {
           toast({
             title: "שגיאה",
@@ -107,18 +113,12 @@ const ExternalAssessment = () => {
           setStatus("error");
           return;
         }
-
         setAssessment(assessmentData);
 
-        const studentData = await studentService.getStudent(
-          assessmentData.studentId
-        );
+        const studentData = await studentService.getStudentById(assessmentData.studentId);
         setStudent(studentData || null);
 
-        if (
-          assessmentData.status === "completed" ||
-          assessmentData.status === "evaluated"
-        ) {
+        if (assessmentData.status === "completed" || assessmentData.status === "evaluated") {
           setStatus("completed");
           setResultsReceived(true);
         } else if (assessmentData.status === "in_progress") {
@@ -126,6 +126,9 @@ const ExternalAssessment = () => {
         } else {
           setStatus("ready");
         }
+        */
+
+        setStatus("ready");
       } catch (error) {
         console.error("Error loading assessment data:", error);
         toast({
@@ -146,9 +149,7 @@ const ExternalAssessment = () => {
     if (!assessment || !assessment.externalSystemUrl) return;
 
     setIsRedirecting(true);
-
     window.open(assessment.externalSystemUrl, "_blank");
-
     setStatus("in_progress");
     setIsRedirecting(false);
     simulateExternalSystemCompletion();
@@ -159,21 +160,18 @@ const ExternalAssessment = () => {
 
     const timer = setTimeout(async () => {
       try {
+        /**
+         * 🚧 TODO: Replace with real result polling when implemented.
+         */
+        /*
         if (assessment.externalSystemId) {
-          const results =
-            await externalAssessmentService.receiveExternalResults(
-              assessment.externalSystemId
-            );
+          const results = await externalAssessmentService.receiveExternalResults(assessment.externalSystemId);
           if (results) {
-            const updatedAssessment =
-              await externalAssessmentService.getAssessmentStatus(
-                assessmentId!
-              );
+            const updatedAssessment = await externalAssessmentService.getAssessmentStatus(assessmentId!);
             if (updatedAssessment) {
               setAssessment(updatedAssessment);
               setStatus("completed");
               setResultsReceived(true);
-
               toast({
                 title: "האבחון הושלם",
                 description: `תוצאות האבחון מסוג ${assessment.type} התקבלו`,
@@ -181,10 +179,19 @@ const ExternalAssessment = () => {
             }
           }
         }
+        */
+
+        // Mock result update
+        setStatus("completed");
+        setResultsReceived(true);
+        toast({
+          title: "האבחון הושלם",
+          description: "תוצאות האבחון התקבלו (נתוני דמה)",
+        });
       } catch (error) {
         console.error("Error receiving assessment results:", error);
       }
-    }, 10000); 
+    }, 3000);
 
     return () => clearTimeout(timer);
   };

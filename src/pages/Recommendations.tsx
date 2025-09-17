@@ -274,9 +274,9 @@ const MissingFormsPopup = ({
       navigate(`/assessment?studentId=${studentId}`);
     }
   };
-  const handleBackToDashboard = () => {
-    navigate(getViewerDashboardUrl(viewerRole));
-  };
+ const handleBackToDashboard = () => {
+  navigate(-1); // 🔙 יחזור אחורה בהיסטוריית הדפדפן
+};
 
   const canUserFillForm = (formKey) => {
     switch (formKey) {
