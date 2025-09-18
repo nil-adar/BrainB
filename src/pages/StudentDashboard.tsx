@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { UserMenu } from "@/components/header/UserMenu";
+import { getTimeBasedGreeting } from "@/utils/timeGreetings";
 
 /**
  * StudentDashboard.tsx
@@ -272,10 +273,9 @@ export default function StudentDashboard() {
   const fullName = student
     ? `${student.firstName ?? ""} ${student.lastName ?? ""}`.trim()
     : "";
-  const greeting =
-    language === "he"
-      ? `בוקר טוב${fullName ? `, ${fullName}` : ""}`
-      : `Good morning${fullName ? `, ${fullName}` : ""}`;
+  const greeting = `${getTimeBasedGreeting(language)}${
+    fullName ? `, ${fullName}` : ""
+  }`;
 
   const motivation =
     language === "he"
@@ -392,6 +392,7 @@ export default function StudentDashboard() {
                             tasks={tasks}
                             currentTask={currentTask}
                             tasksTitle={t.tasks}
+                            language={language}
                             todayText={t.today}
                             minutesText={t.minutes}
                             onToggleComplete={handleToggleComplete}

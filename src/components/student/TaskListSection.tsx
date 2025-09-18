@@ -14,6 +14,7 @@ interface Task {
 interface TaskListSectionProps {
   tasks: Task[];
   currentTask: Task | null;
+  language: "en" | "he";
   tasksTitle: string;
   todayText: string;
   minutesText: string;
@@ -30,6 +31,7 @@ const TaskListSection = ({
   tasksTitle,
   todayText,
   minutesText,
+  language,
   onToggleComplete,
   onSelectTask,
   onDeleteTask,
@@ -52,6 +54,7 @@ const TaskListSection = ({
           <TaskItem
             key={task.id}
             id={String(task.id)}
+            language={language}
             title={task.title}
             timeEstimation={`${task.minutes} ${minutesText}`}
             color={task.color}

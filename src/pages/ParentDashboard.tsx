@@ -22,6 +22,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSettings } from "@/components/SettingsContext";
 import { ChildrenProgressSection } from "@/components/parent/ChildrenProgressSection";
+import { getTimeBasedGreeting } from "@/utils/timeGreetings";
 
 /**
  * ParentDashboard.tsx
@@ -251,15 +252,15 @@ export default function ParentDashboard({
   // Events data with translation
   const upcomingEvents = [
     {
-      date: new Date(2025, 4, 20),
+      date: new Date(2025, 8, 22),
       title: t.parentsDay,
     },
     {
-      date: new Date(2025, 4, 25),
+      date: new Date(2025, 9, 25),
       title: t.parentTeacherMeeting,
     },
     {
-      date: new Date(2025, 5, 30),
+      date: new Date(2025, 10, 30),
       title: t.lastDayOfSchool,
     },
   ];
@@ -300,7 +301,8 @@ export default function ParentDashboard({
           ) : (
             <div className="animate-fade-in">
               <h1 className="text-3xl font-bold text-primary">
-                {t.hello}, {loggedInUser?.name || t.dearParent} 👋
+                {getTimeBasedGreeting(language)},{" "}
+                {loggedInUser?.name || t.dearParent}
               </h1>
               {/*<p className="text-sm text-gray-600">{t.welcome}</p>*/}
             </div>

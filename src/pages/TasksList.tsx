@@ -1,6 +1,6 @@
-
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { AnalogClock } from "@/components/AnalogClock";
 
 interface Task {
   id: string;
@@ -26,7 +26,7 @@ export const TasksList = ({
   tasksLabel,
   currentTaskLabel,
   getTaskTitle,
-  onTaskCompletion
+  onTaskCompletion,
 }: TasksListProps) => {
   return (
     <Card className="p-4 bg-card text-card-foreground">
@@ -46,7 +46,12 @@ export const TasksList = ({
         <h2 className="text-xl font-semibold mb-4">{tasksLabel}</h2>
         <div className="space-y-3">
           {tasks.map((task) => (
-            <Card key={task.id} className={`p-4 ${task.color} ${task.completed ? 'opacity-60' : ''}`}>
+            <Card
+              key={task.id}
+              className={`p-4 ${task.color} ${
+                task.completed ? "opacity-60" : ""
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <Checkbox
@@ -55,20 +60,24 @@ export const TasksList = ({
                     onCheckedChange={() => onTaskCompletion(task.id)}
                   />
                   <div>
-                    <h3 className={`font-medium ${task.completed ? 'line-through' : ''}`}>
+                    <h3
+                      className={`font-medium ${
+                        task.completed ? "line-through" : ""
+                      }`}
+                    >
                       {getTaskTitle(task.title)}
                     </h3>
                     {task.duration && (
-                      <p className="text-sm text-gray-600">
-                        {task.duration}
-                      </p>
+                      <p className="text-sm text-gray-600">{task.duration}</p>
                     )}
                   </div>
                 </div>
                 {task.stars > 0 && (
                   <div className="flex">
                     {[...Array(task.stars)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">⭐</span>
+                      <span key={i} className="text-yellow-400">
+                        ⭐
+                      </span>
                     ))}
                   </div>
                 )}
@@ -80,5 +89,3 @@ export const TasksList = ({
     </Card>
   );
 };
-
-import { AnalogClock } from "@/components/AnalogClock";
