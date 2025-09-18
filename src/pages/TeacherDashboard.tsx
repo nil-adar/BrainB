@@ -243,45 +243,32 @@ export default function TeacherDashboard() {
   console.log("🟢 currentClass:", currentClass);
   console.log("🟢 allStudents:", allStudents);
 
-  const filteredStudents = currentClass
-    ? allStudents?.filter((s, index) => {
-        console.log(`🔍 תלמיד ${index + 1} מפתחות:`, Object.keys(s));
+const filteredStudents = currentClass
+  ? allStudents?.filter((s, index) => {
+      const normalize = (val: string) =>
+        (val ?? "")
+          .normalize("NFKC")
+          .replace(/\s+/g, "")
+          .replace(/[\u200E\u200F\uFEFF]/g, "");
 
-        const normalize = (val: string) =>
-          (val ?? "")
-            .normalize("NFKC") // Normalize composed characters
-            .replace(/\s+/g, "") // Remove all whitespace
-            .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
+      // ✅ נעדיף classId אם קיים, אחרת נ fallback ל-class
+      const studentClassId = normalize(s.classId || s.class);
+      const currentClassId = normalize(currentClass.classId);
 
-        const studentClassId = normalize(s.classId); // ✅ עכשיו הסינון עובד לפי classId
-        const currentClassId = normalize(currentClass.classId);
+      const matchesClass = studentClassId === currentClassId;
+      const matchesTeacher = s.teacherId === teacherId;
 
-        const matchesClass = studentClassId === currentClassId;
-        const matchesTeacher = s.teacherId === teacherId;
+      console.log(`👩‍🏫 תלמיד ${index + 1}:`);
+      console.log("🆔 student.classId:", s.classId);
+      console.log("🆔 student.class:", s.class);
+      console.log("🎯 currentClass.classId:", currentClass.classId);
+      console.log("🎓 התאמת כיתה:", matchesClass);
+      console.log("✅ התאמת מורה:", matchesTeacher);
 
-        const unicodeBreakdown = (str: string) =>
-          str
-            .split("")
-            .map((char) => char.charCodeAt(0))
-            .join(",");
+      return matchesClass && matchesTeacher;
+    })
+  : [];
 
-        console.log(`👩‍🏫 תלמיד ${index + 1}:`);
-        console.log("🆔 student.class (raw):", s.class);
-        console.log("🎯 currentClass.classId (raw):", currentClass.classId);
-        console.log("🧼 studentClassId (norm):", studentClassId);
-        console.log("🧼 currentClassId (norm):", currentClassId);
-        console.log("🔢 יוניקוד תלמיד:", unicodeBreakdown(studentClassId));
-        console.log("🔢 יוניקוד כיתה נבחרת:", unicodeBreakdown(currentClassId));
-        console.log("🎓 התאמת כיתה:", matchesClass);
-        console.log("📚 teacherId תלמיד:", s.teacherId);
-        console.log("👨‍🏫 teacherId נוכחי:", teacherId);
-        console.log("✅ התאמה מורה:", matchesTeacher);
-        console.log("🔎 סטטוס סינון:", matchesClass && matchesTeacher);
-        console.log("────────────");
-
-        return matchesClass && matchesTeacher;
-      })
-    : [];
 
   const handleOpenNotification = (
     parentId: string,
