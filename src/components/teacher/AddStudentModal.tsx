@@ -119,7 +119,7 @@ const studentSchema = z.object({
   firstName: z.string().min(2, "השם הפרטי חייב להכיל לפחות 2 תווים"),
   lastName: z.string().min(2, "שם המשפחה חייב להכיל לפחות 2 תווים"),
   uniqueId: z.string().min(9, "תעודת זהות חייבת להכיל לפחות 9 ספרות"),
-  classId: z.string().min(1, "יש לבחור כיתה"),
+
   extraTime: z.enum(["none", "25", "50"]).optional(),
 });
 
@@ -156,64 +156,69 @@ export function AddStudentModal({
       firstName: "",
       lastName: "",
       uniqueId: "",
-      classId: currentClass?.classId || "",
+      
       extraTime: "none",
     },
   });
 
   const onSubmit = async (values: StudentFormValues) => {
-    setIsSubmitting(true);
-    try {
-      const classId = currentClass?.classId || "";
-      const className = currentClass?.className || "";
+  setIsSubmitting(true);
+  try {
+    const classId = currentClass?.classId || "";
+    const classNameRaw = currentClass?.className || "";
 
-      // שילוב נתוני התלמיד החדש
-      const newStudent = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        uniqueId: values.uniqueId,
-        classId: classId,
-        class: className,
-        name: `${values.firstName} ${values.lastName}`,
-        teacherId: teacherId,
-        userId: values.firstName.toLowerCase() + new Date().getFullYear(),
-        email: `${values.firstName.toLowerCase()}@student.school.com`,
-        phone: "050-" + Math.floor(1000000 + Math.random() * 9000000),
-        role: "student" as const,
-        password: "password123",
-        dateOfBirth: new Date(new Date().getFullYear() - 10, 0, 1)
-          .toISOString()
-          .split("T")[0],
-        parentIds: [],
-        avatar: `https://i.pravatar.cc/150?img=${Math.floor(
-          Math.random() * 70
-        )}`,
-        tasks: [],
-        progressReports: [],
-        extraTime:
-          values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
-      };
+    // ניקוי המילה "כיתה " + רווחים/תווי RTL
+    const normalizedClassName = classNameRaw
+      .replace(/[\u200f\u200e\u00a0\u200b]/g, " ") // הסרת תווים נסתרים
+      .replace(/^כיתה[\s:\-]*/i, "")              // הסרת "כיתה " מהתחלה
+      .trim();
 
-      console.log("🧪 שליחה לשרת:", newStudent);
+    // שילוב נתוני התלמיד החדש
+    const newStudent = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      uniqueId: values.uniqueId,
+      classId: classId,
+      class: normalizedClassName, // שומר רק "ד1" לדוגמה
+      name: `${values.firstName} ${values.lastName}`,
+      teacherId: teacherId,
+      userId: values.firstName.toLowerCase() + new Date().getFullYear(),
+      email: `${values.firstName.toLowerCase()}@student.school.com`,
+      phone: "050-" + Math.floor(1000000 + Math.random() * 9000000),
+      role: "student" as const,
+      password: "password123",
+      dateOfBirth: new Date(new Date().getFullYear() - 10, 0, 1)
+        .toISOString()
+        .split("T")[0],
+      parentIds: [],
+      avatar: `https://i.pravatar.cc/150?img=${Math.floor(
+        Math.random() * 70
+      )}`,
+      tasks: [],
+      progressReports: [],
+      extraTime:
+        values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
+    };
 
-      const result = await teacherService.addNewStudent(newStudent);
+    console.log("🧪 שליחה לשרת:", newStudent);
 
-      if (result.success) {
-        toast.success(t.successMessage);
-        // רענון רשימת התלמידים
-        queryClient.invalidateQueries({ queryKey: ["allStudents"] });
-        form.reset();
-        onOpenChange(false);
-      } else {
-        toast.error(t.errorMessage);
-      }
-    } catch (error) {
-      console.error("Error adding student:", error);
+    const result = await teacherService.addNewStudent(newStudent);
+
+    if (result.success) {
+      toast.success(t.successMessage);
+      queryClient.invalidateQueries({ queryKey: ["allStudents"] });
+      form.reset();
+      onOpenChange(false);
+    } else {
       toast.error(t.errorMessage);
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  } catch (error) {
+    console.error("Error adding student:", error);
+    toast.error(t.errorMessage);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -269,44 +274,7 @@ export function AddStudentModal({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="classId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t.classId}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t.selectClass} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {classes.length > 0 ? (
-                        classes.map((cls) => (
-                          <SelectItem key={cls} value={cls}>
-                            {cls}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <>
-                          <SelectItem value="א">א'</SelectItem>
-                          <SelectItem value="ב">ב'</SelectItem>
-                          <SelectItem value="ג">ג'</SelectItem>
-                          <SelectItem value="ד">ד'</SelectItem>
-                          <SelectItem value="ה">ה'</SelectItem>
-                          <SelectItem value="ו">ו'</SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
 
             <FormField
               control={form.control}

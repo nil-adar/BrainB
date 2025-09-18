@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { User } from '../models/User';
-
+import bcrypt from "bcrypt";
 const router = Router();
 
 /**
@@ -135,30 +135,43 @@ router.get('/:studentId', async (req: Request, res: Response): Promise<void> => 
  * 4) יצירת תלמיד חדש
  *    POST /api/students
  */
-router.post('/', async (req: Request, res: Response): Promise<void> => {
+router.post("/", async (req: Request, res: Response): Promise<void> => {
   try {
-    const existing = await User.findOne({ uniqueId: req.body.uniqueId });
-    if (existing) {
-      res.status(409).json({
-        success: false,
-        message: 'תלמיד עם תעודת זהות זו כבר קיים',
-      });
-      return;
+    const { uniqueId, className, classId, ...rest } = req.body;
+
+    // הצפנה של ת"ז
+    let encryptedUniqueId: string | undefined;
+    if (uniqueId && uniqueId.trim()) {
+      encryptedUniqueId = await bcrypt.hash(uniqueId, 10);
     }
 
+    // ניקוי שם כיתה (כדי לתמוך גם ב"כיתה ד1" וגם ב"ד1")
+    const normalizeClass = (name?: string) => {
+      if (!name) return "";
+      return name
+        .replace(/[\u200f\u200e\u00a0\u200b]/g, " ")
+        .replace(/^כיתה[\s:\-]*/i, "")
+        .trim();
+    };
+    const cleanedClassName = normalizeClass(className);
+
     const newStudent = new User({
-      ...req.body,
-      role: 'student',
+      ...rest,
+      uniqueId: encryptedUniqueId, // נשמר מוצפן
+      classId: classId || "",      // שומר classId ריק אם לא קיים כדי לא לקרוס
+      class: cleanedClassName,
+      role: "student",
     });
 
     await newStudent.save();
+
+    console.log("✅ תלמיד חדש נשמר בהצלחה עם uniqueId מוצפן");
     res.status(201).json({ success: true, studentId: newStudent._id });
   } catch (error) {
-    console.error('❌ שגיאה ביצירת תלמיד:', error);
+    console.error("❌ שגיאה ביצירת תלמיד:", error);
     res.status(500).json({ success: false, error });
   }
 });
-
 /**
  * 5) שליפת תלמידים לפי classId
  *    GET /api/students/by-class/:classId
