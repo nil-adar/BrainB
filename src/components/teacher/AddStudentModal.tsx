@@ -178,10 +178,10 @@ export function AddStudentModal({
       .replace(/[^a-z]/g, "");
     const emailName = sanitizedName || `student${Date.now()}`;
 
-   const newStudent = {
+const newStudent = {
   firstName: values.firstName,
   lastName: values.lastName,
-  // uniqueId: values.uniqueId, // ❌ אל תשלח לשרת
+  uniqueId: values.uniqueId,  // ✅ החזרנו לשרת
   classId: classId,
   class: normalizedClassName,
   name: `${values.firstName} ${values.lastName}`,
@@ -198,9 +198,9 @@ export function AddStudentModal({
   avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
   tasks: [],
   progressReports: [],
-  extraTime:
-    values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
+  extraTime: values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
 };
+
 
 
     console.log("🧪 שליחה   לשרת:", newStudent);

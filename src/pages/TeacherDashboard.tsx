@@ -253,7 +253,7 @@ export default function TeacherDashboard() {
             .replace(/\s+/g, "") // Remove all whitespace
             .replace(/[\u200E\u200F\uFEFF]/g, ""); // Remove directional and invisible marks
 
-        const studentClassId = normalize(s.class);
+        const studentClassId = normalize(s.classId); // ✅ עכשיו הסינון עובד לפי classId
         const currentClassId = normalize(currentClass.classId);
 
         const matchesClass = studentClassId === currentClassId;
