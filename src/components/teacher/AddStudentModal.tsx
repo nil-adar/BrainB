@@ -161,46 +161,49 @@ export function AddStudentModal({
     },
   });
 
-  const onSubmit = async (values: StudentFormValues) => {
+ const onSubmit = async (values: StudentFormValues) => {
   setIsSubmitting(true);
   try {
     const classId = currentClass?.classId || "";
     const classNameRaw = currentClass?.className || "";
 
-    // ניקוי המילה "כיתה " + רווחים/תווי RTL
     const normalizedClassName = classNameRaw
-      .replace(/[\u200f\u200e\u00a0\u200b]/g, " ") // הסרת תווים נסתרים
-      .replace(/^כיתה[\s:\-]*/i, "")              // הסרת "כיתה " מהתחלה
+      .replace(/[\u200f\u200e\u00a0\u200b]/g, " ")
+      .replace(/^כיתה[\s:\-]*/i, "")
       .trim();
 
-    // שילוב נתוני התלמיד החדש
-    const newStudent = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      uniqueId: values.uniqueId,
-      classId: classId,
-      class: normalizedClassName, // שומר רק "ד1" לדוגמה
-      name: `${values.firstName} ${values.lastName}`,
-      teacherId: teacherId,
-      userId: values.firstName.toLowerCase() + new Date().getFullYear(),
-      email: `${values.firstName.toLowerCase()}@student.school.com`,
-      phone: "050-" + Math.floor(1000000 + Math.random() * 9000000),
-      role: "student" as const,
-      password: "password123",
-      dateOfBirth: new Date(new Date().getFullYear() - 10, 0, 1)
-        .toISOString()
-        .split("T")[0],
-      parentIds: [],
-      avatar: `https://i.pravatar.cc/150?img=${Math.floor(
-        Math.random() * 70
-      )}`,
-      tasks: [],
-      progressReports: [],
-      extraTime:
-        values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
-    };
+    // ✅ ניקוי שם + יצירת אימייל חוקי באנגלית
+    const sanitizedName = values.firstName
+      .toLowerCase()
+      .replace(/[^a-z]/g, "");
+    const emailName = sanitizedName || `student${Date.now()}`;
 
-    console.log("🧪 שליחה לשרת:", newStudent);
+   const newStudent = {
+  firstName: values.firstName,
+  lastName: values.lastName,
+  // uniqueId: values.uniqueId, // ❌ אל תשלח לשרת
+  classId: classId,
+  class: normalizedClassName,
+  name: `${values.firstName} ${values.lastName}`,
+  teacherId: teacherId,
+  userId: `${emailName}_${new Date().getFullYear()}`,
+  email: `${emailName}@student.school.com`,
+  phone: "050-" + Math.floor(1000000 + Math.random() * 9000000),
+  role: "student" as const,
+  password: "password123",
+  dateOfBirth: new Date(new Date().getFullYear() - 10, 0, 1)
+    .toISOString()
+    .split("T")[0],
+  parentIds: [],
+  avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`,
+  tasks: [],
+  progressReports: [],
+  extraTime:
+    values.extraTime === "none" ? 1 : 1 + Number(values.extraTime) / 100,
+};
+
+
+    console.log("🧪 שליחה   לשרת:", newStudent);
 
     const result = await teacherService.addNewStudent(newStudent);
 
