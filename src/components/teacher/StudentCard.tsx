@@ -3,7 +3,7 @@
 import { Student } from "@/types/school";
 import { Card } from "@/components/ui/card";
 import { StudentCardActions } from "@/components/teacher/StudentCardActions";
-import { StudentProfile } from "@/components/teacher/StudentProfile"; // ודא שזה מיובא
+import { StudentProfile } from "@/components/teacher/StudentProfile"; //
 import React from "react";
 
 interface StudentCardProps {
