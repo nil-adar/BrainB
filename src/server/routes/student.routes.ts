@@ -135,17 +135,19 @@ router.get('/:studentId', async (req: Request, res: Response): Promise<void> => 
  * 4) יצירת תלמיד חדש
  *    POST /api/students
  */
-router.post("/", async (req: Request, res: Response): Promise<void> => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const { uniqueId, className, classId, ...rest } = req.body;
 
-    // הצפנה של ת"ז
-    let encryptedUniqueId: string | undefined;
-    if (uniqueId && uniqueId.trim()) {
-      encryptedUniqueId = await bcrypt.hash(uniqueId, 10);
+    if (!classId || !classId.trim()) {
+      res.status(400).json({ success: false, message: "Missing classId" });
+      return;
     }
 
-    // ניקוי שם כיתה (כדי לתמוך גם ב"כיתה ד1" וגם ב"ד1")
+    const encryptedUniqueId = uniqueId && uniqueId.trim()
+      ? await bcrypt.hash(uniqueId, 10)
+      : "";
+
     const normalizeClass = (name?: string) => {
       if (!name) return "";
       return name
@@ -153,25 +155,28 @@ router.post("/", async (req: Request, res: Response): Promise<void> => {
         .replace(/^כיתה[\s:\-]*/i, "")
         .trim();
     };
+
     const cleanedClassName = normalizeClass(className);
 
     const newStudent = new User({
       ...rest,
-      uniqueId: encryptedUniqueId, // נשמר מוצפן
-      classId: classId || "",      // שומר classId ריק אם לא קיים כדי לא לקרוס
+      uniqueId: encryptedUniqueId,
+      classId: classId.trim(),
       class: cleanedClassName,
       role: "student",
     });
 
     await newStudent.save();
 
-    console.log("✅ תלמיד חדש נשמר בהצלחה עם uniqueId מוצפן");
+    console.log(`✅ תלמיד חדש נשמר: ${newStudent.firstName} ${newStudent.lastName}, classId=${newStudent.classId}`);
     res.status(201).json({ success: true, studentId: newStudent._id });
   } catch (error) {
     console.error("❌ שגיאה ביצירת תלמיד:", error);
     res.status(500).json({ success: false, error });
   }
 });
+
+
 /**
  * 5) שליפת תלמידים לפי classId
  *    GET /api/students/by-class/:classId
