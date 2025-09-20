@@ -10,7 +10,7 @@ interface StudentCardProps {
   onContactParent?: (studentId: string, parentId: string) => void;
   teacherId?: string;
   questionnaireRole?: "student" | "teacher" | "parent";
-  language: "he" | "en"; // חובה - לא אופציונלי
+  language: "he" | "en";
   translations: {
     createAssessment: string;
     fillQuestionnaire: string;
@@ -21,7 +21,6 @@ interface StudentCardProps {
   };
 }
 
-// React.memo לביצועים טובים יותר
 export const StudentCard = React.memo<StudentCardProps>(
   ({
     student,
@@ -29,13 +28,12 @@ export const StudentCard = React.memo<StudentCardProps>(
     onContactParent,
     teacherId,
     questionnaireRole,
-    language, // השפה מגיעה מ-props - לא מחושבת מחדש
+    language,
     translations: t,
   }) => {
     const formRole = questionnaireRole ?? (teacherId ? "teacher" : "student");
     const navigate = useNavigate();
 
-    // רשימת הפעולות עם התרגומים שמגיעים מה-props
     const actions = React.useMemo(
       () => [
         {

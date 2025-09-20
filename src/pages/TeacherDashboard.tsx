@@ -95,7 +95,7 @@ export default function TeacherDashboard() {
     handleNotificationClick,
     handleNotificationCheckboxChange,
     handleNotificationColorSelection,
-  } = useTeacherNotifications(teacherId ?? "");
+  } = useTeacherNotifications(teacherId ?? "", language);
 
   const currentDate = useMemo(
     () => getLocalizedDate(format(new Date(), "EEEE, MMM do, yyyy"), language),
@@ -220,7 +220,7 @@ export default function TeacherDashboard() {
     }
   }, [teacherData, currentClass]);
 
-  console.log("👨‍🏫 teacherProfile:", teacherProfile);
+  //console.log("👨‍🏫 teacherProfile:", teacherProfile);
   useEffect(() => {
     if (teacherProfile?.assignedClasses?.length) {
       const active =
@@ -240,9 +240,6 @@ export default function TeacherDashboard() {
     enabled: !!teacherId,
   });
 
-  console.log("🟢 currentClass:", currentClass);
-  console.log("🟢 allStudents:", allStudents);
-
   const filteredStudents = currentClass
     ? allStudents?.filter((s, index) => {
         const normalize = (val: string) =>
@@ -257,13 +254,6 @@ export default function TeacherDashboard() {
 
         const matchesClass = studentClassId === currentClassId;
         const matchesTeacher = s.teacherId === teacherId;
-
-        console.log(`👩‍🏫 תלמיד ${index + 1}:`);
-        console.log("🆔 student.classId:", s.classId);
-        console.log("🆔 student.class:", s.class);
-        console.log("🎯 currentClass.classId:", currentClass.classId);
-        console.log("🎓 התאמת כיתה:", matchesClass);
-        console.log("✅ התאמת מורה:", matchesTeacher);
 
         return matchesClass && matchesTeacher;
       })

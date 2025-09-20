@@ -11,6 +11,7 @@ import { studentService } from "@/services/studentService";
 import { Student } from "@/types/school";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { useSettings } from "@/components/SettingsContext";
 
 const translations = {
   en: {
@@ -37,6 +38,8 @@ const translations = {
       title: "Error",
       description: "Failed to create assessment",
     },
+    fillTeacherForm: "Fill Teacher Form",
+    loading: "Loading...",
   },
   he: {
     back: "חזור",
@@ -61,15 +64,15 @@ const translations = {
       title: "שגיאה",
       description: "יצירת האבחון נכשלה",
     },
+    fillTeacherForm: "מלא שאלון מורה",
+    loading: "טוען...",
   },
 };
 
 export default function CreateAssessment() {
   const navigate = useNavigate();
+  const { language, setLanguage } = useSettings();
 
-  const [language, setLanguage] = useState<"en" | "he">(
-    document.documentElement.dir === "rtl" ? "he" : "en"
-  );
   const t = translations[language];
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -104,7 +107,7 @@ export default function CreateAssessment() {
   const toggleLanguage = () =>
     setLanguage((prev) => (prev === "he" ? "en" : "he"));
 
-  const breadcrumbItems = [
+  /*const breadcrumbItems = [
     { label: t.home, href: "/" },
     {
       label:
@@ -112,7 +115,7 @@ export default function CreateAssessment() {
       href: student ? `/student/${studentId}` : undefined,
     },
     { label: t.createNewAssessment },
-  ];
+  ];*/
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,8 +123,9 @@ export default function CreateAssessment() {
 
     if (!studentId) {
       console.log("❌ חסר studentId");
-      toast.error("שגיאה", {
-        description: "לא נמצא מזהה תלמיד",
+      toast.error(t.error.title, {
+        description:
+          language === "he" ? "לא נמצא מזהה תלמיד" : "Student ID not found",
       });
       return;
     }
@@ -155,7 +159,6 @@ export default function CreateAssessment() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="flex justify-between items-center mb-6">
-        <Breadcrumbs items={breadcrumbItems} />
         <LanguageToggle showIcon={true} showText={true} variant="toolbar" />
       </div>
 
@@ -218,19 +221,6 @@ export default function CreateAssessment() {
                   required
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  {t.notes}
-                </label>
-                <textarea
-                  className="w-full p-2 border rounded-lg h-32"
-                  placeholder={t.addNotes}
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-              </div>
-
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <h3 className="font-semibold text-blue-800">
                   {t.externalSystem}
@@ -245,23 +235,26 @@ export default function CreateAssessment() {
                 className="w-full bg-primary text-white py-2 rounded-lg hover:opacity-90 transition-opacity"
                 disabled={loading || loadingStudent || !student} // Added !student to disabled condition
               >
-                {loading ? "..." : t.startAssessment}
+                {loading ? t.loading : t.startAssessment}
               </Button>
               <Button
-                type="button" // Added type="button" to prevent form submission
+                type="button"
                 className="w-full bg-blue-200 text-blue-900 py-2 rounded-lg hover:bg-blue-300 transition-opacity"
                 onClick={() => {
                   if (studentId) {
                     navigate(`/questionnaire/teacher/${studentId}`);
                   } else {
-                    toast.error("שגיאה", {
-                      description: "לא נמצא מזהה תלמיד",
+                    toast.error(t.error.title, {
+                      description:
+                        language === "he"
+                          ? "לא נמצא מזהה תלמיד"
+                          : "Student ID not found",
                     });
                   }
                 }}
-                disabled={!studentId} // Disable if no studentId
+                disabled={!studentId}
               >
-                מלא שאלון מורה
+                {t.fillTeacherForm}
               </Button>
             </form>
           </Card>

@@ -86,8 +86,8 @@ export const TeacherHeader = ({
 
             <UserMenu
               translations={{
-                settings: t.settings || "הגדרות",
-                logout: t.logout || "התנתק",
+                settings: t.settings,
+                logout: t.logout,
               }}
             />
           </div>

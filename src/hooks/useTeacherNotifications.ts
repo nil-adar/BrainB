@@ -3,10 +3,19 @@ import { Notification, Message } from "@/types/school";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 
-export const useTeacherNotifications = (teacherId: string) => {
+export const useTeacherNotifications = (
+  teacherId: string,
+  language: "en" | "he"
+) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadMessages, setUnreadMessages] = useState<Message[]>([]);
   const { toast } = useToast();
+
+  const getNotificationMessage = (language: "en" | "he") => {
+    return language === "he"
+      ? "התקבלה הודעה חדשה מההורה"
+      : "New message from parent";
+  };
 
   useEffect(() => {
     // 🛡️ אם אין teacherId – אל תנסה למשוך הודעות
@@ -15,45 +24,44 @@ export const useTeacherNotifications = (teacherId: string) => {
       setUnreadMessages([]);
       return;
     }
-  
+
     const fetchUnreadMessages = async () => {
       try {
         console.log("Fetching unread messages for teacher:", teacherId);
         const { data } = await axios.get<Message[]>(
           `/api/messages/unread/${teacherId}`
         );
-  
+
         setUnreadMessages(data);
-  
+
         // הפיכת ההודעות להתראות
-        const messageNotifications: Notification[] = data.map(msg => ({
+        const messageNotifications: Notification[] = data.map((msg) => ({
           id: msg._id ?? msg.id ?? `${msg.senderId}_${msg.timestamp}`,
           parentId: msg.senderId,
           studentId: msg.studentId, // ✅ נוסף
           studentName: msg.studentName ?? "הודעה מהורה",
-          message: "התקבלה הודעה חדשה מההורה",
+          message: getNotificationMessage(language),
           timestamp: msg.timestamp,
           read: false,
           type: "message",
           isChecked: false,
-          color: ""
+          color: "",
         }));
-        
-  
+
         // מתמזג עם התראות קיימות
-        setNotifications(prev =>
-          [...prev.filter(n => n.type !== "message"), ...messageNotifications]
-        );
+        setNotifications((prev) => [
+          ...prev.filter((n) => n.type !== "message"),
+          ...messageNotifications,
+        ]);
       } catch (err) {
         console.error("Error fetching unread messages:", err);
       }
     };
-  
-    fetchUnreadMessages();               // קריאה ראשונה
+
+    fetchUnreadMessages(); // קריאה ראשונה
     const interval = setInterval(fetchUnreadMessages, 30_000); // כל 30 ש׳
     return () => clearInterval(interval); // ניקוי טיימר
   }, [teacherId]);
-  
 
   const handleNotificationClick = (parentId: string, studentId?: string) => {
     const markAsRead = async () => {
@@ -63,27 +71,29 @@ export const useTeacherNotifications = (teacherId: string) => {
             String(m.senderId) === parentId &&
             (!studentId || String(m.studentId) === studentId)
         );
-  
+
         await Promise.all(
-          toMark.map((m) =>
-            axios.patch(`/api/messages/${m._id}/read`, {})
-          )
+          toMark.map((m) => axios.patch(`/api/messages/${m._id}/read`, {}))
         );
-  
+
         setUnreadMessages((prev) =>
           prev.filter(
             (m) =>
-              !(String(m.senderId) === parentId &&
-                (!studentId || String(m.studentId) === studentId))
+              !(
+                String(m.senderId) === parentId &&
+                (!studentId || String(m.studentId) === studentId)
+              )
           )
         );
-  
+
         setNotifications((prev) =>
           prev.filter(
             (n) =>
-              !(n.type === "message" &&
+              !(
+                n.type === "message" &&
                 n.parentId === parentId &&
-                (!studentId || n.studentId === studentId))
+                (!studentId || n.studentId === studentId)
+              )
           )
         );
       } catch (err) {
@@ -95,10 +105,9 @@ export const useTeacherNotifications = (teacherId: string) => {
         });
       }
     };
-  
+
     markAsRead();
   };
-  
 
   const handleNotificationCheckboxChange = (notificationId: string) => {
     setNotifications((prev) =>
@@ -107,7 +116,7 @@ export const useTeacherNotifications = (teacherId: string) => {
       )
     );
   };
-  
+
   const handleNotificationColorSelection = (
     notificationId: string,
     color: string
@@ -118,7 +127,6 @@ export const useTeacherNotifications = (teacherId: string) => {
       )
     );
   };
-  
 
   const refreshUnreadMessages = async () => {
     if (!teacherId) return;
@@ -138,6 +146,6 @@ export const useTeacherNotifications = (teacherId: string) => {
     handleNotificationClick,
     handleNotificationCheckboxChange,
     handleNotificationColorSelection,
-    refreshUnreadMessages
+    refreshUnreadMessages,
   };
 };

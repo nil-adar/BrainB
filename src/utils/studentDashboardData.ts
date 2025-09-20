@@ -36,6 +36,8 @@ export const translations = {
     cancel: "Cancel",
     send: "Send",
     timeUpForTask: "Time's up for task",
+    settings: "Settings",
+    logout: "Logout",
 
     child: {
       title: "Student Questionnaire",
@@ -93,6 +95,8 @@ export const translations = {
     name: "שם",
     date: "תאריך",
     submit: "שלח",
+    settings: "הגדרות",
+    logout: "התנתק",
     deleteTaskError: "שגיאה במחיקת משימה",
     taskUpdatedSuccess: "המשימה עודכנה בהצלחה",
     taskUpdateError: "שגיאה בעדכון המשימה",

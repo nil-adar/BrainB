@@ -282,10 +282,8 @@ export default function ParentDashboard({
           )
         }
         translations={{
-          //search: t.search,
           settings: t.settings,
           logout: t.logout,
-          profile: t.profile,
           noNotifications: t.noNotifications,
           viewConversation: t.viewConversation,
           viewAssessment: t.viewAssessment,

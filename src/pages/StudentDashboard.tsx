@@ -322,9 +322,8 @@ export default function StudentDashboard() {
                 <LanguageToggle variant="button" />
                 <UserMenu
                   translations={{
-                    profile: "פרופיל",
-                    settings: "הגדרות",
-                    logout: "התנתק",
+                    settings: t.settings,
+                    logout: t.logout,
                   }}
                 />
               </div>

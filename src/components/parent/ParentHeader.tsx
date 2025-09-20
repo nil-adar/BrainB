@@ -22,7 +22,6 @@ interface ParentHeaderProps {
   onNotificationCheckboxChange: (notificationId: string) => void;
   onColorSelection: (notificationId: string, color: string) => void;
   translations: {
-    //search: string;
     settings?: string;
     logout?: string;
     profile?: string;
@@ -91,9 +90,8 @@ export const ParentHeader = ({
             <div className="rounded-md hover:bg-emerald-100 transition-colors">
               <UserMenu
                 translations={{
-                  profile: translations.profile || "פרופיל",
-                  settings: translations.settings || "הגדרות",
-                  logout: translations.logout || "התנתק",
+                  settings: translations.settings,
+                  logout: translations.logout,
                 }}
               />
             </div>

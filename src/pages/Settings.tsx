@@ -1,5 +1,3 @@
-
-
 import { ArrowLeft, Camera, Save, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
@@ -23,7 +21,7 @@ import { userSettingsService } from "@/services/userSettingsService";
 import { AppToolbar } from "../components/ui/AppToolbar";
 import { LanguageToggle } from "../components/LanguageToggle";
 import { useSettings } from "../components/SettingsContext";
-import { API_BASE_URL } from "@/config/api"; // 
+import { API_BASE_URL } from "@/config/api";
 const translations = {
   en: {
     back: "Back",
@@ -206,7 +204,10 @@ const Settings = () => {
                         src={
                           profileImage.startsWith("http")
                             ? profileImage
-                            : `${API_BASE_URL.replace("/api", "")}${profileImage}`
+                            : `${API_BASE_URL.replace(
+                                "/api",
+                                ""
+                              )}${profileImage}`
                         }
                         alt="Profile"
                       />
