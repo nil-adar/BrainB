@@ -12,6 +12,7 @@ import CreateAssessment from "./pages/CreateAssessment";
 import DailyTasks from "./pages/DailyTasks";
 //import Statistics from "./pages/Statistics";
 import StudentDetails from "./pages/StudentDetails";
+//import Profile from "./pages/profile";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
@@ -31,7 +32,7 @@ import React from "react";
 import QuestionnaireFormPage from "@/pages/QuestionnaireFormPage";
 import { SettingsProvider } from "@/components/SettingsContext";
 import SettingsToggle from "@/components/SettingsToggle";
-import api from "@/services/api"; // 
+import api from "@/services/api"; //
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -43,20 +44,20 @@ const queryClient = new QueryClient({
 
 function App() {
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    // ה-token עדיין נכנס ל-axios global אם אתה רוצה,
-    // אבל עדיף לתת לזה להיכנס דרך ה-interceptor ב-api.ts
-    api
-      .get("/users/me")
-      .then((res) => {
-        console.log("🟢 מחובר כ:", res.data);
-      })
-      .catch((err) => {
-        console.error("🔴 שגיאה באימות הטוקן:", err.response?.data?.message);
-      });
-  }
-}, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      // ה-token עדיין נכנס ל-axios global אם אתה רוצה,
+      // אבל עדיף לתת לזה להיכנס דרך ה-interceptor ב-api.ts
+      api
+        .get("/users/me")
+        .then((res) => {
+          console.log("🟢 מחובר כ:", res.data);
+        })
+        .catch((err) => {
+          console.error("🔴 שגיאה באימות הטוקן:", err.response?.data?.message);
+        });
+    }
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="top-center" expand={true} richColors />
@@ -71,6 +72,7 @@ function App() {
               <Route path="/student-dashboard" element={<StudentDashboard />} />
               <Route path="/parent-dashboard" element={<ParentDashboard />} />
               <Route path="/recommendations" element={<Recommendations />} />
+              <Route path="/settings" element={<Settings />} />
               <Route
                 path="/nutritional-recommendations"
                 element={<NutritionalRecommendations />}
@@ -84,16 +86,14 @@ function App() {
                 element={<EnvironmentalRecommendations />}
               />
               <Route path="/create-assessment" element={<CreateAssessment />} />
-            <Route
-  path="/daily-tasks/:teacherId/:classId"
-  element={<DailyTasks />}
-/>
-<Route
-  path="/daily-tasks"
-  element={<DailyTasks />}
-/>              <Route
+              <Route
+                path="/daily-tasks/:teacherId/:classId"
+                element={<DailyTasks />}
+              />
+              <Route path="/daily-tasks" element={<DailyTasks />} />{" "}
+              <Route
                 path="/questionnaire/:role/:studentId"
-                element={<QuestionnaireFormPage />} 
+                element={<QuestionnaireFormPage />}
               />
               <Route path="*" element={<NotFound />} />
             </Routes>

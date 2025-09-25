@@ -118,8 +118,8 @@ const translations = {
     Hyperactivity: "היפראקטיבי",
     Inattention: "קשב",
     unidentifiedUser: "👤 משתמש לא מזוהה",
-    viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
-    viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
+    viewingAsParent: " הנך צופה כהורה עבור",
+    viewingAsTeacher: " הנך צופה כמורה עבור",
   },
 };
 type Translated = { en: string; he: string };

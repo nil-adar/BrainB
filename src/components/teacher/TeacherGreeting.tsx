@@ -1,21 +1,21 @@
-import { Clock } from "lucide-react";
+import { getTimeBasedGreeting } from "@/utils/timeGreetings";
 
 interface TeacherGreetingProps {
   teacherName: string;
-  translations: {
-    greeting: string;
-    grade: string;
-  };
+  language: "en" | "he";
   assignedClass?: string;
   classSwitcher?: React.ReactNode;
 }
 
 export const TeacherGreeting = ({
   teacherName,
-  translations: t,
+  language,
   assignedClass,
   classSwitcher,
 }: TeacherGreetingProps) => {
+  const timeGreeting = getTimeBasedGreeting(language);
+  const teacherTitle = language === "he" ? "המורה" : "Teacher";
+
   return (
     <div className="relative overflow-hidden mb-3 md:mb-2 rounded-xl shadow-md w-full p-1 md:p-2 z-5">
       {/* Background gradient */}
@@ -34,8 +34,10 @@ export const TeacherGreeting = ({
       <div className="relative flex flex-col md:flex-row justify-center items-center p-6 z-10">
         <div className="flex-1 flex flex-col items-center text-center mb-4 md:mb-0">
           <h1 className="text-2xl md:text-4xl font-bold mb-2 flex items-center gap-2">
-            {t.greeting},{" "}
-            <span className="text-stone-800 ">המורה {teacherName}</span>
+            {timeGreeting},{" "}
+            <span className="text-stone-800 ">
+              {teacherTitle} {teacherName}
+            </span>
           </h1>
           <p className="text-muted-foreground">
             {/*assignedClass || t.grade*/}

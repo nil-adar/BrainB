@@ -1,4 +1,3 @@
-
 export const teacherTranslations = {
   en: {
     currentTask: "Current Task",
@@ -17,7 +16,7 @@ export const teacherTranslations = {
     cognitiveAssessment: "Cognitive Assessment",
     notifications: "Notifications",
     noNotifications: "No notifications",
-    viewConversation: "View conversation"
+    viewConversation: "View conversation",
   },
   he: {
     currentTask: "משימה נוכחית",
@@ -36,6 +35,6 @@ export const teacherTranslations = {
     cognitiveAssessment: "אבחון קוגניטיבי",
     notifications: "התראות",
     noNotifications: "אין התראות",
-    viewConversation: "צפה בשיחה"
-  }
+    viewConversation: "צפה בשיחה",
+  },
 };

@@ -193,6 +193,26 @@ export default function QuestionnaireFormPage() {
     });
   };
 
+  const getFallbackTitle = (role: string, language: "en" | "he") => {
+    const titles = {
+      en: {
+        student: "Student Questionnaire",
+        parent: "Parent Questionnaire",
+        teacher: "Teacher Questionnaire",
+      },
+      he: {
+        student: "שאלון לתלמיד",
+        parent: "שאלון להורה",
+        teacher: "שאלון למורה",
+      },
+    };
+
+    return (
+      titles[language][role as keyof (typeof titles)[typeof language]] ||
+      "Questionnaire"
+    );
+  };
+
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="p-4 max-w-3xl mx-auto">
       {/* Header with back button */}
@@ -209,12 +229,7 @@ export default function QuestionnaireFormPage() {
       </div>
 
       <h1 className="text-2xl font-bold mb-6 text-center">
-        {t[role]?.title ||
-          (role === "student"
-            ? "שאלון לתלמיד"
-            : role === "parent"
-            ? "שאלון להורה"
-            : "שאלון למורה")}
+        {t[role]?.title || getFallbackTitle(role, language)}
       </h1>
 
       <QuestionnaireForm

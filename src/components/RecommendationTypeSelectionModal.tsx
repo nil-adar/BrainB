@@ -14,7 +14,6 @@ const RecommendationTypeSelectionModal: React.FC<
 > = ({ isOpen, mainType, subTypes, language, onSelectPreference }) => {
   if (!isOpen) return null;
 
-  // אם אין mainType בכלל - זה אומר שיש בעיה בהמלצות
   if (!mainType) {
     const errorTranslations = {
       en: {
@@ -63,7 +62,6 @@ const RecommendationTypeSelectionModal: React.FC<
     );
   }
 
-  // אם יש mainType אבל אין subTypes או subTypes ריק - אל תציג את מודל הבחירה
   if (!subTypes || subTypes.length === 0) {
     return null;
   }

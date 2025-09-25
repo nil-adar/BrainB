@@ -31,7 +31,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getViewerDashboardUrl } from "@/utils/paths";
 import { getLocalizedDate } from "@/utils/dateTranslations";
 import { useMemo } from "react";
-
+import { getTimeBasedGreeting } from "@/utils/timeGreetings";
 /**
  * Recommendations Page
  * ------------------------------------------------------------
@@ -52,7 +52,7 @@ import { useMemo } from "react";
  * - Ensure API endpoints are authenticated (handled outside this component)
  */
 
-const getStoredLanguage = () => {
+const getStoredLanguage = (): "en" | "he" => {
   const stored = localStorage.getItem("language");
   if (stored === "en" || stored === "he") {
     return stored;
@@ -141,6 +141,9 @@ const translations = {
     teacherFormDesc: "Teacher observations and classroom behavior",
     diagnosisFormDesc: "Professional NODUS diagnostic assessment",
     accessBlocked: "Access blocked until all forms are completed",
+    unknownUser: "👤 Unknown user",
+    viewingAsParent: "You are viewing as parent for",
+    viewingAsTeacher: "You are viewing as teacher for",
   },
   he: {
     title: "המלצות",
@@ -195,6 +198,9 @@ const translations = {
     teacherFormDesc: "תצפיות מורים והתנהגות בכיתה",
     diagnosisFormDesc: "הערכה אבחנתית מקצועית של נודוס",
     accessBlocked: "הגישה חסומה עד להשלמת כל הטפסים",
+    unknownUser: "👤 משתמש לא מזוהה",
+    viewingAsParent: "הנך צופה כהורה עבור",
+    viewingAsTeacher: "הנך צופה כמורה עבור",
   },
 };
 
@@ -274,9 +280,9 @@ const MissingFormsPopup = ({
       navigate(`/assessment?studentId=${studentId}`);
     }
   };
- const handleBackToDashboard = () => {
-  navigate(-1); // 🔙 יחזור אחורה בהיסטוריית הדפדפן
-};
+  const handleBackToDashboard = () => {
+    navigate(-1); // 🔙 יחזור אחורה בהיסטוריית הדפדפן
+  };
 
   const canUserFillForm = (formKey) => {
     switch (formKey) {
@@ -815,23 +821,24 @@ export default function Recommendations() {
   ];
 
   const getGreetingTitle = () => {
-    if (!viewerRole || !studentId || !studentName) return "👤 משתמש לא מזוהה";
+    if (!viewerRole || !studentId || !studentName) return t.unknownUser;
 
     const isSelf = String(loggedUserId) === String(studentId);
+    const timeGreeting = getTimeBasedGreeting(currentLanguage);
 
     if (viewerRole === "student" && isSelf) {
-      return `${t.greeting} ${studentName}`;
+      return `${timeGreeting} ${studentName}`;
     }
 
     if (viewerRole === "parent") {
-      return `👨‍👧 ${t.greeting} - הנך צופה כהורה עבור ${studentName}`;
+      return `${timeGreeting} - ${t.viewingAsParent} ${studentName}`;
     }
 
     if (viewerRole === "teacher") {
-      return `🧑‍🏫 ${t.greeting} - הנך צופה כמורה עבור ${studentName}`;
+      return `${timeGreeting} - ${t.viewingAsTeacher} ${studentName}`;
     }
 
-    return "👤 משתמש לא מזוהה";
+    return t.unknownUser;
   };
 
   return (

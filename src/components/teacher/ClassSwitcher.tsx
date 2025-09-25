@@ -5,12 +5,12 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { UserProfile } from "@/services/userProfileService";
 
-type AssignedClass = NonNullable<UserProfile['assignedClasses']>[0];
+type AssignedClass = NonNullable<UserProfile["assignedClasses"]>[0];
 
 interface ClassSwitcherProps {
   teacherId: string;
@@ -23,10 +23,8 @@ export const ClassSwitcher = ({
   teacherId,
   language,
   onClassChange,
-  classOptions
+  classOptions,
 }: ClassSwitcherProps) => {
-  console.log("📦 classOptions המלא:", classOptions);
-
   const translations = {
     en: {
       switchClass: "Switch Class",
@@ -37,15 +35,17 @@ export const ClassSwitcher = ({
       switchClass: "החלף כיתה",
       chooseClass: "בחר כיתה",
       noClasses: "אין כיתות זמינות",
-    }
+    },
   };
 
-  const [selectedClassValue, setSelectedClassValue] = useState<string | undefined>(undefined);
+  const [selectedClassValue, setSelectedClassValue] = useState<
+    string | undefined
+  >(undefined);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     if (!initialized && classOptions && classOptions.length > 0) {
-      const activeClass = classOptions.find(cls => cls.isActive);
+      const activeClass = classOptions.find((cls) => cls.isActive);
       if (activeClass) {
         const value = `${activeClass.schoolId}|${activeClass.classId}`;
         setSelectedClassValue(value);
@@ -58,17 +58,18 @@ export const ClassSwitcher = ({
   const handleClassChange = (value: string) => {
     setSelectedClassValue(value);
 
-    const [schoolId, classId] = value.split('|');
+    const [schoolId, classId] = value.split("|");
     const selectedClass = classOptions.find(
-      cls => cls.schoolId === schoolId && cls.classId === classId
+      (cls) => cls.schoolId === schoolId && cls.classId === classId
     );
 
     if (selectedClass) {
       onClassChange(selectedClass);
 
-      const message = language === "he"
-        ? `עברת לכיתה ${selectedClass.className} בבית ספר ${selectedClass.schoolName}`
-        : `Switched to class ${selectedClass.className} in ${selectedClass.schoolName}`;
+      const message =
+        language === "he"
+          ? `עברת לכיתה ${selectedClass.className} בבית ספר ${selectedClass.schoolName}`
+          : `Switched to class ${selectedClass.className} in ${selectedClass.schoolName}`;
 
       toast.success(message, {
         duration: 2500, // משך הופעת ההודעה במילישניות
@@ -78,8 +79,10 @@ export const ClassSwitcher = ({
 
   const t = translations[language];
 
-  const activeClass = classOptions.find(cls => cls.isActive);
-  const activeValue = activeClass ? `${activeClass.schoolId}|${activeClass.classId}` : undefined;
+  const activeClass = classOptions.find((cls) => cls.isActive);
+  const activeValue = activeClass
+    ? `${activeClass.schoolId}|${activeClass.classId}`
+    : undefined;
 
   return (
     <div className="flex items-center gap-2">
@@ -100,13 +103,17 @@ export const ClassSwitcher = ({
               >
                 <div className="flex items-center gap-2">
                   <School className="h-4 w-4" />
-                  <span>{cls.schoolName} - {cls.className}</span>
+                  <span>
+                    {cls.schoolName} - {cls.className}
+                  </span>
                   {cls.isActive && <Check className="h-4 w-4 ml-auto" />}
                 </div>
               </SelectItem>
             ))}
             {classOptions.length === 0 && (
-              <div className="p-2 text-center text-muted-foreground">{t.noClasses}</div>
+              <div className="p-2 text-center text-muted-foreground">
+                {t.noClasses}
+              </div>
             )}
           </SelectContent>
         </Select>

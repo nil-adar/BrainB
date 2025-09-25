@@ -94,8 +94,8 @@ const translations = {
     environment: "סביבה",
     sensory: "חושי",
     unidentifiedUser: "👤 משתמש לא מזוהה",
-    viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
-    viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
+    viewingAsParent: " הנך צופה כהורה עבור",
+    viewingAsTeacher: " הנך צופה כמורה עבור",
   },
 };
 

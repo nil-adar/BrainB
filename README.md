@@ -5,6 +5,11 @@
 
 This project is a platform designed to support individuals with ADHD. The system provides smart tools and features to assist users in managing their daily challenges and improving their quality of life.
 
+### 🎥 Demo Video
+[![Watch the demo](https://img.youtube.com/vi/3yylb_jKSqg/0.jpg)](https://youtu.be/3yylb_jKSqg)
+
+Click the thumbnail above to watch a 2-minute walkthrough of BrainBridge in action.  
+
 Key features include:
 
 - Smart assessment based on external ADHD diagnosis (via Nodus)

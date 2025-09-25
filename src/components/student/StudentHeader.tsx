@@ -54,9 +54,8 @@ export const StudentHeader = ({
 
             <UserMenu
               translations={{
-                profile: translations.profile || "פרופיל",
-                settings: translations.settings || "הגדרות",
-                logout: translations.logout || "התנתק",
+                settings: translations.settings,
+                logout: translations.logout,
               }}
             />
           </div>

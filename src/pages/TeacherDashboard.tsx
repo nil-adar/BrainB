@@ -95,7 +95,7 @@ export default function TeacherDashboard() {
     handleNotificationClick,
     handleNotificationCheckboxChange,
     handleNotificationColorSelection,
-  } = useTeacherNotifications(teacherId ?? "");
+  } = useTeacherNotifications(teacherId ?? "", language);
 
   const currentDate = useMemo(
     () => getLocalizedDate(format(new Date(), "EEEE, MMM do, yyyy"), language),
@@ -220,7 +220,7 @@ export default function TeacherDashboard() {
     }
   }, [teacherData, currentClass]);
 
-  console.log("👨‍🏫 teacherProfile:", teacherProfile);
+  //console.log("👨‍🏫 teacherProfile:", teacherProfile);
   useEffect(() => {
     if (teacherProfile?.assignedClasses?.length) {
       const active =
@@ -240,35 +240,24 @@ export default function TeacherDashboard() {
     enabled: !!teacherId,
   });
 
-  console.log("🟢 currentClass:", currentClass);
-  console.log("🟢 allStudents:", allStudents);
+  const filteredStudents = currentClass
+    ? allStudents?.filter((s, index) => {
+        const normalize = (val: string) =>
+          (val ?? "")
+            .normalize("NFKC")
+            .replace(/\s+/g, "")
+            .replace(/[\u200E\u200F\uFEFF]/g, "");
 
-const filteredStudents = currentClass
-  ? allStudents?.filter((s, index) => {
-      const normalize = (val: string) =>
-        (val ?? "")
-          .normalize("NFKC")
-          .replace(/\s+/g, "")
-          .replace(/[\u200E\u200F\uFEFF]/g, "");
+        // ✅ נעדיף classId אם קיים, אחרת נ fallback ל-class
+        const studentClassId = normalize(s.classId || s.class);
+        const currentClassId = normalize(currentClass.classId);
 
-      // ✅ נעדיף classId אם קיים, אחרת נ fallback ל-class
-      const studentClassId = normalize(s.classId || s.class);
-      const currentClassId = normalize(currentClass.classId);
+        const matchesClass = studentClassId === currentClassId;
+        const matchesTeacher = s.teacherId === teacherId;
 
-      const matchesClass = studentClassId === currentClassId;
-      const matchesTeacher = s.teacherId === teacherId;
-
-      console.log(`👩‍🏫 תלמיד ${index + 1}:`);
-      console.log("🆔 student.classId:", s.classId);
-      console.log("🆔 student.class:", s.class);
-      console.log("🎯 currentClass.classId:", currentClass.classId);
-      console.log("🎓 התאמת כיתה:", matchesClass);
-      console.log("✅ התאמת מורה:", matchesTeacher);
-
-      return matchesClass && matchesTeacher;
-    })
-  : [];
-
+        return matchesClass && matchesTeacher;
+      })
+    : [];
 
   const handleOpenNotification = (
     parentId: string,
@@ -330,7 +319,7 @@ const filteredStudents = currentClass
         <div className="flex flex-col items-center justify-center mb-6">
           <TeacherGreeting
             teacherName={teacherName}
-            translations={{ greeting: t.greeting, grade: t.grade }}
+            language={language}
             assignedClass={greetingClassText}
             classSwitcher={classSwitcherComponent}
           />

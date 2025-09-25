@@ -80,7 +80,6 @@ export const TeacherSchedule = ({
     queryFn: () =>
       scheduleService.getTeacherScheduleForDay(teacherId, selectedDate),
   });
-  console.log("📅 scheduleData (raw):", scheduleData);
 
   return (
     <>
