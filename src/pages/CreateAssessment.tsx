@@ -183,7 +183,7 @@ export default function CreateAssessment() {
                 {t.success.title}
               </h3>
               <p className="text-gray-600">{t.success.description}</p>
-              <Button onClick={() => navigate("/")} className="mt-4">
+              <Button onClick={() => navigate(-1)} className="mt-4">
                 {t.success.button}
               </Button>
             </div>

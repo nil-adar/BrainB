@@ -70,8 +70,8 @@ const translations = {
     recommended: "מומלץ",
     avoid: "להימנע",
     unidentifiedUser: "👤 משתמש לא מזוהה",
-    viewingAsParent: "👨‍👧 הנך צופה כהורה עבור",
-    viewingAsTeacher: "🧑‍🏫 הנך צופה כמורה עבור",
+    viewingAsParent: " הנך צופה כהורה עבור",
+    viewingAsTeacher: "הנך צופה כמורה עבור",
   },
 };
 
