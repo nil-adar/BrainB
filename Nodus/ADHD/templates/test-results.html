@@ -373,8 +373,9 @@
 
 </div>
 <div style="display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap;">
+  <!-- כפתור חזרה לדף הראשי -->
   <div
-    onclick="window.location.href='http://localhost:8080/'"
+    id="backToBrainBridge"
     style="width: 220px; height: 70px; background-color: #00c39a; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
     onmouseover="this.style.backgroundColor='#019c84'; this.style.transform='translateY(-2px)'"
     onmouseout="this.style.backgroundColor='#00c39a'; this.style.transform='translateY(0)'"
@@ -383,44 +384,42 @@
     חזור ל־BrainBridge
   </div>
 
-<div
-  id="recommendationsButton"
-  style="
-    width: 220px;
-    height: 70px;
-    background-color: #0f75bc;
-    color: white;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  "
-  onmouseover="this.style.backgroundColor='#0d5fa3'; this.style.transform='translateY(-2px)'"
-  onmouseout="this.style.backgroundColor='#0f75bc'; this.style.transform='translateY(0)'"
-  data-translate="go_to_recommendations"
->
-  מעבר להמלצות
+  <!-- כפתור מעבר להמלצות -->
+  <div
+    id="recommendationsButton"
+    style="width: 220px; height: 70px; background-color: #0f75bc; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
+    onmouseover="this.style.backgroundColor='#0d5fa3'; this.style.transform='translateY(-2px)'"
+    onmouseout="this.style.backgroundColor='#0f75bc'; this.style.transform='translateY(0)'"
+    data-translate="go_to_recommendations"
+  >
+    מעבר להמלצות
+  </div>
 </div>
 
 <script>
-  const studentId = localStorage.getItem("studentId");
+  // קובעים כתובת בסיס לפי סביבת הריצה
+  const BASE_URL =
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+      ? "http://localhost:8080" // כתובת פיתוח
+      : "https://brain-bridge.net"; // כתובת פרודקשן
 
-  if (studentId) {
-    const recommendationsUrl = `http://localhost:8080/recommendations?studentId=${studentId}`;
-    document.getElementById("recommendationsButton").onclick = function() {
-      window.location.href = recommendationsUrl;
-    };
-  } else {
-    console.warn("⚠️ studentId לא נמצא ב-localStorage.");
-    document.getElementById("recommendationsButton").onclick = function() {
+  // כפתור חזרה למערכת
+  document.getElementById("backToBrainBridge").onclick = () => {
+    window.location.href = BASE_URL;
+  };
+
+  // כפתור מעבר להמלצות
+  const studentId = localStorage.getItem("studentId");
+  document.getElementById("recommendationsButton").onclick = () => {
+    if (studentId) {
+      window.location.href = `${BASE_URL}/recommendations?studentId=${studentId}`;
+    } else {
       alert("⚠️ לא נמצא מזהה תלמיד. נסה להתחיל את האבחון מחדש.");
-    };
-  }
+    }
+  };
 </script>
+
+
 
 
 
@@ -465,7 +464,7 @@
                     assessment_complete: "The assessment has been successfully completed!",
                     view_results_note: "To view your full results and personalized recommendations, return to the BrainBridge system.",   
                     back_home: "Back to BrainBriddge",
-                    go_to_recommendations: "מעבר להמלצות",
+                    go_to_recommendations: "Go to Recommendations",
                     incomplete_form: "Incomplete Form",
                     form_error: "Some questions are not answered.\nPlease answer all questions.",
                     learn_more: "Learn more about ADHD",
