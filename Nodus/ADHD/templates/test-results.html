@@ -358,14 +358,14 @@
           alt="NODUS Logo"
           sizes="50px"
         />
-        <!-- Add your logo URL here -->
         <a
           class="logo-name"
           href="#"
           onclick="location.href='{% url 'landing' %}'"
           data-translate="nodus"
-          ><strong>NODUS</strong></a
         >
+          <strong>NODUS</strong>
+        </a>
       </div>
       <div style="display: flex; align-items: center">
         <nav style="padding: 10px">
@@ -388,7 +388,6 @@
             >FAQ</a
           >
         </nav>
-        <!-- Language selector buttons -->
         <div class="language-selector">
           <button class="language-btn active" onclick="changeLanguage('en')">
             EN
@@ -399,6 +398,7 @@
         </div>
       </div>
     </header>
+
     <section class="hero">
       <div
         style="
@@ -434,6 +434,29 @@
         "
       >
         <div
+          id="backToBrainBridge"
+          style="
+            width: 220px;
+            height: 70px;
+            background-color: #00c39a;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          "
+          onmouseover="this.style.backgroundColor='#019c84'; this.style.transform='translateY(-2px)'"
+          onmouseout="this.style.backgroundColor='#00c39a'; this.style.transform='translateY(0)'"
+          data-translate="back_to_brainbridge"
+        >
+          חזור ל־BrainBridge
+        </div>
+
+        <div
           id="recommendationsButton"
           style="
             width: 220px;
@@ -458,20 +481,24 @@
       </div>
 
       <script>
+        const BASE_URL =
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1"
+            ? "http://localhost:8080"
+            : "https://brain-bridge.net";
+
+        document.getElementById("backToBrainBridge").onclick = () => {
+          window.location.href = BASE_URL;
+        };
+
         const studentId = localStorage.getItem("studentId");
-        if (studentId) {
-          const recommendationsUrl = `http://localhost:8080/recommendations?studentId=${studentId}`;
-          document.getElementById("recommendationsButton").onclick =
-            function () {
-              window.location.href = recommendationsUrl;
-            };
-        } else {
-          console.warn("⚠️ studentId לא נמצא ב-localStorage.");
-          document.getElementById("recommendationsButton").onclick =
-            function () {
-              alert("⚠️ לא נמצא מזהה תלמיד. נסה להתחיל את האבחון מחדש.");
-            };
-        }
+        document.getElementById("recommendationsButton").onclick = () => {
+          if (studentId) {
+            window.location.href = `${BASE_URL}/recommendations?studentId=${studentId}`;
+          } else {
+            alert("⚠️ לא נמצא מזהה תלמיד. נסה להתחיל את האבחון מחדש.");
+          }
+        };
       </script>
     </section>
 
@@ -520,216 +547,62 @@
     </footer>
 
     <script>
-      let currentLanguage = 'he';
+      let currentLanguage = "he";
 
       const translations = {
-          en: {
-              nodus: "NODUS",
-              home: "Home",
-              start_test: "Start Test",
-              back_to_brainbridge: "Back to BrainBridge",
-              faq: "FAQ",
-              results_title: " Full results and recommendations will be available in the student's profile on BrainBridge. Treatment",
-              results_subtitle: "This is what your test results say about you (according to our analysis)",
-              dominant_type: "Your dominant ADHD subtype is:",
-              combined: "Combined",
-              Impulsivity_Hyperactivity: "Impulsivity/Hyperactivity",
-              Inattention: "Inattention",
-              no_adhd: "No ADHD",
-              assessment_complete: "The assessment has been successfully completed!",
-              view_results_note: "To view your full results and personalized recommendations, return to the BrainBridge system.",
-              back_home: "Back to BrainBriddge",
-              go_to_recommendations: "Go to recommendations",
-              incomplete_form: "Incomplete Form",
-              form_error: "Some questions are not answered.\nPlease answer all questions.",
-              learn_more: "Learn more about ADHD",
-              who_adhd: "World Health Organization - ADHD",
-              cdc_adhd: "CDC.gov - ADHD",
-              contact_us: "Contact Us"
-
-          },
-          he: {
-              nodus: "נודוס",
-              home: "דף הבית",
-              start_test: "התחל בדיקה",
-              faq: "שאלות נפוצות",
-              results_title: "-תוצאות והמלצות מלאות יהיו זמינות בפרופיל התלמיד ב BrainBridge",
-              results_subtitle: "אלו התוצאות שלך (לפי הניתוח שלנו)",
-              dominant_type: "תת הסוג הדומיננטי שלך הוא:",
-              combined: "משולב",
-              Impulsivity_Hyperactivity: "אימפולסיבי/היפראקטיבי",
-              back_to_brainbridge: "  חזור לדף הבית של BrainBridge ",
-              go_to_recommendations: "מעבר להמלצות",
-              assessment_complete: "האבחון הסתיים בהצלחה!",
-              view_results_note: "כדי לצפות בתוצאות המלאות וההמלצות האישיות, חזור למערכת BrainBridge.",
-
-
-
-              Inattention: "חוסר קשב",
-              no_adhd: "ללא ADHD",
-              back_home: "   חזור ל-BrainBridge  ",
-              incomplete_form: "טופס לא שלם",
-              form_error: "חלק מהשאלות לא נענו.\nאנא ענה על כל השאלות.",
-              learn_more: "למד עוד על ADHD",
-              who_adhd: "ארגון הבריאות העולמי - ADHD",
-              cdc_adhd: "CDC.gov - ADHD",
-              contact_us: "צור קשר"
-          }
+        en: {
+          nodus: "NODUS",
+          home: "Home",
+          start_test: "Start Test",
+          back_to_brainbridge: "Back to BrainBridge",
+          faq: "FAQ",
+          assessment_complete:
+            "The assessment has been successfully completed!",
+          view_results_note:
+            "To view your full results and personalized recommendations, return to the BrainBridge system.",
+          go_to_recommendations: "Go to Recommendations",
+          learn_more: "Learn more about ADHD",
+          who_adhd: "World Health Organization - ADHD",
+          cdc_adhd: "CDC.gov - ADHD",
+          contact_us: "Contact Us",
+        },
+        he: {
+          nodus: "נודוס",
+          home: "דף הבית",
+          start_test: "התחל בדיקה",
+          faq: "שאלות נפוצות",
+          back_to_brainbridge: "חזור לדף הבית של BrainBridge",
+          go_to_recommendations: "מעבר להמלצות",
+          assessment_complete: "האבחון הסתיים בהצלחה!",
+          view_results_note:
+            "כדי לצפות בתוצאות המלאות וההמלצות האישיות, חזור למערכת BrainBridge.",
+          learn_more: "למד עוד על ADHD",
+          who_adhd: "ארגון הבריאות העולמי - ADHD",
+          cdc_adhd: "CDC.gov - ADHD",
+          contact_us: "צור קשר",
+        },
       };
 
       function changeLanguage(lang) {
-          currentLanguage = lang;
-
-          document.querySelectorAll('.language-btn').forEach(btn => {
-              btn.classList.remove('active');
-          });
-          document.querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`).classList.add('active');
-
-          document.documentElement.lang = lang;
-          document.body.classList.remove('rtl', 'he');
-          if (lang === 'he') {
-              document.body.classList.add('rtl', 'he');
-          }
-
-          document.querySelectorAll('[data-translate]').forEach(element => {
-              const key = element.getAttribute('data-translate');
-              if (translations[lang][key]) {
-                  element.innerHTML = translations[lang][key];
-              }
-          });
-
-          updateChartLabels();
-          updateResultTexts();
-          updateTipsText();
+        currentLanguage = lang;
+        document
+          .querySelectorAll(".language-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        document
+          .querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`)
+          .classList.add("active");
+        document.documentElement.lang = lang;
+        document.body.classList.remove("rtl", "he");
+        if (lang === "he") document.body.classList.add("rtl", "he");
+        document.querySelectorAll("[data-translate]").forEach((element) => {
+          const key = element.getAttribute("data-translate");
+          if (translations[lang][key])
+            element.innerHTML = translations[lang][key];
+        });
       }
 
-      function updateResultTexts() {
-          const diagnosisLabels = {
-              en: {
-                  combined: "Combined",
-                  Impulsivity: "Impulsivity/Hyperactivity",
-                  Inattention: "Inattention",
-                  none: "No ADHD"
-              },
-              he: {
-                  combined: "משולב",
-                  Impulsivity: "אימפולסיבי/היפראקטיבי",
-                  Inattention: "חוסר קשב",
-                  none: "ללא ADHD"
-              }
-          };
-
-          const comb = document.getElementById('combined');
-          const imp = document.getElementById('impulse');
-          const inat = document.getElementById('Inattention');
-          const none = document.getElementById('none');
-          const dom = document.getElementById('dominant');
-
-          const combPercent = parseFloat(diagnosisDataBackend[0] * 100).toFixed(2);
-          const impPercent = parseFloat(diagnosisDataBackend[1] * 100).toFixed(2);
-          const inatPercent = parseFloat(diagnosisDataBackend[2] * 100).toFixed(2);
-          const nonePercent = parseFloat(diagnosisDataBackend[3] * 100).toFixed(2);
-
-          comb.textContent = `${diagnosisLabels[currentLanguage].combined} - ${combPercent}%`;
-          imp.textContent = `${diagnosisLabels[currentLanguage].Impulsivity} - ${impPercent}%`;
-          inat.textContent = `${diagnosisLabels[currentLanguage].Inattention} - ${inatPercent}%`;
-          none.textContent = `${diagnosisLabels[currentLanguage].none} - ${nonePercent}%`;
-
-          const types = [
-              diagnosisLabels[currentLanguage].combined,
-              diagnosisLabels[currentLanguage].Impulsivity,
-              diagnosisLabels[currentLanguage].Inattention,
-              diagnosisLabels[currentLanguage].none
-          ];
-          dom.textContent = `${types[index]} - ${parseFloat(diagnosisDataBackend[index] * 100).toFixed(2)}%`;
-      }
-
-      function updateTipsText() {
-          const tipsTextElement = document.getElementById('tips-text');
-          const tipsHe = document.getElementById('tips-he')?.innerText || '';
-          const tipsEn = document.getElementById('tips-en')?.innerText || '';
-
-          if (tipsTextElement) {
-              tipsTextElement.innerText = currentLanguage === 'he' ? tipsHe : tipsEn;
-          }
-      }
-
-      function updateChartLabels() {
-          if (window.myPieChart) {
-              const chartLabels = {
-                  en: ['Combined', 'Impulsivity / Hyperactivity', 'Inattention', 'No ADHD'],
-                  he: ['משולב', 'אימפולסיבי / היפראקטיבי', 'חוסר קשב', 'ללא ADHD']
-              };
-              window.myPieChart.data.labels = chartLabels[currentLanguage];
-              window.myPieChart.update();
-          }
-      }
-
-      function customAlert(message) {
-          Swal.fire({
-              icon: 'warning',
-              title: translations[currentLanguage].incomplete_form,
-              text: translations[currentLanguage].form_error,
-              confirmButtonText: 'OK'
-          });
-      }
-
-      async function cleanUp() {
-          const response1 = await fetch('/done/', {
-              method: 'GET',
-              body: null
-          });
-          if (response1.ok) {
-              console.log("flushed files from backend");
-          } else {
-              const data = await response.json();
-              const message = data.message;
-              customAlert(message + ", try running the test again to remove your files");
-          }
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-          cleanUp();
-          changeLanguage('he');
-      });
-
-      let diagnosisDataBackend = [];
-      {% for item in percentages %}
-      diagnosisDataBackend.push({{ item }});
-      {% endfor %}
-
-      let max = -1;
-      let index = -1;
-      for (let i = 0; i < diagnosisDataBackend.length; i++) {
-          if (diagnosisDataBackend[i] > max) {
-              max = diagnosisDataBackend[i];
-              index = i;
-          }
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-          const ctx = document.getElementById('myPieChart').getContext('2d');
-          const data = {
-              labels: ['Combined', 'Impulsivity / Hyperactivity', 'Inattention', 'No ADHD'],
-              datasets: [{
-                  label: 'Results',
-                  data: diagnosisDataBackend,
-                  backgroundColor: [
-                      'rgb(255, 99, 132)',
-                      'rgb(54, 162, 235)',
-                      'rgb(255, 205, 86)',
-                      'rgb(102, 22, 200)'
-                  ],
-                  hoverOffset: 4
-              }]
-          };
-
-          const config = {
-              type: 'pie',
-              data: data,
-          };
-
-          window.myPieChart = new Chart(ctx, config);
+      document.addEventListener("DOMContentLoaded", () => {
+        changeLanguage("he");
       });
     </script>
   </body>
