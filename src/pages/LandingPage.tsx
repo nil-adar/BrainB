@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  BarChart2,
   Brain,
   Users,
   Calendar,
@@ -17,6 +16,8 @@ import { FAQSection } from "@/components/landing/FAQSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { FooterSection } from "@/components/landing/FooterSection";
 import { useSettings } from "@/components/SettingsContext";
+import LandingVideo from "@/components/landing/LandingVideo";
+import { LandingHeaderSection } from "@/components/landing/LandingHeaderSection";
 
 const translations = {
   en: {
@@ -28,16 +29,18 @@ const translations = {
     getStarted: "Get Started",
     features: {
       title: "Key Features",
-      monitoring: {
+      /*monitoring: {
         title: "Comprehensive Monitoring",
         description:
           "Track student progress with detailed analytics and visual reports.",
-      },
+      },*/
       personalized: {
         title: "Personalized Learning",
         description:
           "Tailored recommendations based on individual student needs and performance.",
       },
+      loginLink: "Already have an account? Login here",
+
       communication: {
         title: "Seamless Communication",
         description:
@@ -52,7 +55,6 @@ const translations = {
     forTeachers: "For Teachers",
     forStudents: "For Students",
     forParents: "For Parents",
-    login: "Login",
     testimonials: {
       title: "Success Stories",
       items: [
@@ -91,18 +93,12 @@ const translations = {
           answer:
             "Student privacy is our top priority. BrainBridge uses enterprise-grade encryption and complies with all educational data privacy regulations. Parents can control data sharing permissions.",
         },
-        {
-          question: "Can BrainBridge integrate with other educational tools?",
-          answer:
-            "Yes, BrainBridge connects seamlessly with popular learning management systems, assessment tools, and educational resources through our API.",
-        },
       ],
     },
     contact: {
       title: "Get in Touch",
       phone: "Call us:",
       phoneNumber: "+1 (555) 123-4567",
-      email: "Email:",
       emailAddress: "info@brainbridge.edu",
       support: "Support Center",
       privacy: "Privacy Policy",
@@ -118,16 +114,18 @@ const translations = {
     getStarted: "בואו נתחיל",
     features: {
       title: "תכונות מרכזיות",
-      monitoring: {
+      /*monitoring: {
         title: "ניטור מקיף",
         description:
           "מעקב אחר התקדמות התלמידים עם ניתוחים מפורטים ודוחות חזותיים.",
-      },
+      },*/
       personalized: {
         title: "למידה מותאמת אישית",
         description:
           "המלצות מותאמות בהתבסס על צרכים וביצועים אישיים של התלמיד.",
       },
+      loginLink: "?כבר יש לך חשבון? התחבר כאן",
+
       communication: {
         title: "תקשורת חלקה",
         description: "חיבור בין מורים, תלמידים והורים בפלטפורמה אחידה.",
@@ -140,7 +138,6 @@ const translations = {
     forTeachers: "למורים",
     forStudents: "לתלמידים",
     forParents: "להורים",
-    login: "כניסה",
     testimonials: {
       title: "סיפורי הצלחה",
       items: [
@@ -179,18 +176,12 @@ const translations = {
           answer:
             "פרטיות התלמידים היא בעדיפות עליונה עבורנו. BrainBridge משתמשת בהצפנה ועומדת בכל תקנות פרטיות נתוני החינוך. הורים יכולים לשלוט בהרשאות שיתוף הנתונים.",
         },
-        {
-          question: "האם BrainBridge יכולה להשתלב עם כלים חינוכיים אחרים?",
-          answer:
-            "כן, BrainBridge מתחברת בצורה חלקה עם מערכות ניהול למידה פופולריות, כלי הערכה ומשאבים חינוכיים באמצעות ה-API שלנו.",
-        },
       ],
     },
     contact: {
       title: "צור קשר",
       phone: "התקשרו אלינו:",
       phoneNumber: "+1 (555) 123-4567",
-      email: " ",
       emailAddress: "info@brainbridge.edu",
       support: "מרכז תמיכה",
       privacy: "מדיניות פרטיות",
@@ -207,16 +198,16 @@ export default function LandingPage() {
 
   // Icons for different sections
   const featureIcons = {
-    monitoring: <BarChart2 size={24} />,
+    //monitoring: <BarChart2 size={24} />,
     personalized: <Brain size={24} />,
     communication: <Users size={24} />,
     scheduling: <Calendar size={24} />,
   };
 
   const userTypeIcons = {
-    teacher: <School size={48} className="text-primary" />,
-    student: <GraduationCap size={48} className="text-primary" />,
-    parent: <UserRound size={48} className="text-primary" />,
+    teacher: <School size={40} className="text-primary" />,
+    student: <GraduationCap size={40} className="text-primary" />,
+    parent: <UserRound size={40} className="text-primary" />,
   };
 
   return (
@@ -227,7 +218,7 @@ export default function LandingPage() {
       dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Header */}
-      <HeaderSection loginText={t.login} />
+      <LandingHeaderSection />
 
       {/* Hero Section */}
       <HeroSection
@@ -235,6 +226,7 @@ export default function LandingPage() {
         subtitle={t.subtitle}
         description={t.description}
         getStarted={t.getStarted}
+        loginLink={t.features.loginLink}
         isRTL={isRTL}
       />
 
@@ -245,13 +237,16 @@ export default function LandingPage() {
         icons={featureIcons}
       />
 
-      {/* User Types Section */}
       <UserTypesSection
         forTeachers={t.forTeachers}
         forStudents={t.forStudents}
         forParents={t.forParents}
         icons={userTypeIcons}
+        lang={language as "he" | "en"}
+        whatYouGetText={language === "he" ? "מה מקבלים?" : "What do you get?"}
       />
+
+      <LandingVideo videoId="3yylb_jKSqg" lang={language as "he" | "en"} />
 
       {/* Testimonials Section */}
       <TestimonialsSection
@@ -266,14 +261,7 @@ export default function LandingPage() {
       <CTASection title={t.finalCta} buttonText={t.getStarted} />
 
       {/* Footer */}
-      <FooterSection
-        //description={t.description}
-        contact={t.contact}
-        forTeachers={t.forTeachers}
-        login={t.login}
-        getStarted={t.getStarted}
-        features={t.features}
-      />
+      <FooterSection contact={t.contact} features={t.features} />
     </div>
   );
 }

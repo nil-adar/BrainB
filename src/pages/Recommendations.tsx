@@ -32,6 +32,8 @@ import { getViewerDashboardUrl } from "@/utils/paths";
 import { getLocalizedDate } from "@/utils/dateTranslations";
 import { useMemo } from "react";
 import { getTimeBasedGreeting } from "@/utils/timeGreetings";
+import HelpButton from "@/components/HelpButton";
+
 /**
  * Recommendations Page
  * ------------------------------------------------------------
@@ -213,6 +215,7 @@ const MissingFormsPopup = ({
   navigate,
   viewerRole,
   viewerId,
+  onRefresh,
 }) => {
   if (!isVisible) return null;
 
@@ -281,7 +284,15 @@ const MissingFormsPopup = ({
     }
   };
   const handleBackToDashboard = () => {
-    navigate(-1); // 🔙 יחזור אחורה בהיסטוריית הדפדפן
+    if (viewerRole === "student") {
+      navigate(`/student-dashboard?studentId=${studentId}`);
+    } else if (viewerRole === "parent") {
+      navigate(`/parent-dashboard?studentId=${studentId}`);
+    } else if (viewerRole === "teacher") {
+      navigate(`/teacher-dashboard`);
+    } else {
+      navigate(`/dashboard`);
+    }
   };
 
   const canUserFillForm = (formKey) => {
@@ -550,8 +561,10 @@ export default function Recommendations() {
     }
   }, []);
 
-  const [currentUserRole, setCurrentUserRole] = useState("student");
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUserRole, setCurrentUserRole] = useState<
+    "student" | "parent" | "teacher" | "admin" | "unknown"
+  >("unknown");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const [status, setStatus] = useState<RecommendationStatus | null>(null);
   const [showIncompleteFormsPopup, setShowIncompleteFormsPopup] =
@@ -575,14 +588,44 @@ export default function Recommendations() {
 
   const [studentName, setStudentName] = useState<string>("");
 
-  const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+  /*const localUser = JSON.parse(localStorage.getItem("user") || "{}");
   const loggedUserId = localUser._id;
-  const viewerRole = localUser?.role;
+  const viewerRole = localUser?.role;*/
+
   const studentId =
     new URLSearchParams(location.search).get("studentId") ||
     localStorage.getItem("studentId");
 
-  const isStudentViewer = loggedUserId === studentId;
+  const refreshFormsStatus = useCallback(async () => {
+    if (!studentId) return;
+
+    try {
+      const statusResponse = await fetch(
+        `/api/forms/check-status/${studentId}`
+      );
+
+      if (statusResponse.ok) {
+        const statusData = await statusResponse.json();
+        setStatus(statusData);
+
+        const allFormsCompleted =
+          statusData.studentFormCompleted &&
+          statusData.parentFormCompleted &&
+          statusData.teacherFormCompleted &&
+          statusData.diagnosisCompleted;
+
+        if (allFormsCompleted) {
+          setShowIncompleteFormsPopup(false);
+        }
+      }
+    } catch (err) {
+      console.error("❌ Failed to refresh forms status:", err);
+    }
+  }, [studentId]);
+
+  const isStudentViewer =
+    currentUserRole === "student" &&
+    String(currentUserId ?? "") === String(studentId ?? "");
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showTypeSelectionModal, setShowTypeSelectionModal] = useState(false);
@@ -593,9 +636,18 @@ export default function Recommendations() {
   const [recommendationData, setRecommendationData] =
     useState<RecommendationResponseData | null>(null);
 
-  const goToViewerDashboard = useCallback(() => {
+  /*const goToViewerDashboard = useCallback(() => {
     navigate(getViewerDashboardUrl(viewerRole));
-  }, [navigate, viewerRole]);
+  }, [navigate, viewerRole]);*/
+
+  const goToViewerDashboard = useCallback(() => {
+    const r = currentUserRole;
+    if (r === "teacher" || r === "student" || r === "parent" || r === "admin") {
+      navigate(getViewerDashboardUrl(r), { replace: true });
+    } else {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate, currentUserRole]);
 
   const fetchRecommendations = useCallback(
     async (
@@ -652,65 +704,62 @@ export default function Recommendations() {
 
   const loadCurrentUser = useCallback(async () => {
     try {
-      console.log("🔍 Loading current user...");
+      // A) קודם כל – נסי להביא את המשתמש המחובר מ- localStorage.user
+      const raw = localStorage.getItem("user");
+      if (raw) {
+        try {
+          const u = JSON.parse(raw);
+          if (u?._id && u?.role) {
+            setCurrentUserId(String(u._id));
+            setCurrentUserRole(u.role);
+            return { userId: String(u._id), role: u.role };
+          }
+        } catch {}
+      }
+
+      // B) מפתחות מפוצלים (אם קיימים)
       const storedUserId =
         localStorage.getItem("userId") || sessionStorage.getItem("userId");
       const storedUserRole =
         localStorage.getItem("userRole") || sessionStorage.getItem("userRole");
-
       if (storedUserId && storedUserRole) {
-        console.log("✅ Found user in localStorage:", {
-          storedUserId,
-          storedUserRole,
-        });
         setCurrentUserId(storedUserId);
-        setCurrentUserRole(storedUserRole);
+        setCurrentUserRole(storedUserRole as any);
         return { userId: storedUserId, role: storedUserRole };
       }
 
+      // C) API (אם יש טוקן)
       const authToken =
         localStorage.getItem("authToken") ||
         sessionStorage.getItem("authToken");
       if (authToken) {
         try {
-          const response = await fetch("/api/auth/current-user", {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json",
-            },
+          const resp = await fetch("/api/auth/current-user", {
+            headers: { Authorization: `Bearer ${authToken}` },
           });
-
-          if (response.ok) {
-            const userData = await response.json();
-            if (userData.success && userData.userId && userData.role) {
-              console.log("✅ Loaded user from API:", userData);
-              setCurrentUserId(userData.userId);
-              setCurrentUserRole(userData.role);
-              localStorage.setItem("userId", userData.userId);
-              localStorage.setItem("userRole", userData.role);
-
-              return { userId: userData.userId, role: userData.role };
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data?.success && data?.userId && data?.role) {
+              setCurrentUserId(String(data.userId));
+              setCurrentUserRole(data.role);
+              localStorage.setItem("userId", String(data.userId));
+              localStorage.setItem("userRole", data.role);
+              return { userId: String(data.userId), role: data.role };
             }
           }
-        } catch (apiError) {
-          console.warn("⚠️ API call failed, will use fallback:", apiError);
-        }
+        } catch {}
       }
 
-      console.log("⚠️ Using fallback - setting as student");
-      setCurrentUserRole("student");
-
-      const fallbackUserId = studentId || "temp-user-" + Date.now();
-      setCurrentUserId(fallbackUserId);
-
-      return { userId: fallbackUserId, role: "student" };
-    } catch (error) {
-      console.error("❌ Failed to load current user:", error);
-      setCurrentUserRole("student");
-      setCurrentUserId(studentId || "unknown");
-      return { userId: studentId || "unknown", role: "student" };
+      // D) ברירת מחדל בטוחה – לא "student"
+      setCurrentUserRole("unknown");
+      setCurrentUserId(null);
+      return { userId: null, role: "unknown" as const };
+    } catch {
+      setCurrentUserRole("unknown");
+      setCurrentUserId(null);
+      return { userId: null, role: "unknown" as const };
     }
-  }, [studentId]);
+  }, []);
 
   useEffect(() => {
     const initializeComponent = async () => {
@@ -807,6 +856,21 @@ export default function Recommendations() {
     initializeComponent();
   }, [studentId, currentLanguage, loadCurrentUser, fetchRecommendations]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        console.log("🔄 Page became visible, refreshing status...");
+        refreshFormsStatus();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [refreshFormsStatus]);
+
   const handleToggleChange = async (preference: "main" | "both") => {
     setUserPreference(preference);
     sessionStorage.setItem("recommendationPreference", preference);
@@ -820,7 +884,7 @@ export default function Recommendations() {
     { label: t.title },
   ];
 
-  const getGreetingTitle = () => {
+  /*const getGreetingTitle = () => {
     if (!viewerRole || !studentId || !studentName) return t.unknownUser;
 
     const isSelf = String(loggedUserId) === String(studentId);
@@ -838,6 +902,25 @@ export default function Recommendations() {
       return `${timeGreeting} - ${t.viewingAsTeacher} ${studentName}`;
     }
 
+    return t.unknownUser;
+  };*/
+
+  const getGreetingTitle = () => {
+    const timeGreeting = getTimeBasedGreeting(currentLanguage);
+    if (!studentId || !studentName) return t.unknownUser;
+
+    if (
+      currentUserRole === "student" &&
+      String(currentUserId ?? "") === String(studentId)
+    ) {
+      return `${timeGreeting}, ${studentName}`;
+    }
+    if (currentUserRole === "parent") {
+      return `${timeGreeting} - ${t.viewingAsParent} ${studentName}`;
+    }
+    if (currentUserRole === "teacher") {
+      return `${timeGreeting} - ${t.viewingAsTeacher} ${studentName}`;
+    }
     return t.unknownUser;
   };
 
@@ -868,7 +951,12 @@ export default function Recommendations() {
               }`}
             >
               <LanguageToggle variant="button" />
-
+              <HelpButton
+                page="viewRecommendations"
+                language={currentLanguage as "en" | "he"}
+                variant="icon"
+                className={isRTL ? "ml-2" : "mr-2"}
+              />
               <span className="text-gray-600">{currentDate}</span>
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
@@ -1187,6 +1275,7 @@ export default function Recommendations() {
         navigate={navigate}
         viewerRole={currentUserRole}
         viewerId={currentUserId}
+        onRefresh={refreshFormsStatus}
       />
     </div>
   );

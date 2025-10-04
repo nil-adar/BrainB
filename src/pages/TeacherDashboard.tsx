@@ -21,6 +21,7 @@ import { useSettings } from "@/components/SettingsContext";
 import { getLocalizedDate } from "@/utils/dateTranslations";
 import { format } from "date-fns";
 import { useMemo } from "react";
+import HelpButton from "@/components/HelpButton";
 
 /**
  * TeacherDashboard.tsx

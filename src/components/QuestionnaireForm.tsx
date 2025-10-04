@@ -54,8 +54,7 @@ export default function QuestionnaireForm({
 
   // Pagination state
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
-
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
   //First, filter out question dependencies:
   const visibleQuestionsAll = questionnaire.questions.filter((q) => {
     /*If this question is Q2-18, return true only when Q2-17 was answered opt2*/
@@ -102,7 +101,8 @@ export default function QuestionnaireForm({
       setCurrentPageIndex((i) => i + 1);
     } else {
       onSubmit(answers);
-      setIsCompleted(true);
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 3000);
     }
   };
 
@@ -111,125 +111,96 @@ export default function QuestionnaireForm({
       setCurrentPageIndex((i) => i - 1);
     }
   };
-  if (isCompleted) {
-    return (
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-green-600">
-            {language === "he"
-              ? "השאלון הושלם בהצלחה!"
-              : "Questionnaire completed successfully!"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <p className="text-muted-foreground mb-6">
-            {language === "he"
-              ? "תודה על מילוי השאלון. התשובות שלך נשמרו."
-              : "Thank you for completing the questionnaire. Your answers have been saved."}
-          </p>
-          <div
-            className={`bg-muted p-4 rounded-lg ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            <h3 className="font-semibold mb-2">
-              {language === "he" ? "סיכום התשובות:" : "Answer Summary:"}
-            </h3>
-
-            {answers.map((ansObj, index) => {
-              const question = questionnaire.questions.find(
-                (q) => q.id === ansObj.questionId
-              );
-              return (
-                <div key={ansObj.questionId || index} className="mb-2">
-                  <p className="text-sm font-medium">
-                    {question?.text[language]}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {Array.isArray(ansObj.response)
-                      ? ansObj.response.join(", ")
-                      : ansObj.response}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
-    <div className="max-w-2xl mx-auto flex flex-col space-y-6">
-      {/* Progress Bar */}
-      <div>
-        <div className="flex justify-between text-sm mb-3">
-          <span>
-            {language === "he"
-              ? `עמוד ${currentPageIndex + 1} מתוך ${totalPages}`
-              : `Page ${currentPageIndex + 1} of ${totalPages}`}
-          </span>
-          <span>
-            {Math.round(progress)}% {language === "he" ? "הושלם" : "completed"}
-          </span>
+    <>
+      {showSuccessToast && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-5">
+          <Card className="bg-green-500 text-white shadow-lg">
+            <CardContent className="py-3 px-6 flex items-center gap-2">
+              <span className="text-lg">✓</span>
+              <span className="font-medium">
+                {language === "he"
+                  ? "השאלון הושלם בהצלחה!"
+                  : "Questionnaire completed successfully!"}
+              </span>
+            </CardContent>
+          </Card>
         </div>
-        <div className="w-full h-2 bg-gray-200 rounded">
-          <div
-            className="h-2 bg-teal-300 rounded"
-            style={{ width: `${progress}%` }}
+      )}
+
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6">
+        {/* Progress Bar */}
+        <div>
+          <div className="flex justify-between text-sm mb-3">
+            <span>
+              {language === "he"
+                ? `עמוד ${currentPageIndex + 1} מתוך ${totalPages}`
+                : `Page ${currentPageIndex + 1} of ${totalPages}`}
+            </span>
+            <span>
+              {Math.round(progress)}%{" "}
+              {language === "he" ? "הושלם" : "completed"}
+            </span>
+          </div>
+          <div className="w-full h-2 bg-gray-200 rounded">
+            <div
+              className="h-2 bg-teal-300 rounded"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        {currentQuestions.map((question) => (
+          <QuestionCard
+            key={question.id}
+            question={question}
+            answer={
+              answers.find((a) => a.questionId === question.id)?.response ?? ""
+            }
+            onAnswer={(_, ans) => {
+              const shouldAddAllergyTag =
+                question.id === "q2-19" && (ans === "yes" || ans === "opt1");
+
+              const updatedAnswer = {
+                questionId: question.id,
+                response: ans,
+                tag: shouldAddAllergyTag
+                  ? ["allergy"]
+                  : question.tag?.includes(",")
+                  ? question.tag.split(",").map((t) => t.trim())
+                  : question.tag
+                  ? [question.tag]
+                  : [],
+                type: question.type,
+                text: question.text[language],
+              };
+
+              onChange(updatedAnswer);
+            }}
           />
+        ))}
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mt-6">
+          <Button
+            variant="outline"
+            onClick={handlePrevious}
+            disabled={currentPageIndex === 0}
+          >
+            {language === "he" ? "עמוד קודם" : "Previous"}
+          </Button>
+          <Button onClick={handleNext} disabled={!canProceed}>
+            {currentPageIndex < totalPages - 1
+              ? language === "he"
+                ? "עמוד הבא"
+                : "Next"
+              : language === "he"
+              ? "סיים"
+              : "Finish"}
+          </Button>
         </div>
       </div>
-
-      {currentQuestions.map((question) => (
-        <QuestionCard
-          key={question.id}
-          question={question}
-          answer={
-            answers.find((a) => a.questionId === question.id)?.response ?? ""
-          }
-          onAnswer={(_, ans) => {
-            const shouldAddAllergyTag =
-              question.id === "q2-19" && (ans === "yes" || ans === "opt1");
-
-            const updatedAnswer = {
-              questionId: question.id,
-              response: ans,
-              tag: shouldAddAllergyTag
-                ? ["allergy"]
-                : question.tag?.includes(",")
-                ? question.tag.split(",").map((t) => t.trim())
-                : question.tag
-                ? [question.tag]
-                : [],
-              type: question.type,
-              text: question.text[language],
-            };
-
-            onChange(updatedAnswer);
-          }}
-        />
-      ))}
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-6">
-        <Button
-          variant="outline"
-          onClick={handlePrevious}
-          disabled={currentPageIndex === 0}
-        >
-          {language === "he" ? "עמוד קודם" : "Previous"}
-        </Button>
-        <Button onClick={handleNext} disabled={!canProceed}>
-          {currentPageIndex < totalPages - 1
-            ? language === "he"
-              ? "עמוד הבא"
-              : "Next"
-            : language === "he"
-            ? "סיים"
-            : "Finish"}
-        </Button>
-      </div>
-    </div>
+    </>
   );
 }

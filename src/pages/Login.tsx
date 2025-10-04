@@ -5,6 +5,7 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { authTranslations } from "@/translations/auth";
 import { useSettings } from "../components/SettingsContext";
+import HelpButton from "../components/HelpButton";
 
 export const Login = () => {
   const { language } = useSettings();
@@ -18,7 +19,11 @@ export const Login = () => {
       className="min-h-screen flex flex-col items-center justify-center p-4 bg-white"
     >
       <Card className="w-full max-w-2xl p-10 space-y-10 shadow-lg relative animate-fadeIn">
-        <LanguageToggle variant="minimal" className="absolute top-4 right-4" />
+        {/* Language Toggle and Help Button in top corners */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+          <HelpButton page="login" language={language} variant="icon" />
+          <LanguageToggle variant="minimal" />
+        </div>
 
         <div className="text-center space-y-8">
           <div className="flex justify-center px-8 py-6">

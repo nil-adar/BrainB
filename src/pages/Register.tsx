@@ -6,6 +6,7 @@ import { registerTranslations } from "@/translations/register";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Logo } from "@/components/ui/logo";
 import { useSettings } from "../components/SettingsContext";
+import HelpButton from "@/components/HelpButton";
 
 export const Register = () => {
   const { language } = useSettings();
@@ -19,8 +20,10 @@ export const Register = () => {
       dir={isRTL ? "rtl" : "ltr"}
     >
       <Card className="w-full max-w-3xl p-8 space-y-10 relative bg-secondary-DEFAULT">
-        <LanguageToggle variant="minimal" className="absolute top-4 right-4" />
-
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+          <HelpButton page="register" language={language} variant="icon" />
+          <LanguageToggle variant="minimal" />
+        </div>
         <div className="flex flex-col items-center justify-center space-y-4 mb-8">
           <Logo size="md" showText={true} />
         </div>

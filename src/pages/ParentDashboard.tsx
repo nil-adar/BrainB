@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { useSettings } from "@/components/SettingsContext";
 import { ChildrenProgressSection } from "@/components/parent/ChildrenProgressSection";
 import { getTimeBasedGreeting } from "@/utils/timeGreetings";
+import HelpButton from "@/components/HelpButton";
 
 /**
  * ParentDashboard.tsx

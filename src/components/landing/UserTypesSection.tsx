@@ -1,68 +1,71 @@
+// src/components/landing/UserTypesSection.tsx
+import { useState, ReactNode } from "react";
+import RolePreview from "./RolePreview";
 
-import React from "react";
-import { useNavigate } from "react-router-dom";
-
-interface UserTypeCardProps {
-  title: string;
-  onClick: () => void;
-  icon: React.ReactNode;
-}
-
-function UserTypeCard({ title, onClick, icon }: UserTypeCardProps) {
-  return (
-    <div 
-      className="cursor-pointer group rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 bg-card animate-fadeIn border border-border"
-      onClick={onClick}
-    >
-      <div className="h-48 flex items-center justify-center">
-        <div className="p-6 flex flex-col items-center justify-center gap-4 transition-transform duration-500 group-hover:scale-110">
-          {icon}
-          <h3 className="text-xl font-bold text-center group-hover:text-primary transition-colors">
-            {title}
-          </h3>
-        </div>
-      </div>
-    </div>
-  );
-}
+type RoleKey = "parents" | "teachers" | "students";
+type Lang = "he" | "en";
 
 interface UserTypesSectionProps {
   forTeachers: string;
   forStudents: string;
   forParents: string;
   icons: {
-    teacher: React.ReactNode;
-    student: React.ReactNode;
-    parent: React.ReactNode;
+    teacher: ReactNode;
+    student: ReactNode;
+    parent: ReactNode;
   };
+  lang: Lang;
+  whatYouGetText?: string;
 }
 
-export function UserTypesSection({ forTeachers, forStudents, forParents, icons }: UserTypesSectionProps) {
-  const navigate = useNavigate();
+export function UserTypesSection({
+  forTeachers,
+  forStudents,
+  forParents,
+  icons,
+  lang,
+  whatYouGetText,
+}: UserTypesSectionProps) {
+  const [openFor, setOpenFor] = useState<RoleKey | null>(null);
 
-  const handleUserTypeClick = (userType: string) => {
-    navigate("/login", { state: { userType } });
+  const roleCards: Record<RoleKey, { title: string; icon: ReactNode }> = {
+    teachers: { title: forTeachers, icon: icons.teacher },
+    students: { title: forStudents, icon: icons.student },
+    parents: { title: forParents, icon: icons.parent },
   };
 
+  const helper =
+    whatYouGetText ?? (lang === "he" ? "מה מקבלים?" : "What do you get?");
+
   return (
-    <section className="py-16 px-6 md:px-10 lg:px-20 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <UserTypeCard
-          title={forTeachers}
-          onClick={() => handleUserTypeClick("teacher")}
-          icon={icons.teacher}
-        />
-        <UserTypeCard
-          title={forStudents}
-          onClick={() => handleUserTypeClick("student")}
-          icon={icons.student}
-        />
-        <UserTypeCard
-          title={forParents}
-          onClick={() => handleUserTypeClick("parent")}
-          icon={icons.parent}
-        />
+    <>
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {(["teachers", "students", "parents"] as RoleKey[]).map((key) => {
+            const card = roleCards[key];
+            return (
+              <button
+                key={key}
+                onClick={() => setOpenFor(key)}
+                className="group rounded-2xl border bg-white dark:bg-neutral-900 hover:shadow-lg transition p-6 text-center max-w-sm w-full mx-auto"
+              >
+                <div className="mx-auto mb-3 group-hover:scale-105 transition min-h-[48px] flex items-center justify-center">
+                  {card.icon}
+                </div>
+                <div className="font-semibold">{card.title}</div>
+                <div className="mt-1 text-xs text-neutral-500">{helper}</div>
+              </button>
+            );
+          })}
+        </div>
       </div>
-    </section>
+
+      <RolePreview
+        role={openFor ?? "parents"}
+        open={openFor !== null}
+        onClose={() => setOpenFor(null)}
+        lang={lang}
+      />
+    </>
   );
 }

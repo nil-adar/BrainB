@@ -18,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, Clock, Star, Palette } from "lucide-react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import HelpButton from "@/components/HelpButton";
 
 export interface Task {
   id: string;
@@ -147,7 +148,7 @@ export default function DailyTasks() {
   const { teacherId, classId } = useParams();
   const { language } = useSettings();
   const t = translations[language];
-
+  const isHeb = language === "he";
   const [assignToAll, setAssignToAll] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -262,7 +263,12 @@ export default function DailyTasks() {
       className="space-y-8 max-w-5xl mx-auto py-8"
       dir={language === "he" ? "rtl" : "ltr"}
     >
-      <div className="flex justify-start mb-4">
+      {/* Top bar: Back + Help */}
+      <div
+        className={`flex items-center mb-4 justify-between ${
+          isHeb ? "flex-row-reverse" : ""
+        }`}
+      >
         <Button
           variant="outline"
           className="text-base px-4 py-2"
@@ -270,6 +276,14 @@ export default function DailyTasks() {
         >
           {t.backButton}
         </Button>
+
+        {/* כפתור העזרה – שפה אוטומטית, עמוד מתאים */}
+        <HelpButton
+          page="createTask"
+          language={language}
+          variant="icon" // אפשר "icon" אם את מעדיפה איקון בלבד
+          className="px-4 py-2" // padding עדין כדי שלא יידחף למטה
+        />
       </div>
 
       <Card className="shadow-md border-slate-200">

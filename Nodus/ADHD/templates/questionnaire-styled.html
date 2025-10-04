@@ -1,1185 +1,1404 @@
 <!DOCTYPE html>
 <html lang="he">
-{% load static %}
+  {% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
-        const savedLang = localStorage.getItem('language') || 'he';
-        document.documentElement.lang = savedLang;
-        document.documentElement.dir = savedLang === 'he' ? 'rtl' : 'ltr';
-        document.addEventListener('DOMContentLoaded', () => {
-          if (savedLang === 'he') {
-            document.body.classList.add('rtl');
-            document.body.classList.add('he');
-          }
-        });
-      </script>
-    <link href="https://db.onlinewebfonts.com/c/70157cb1204ca26691b11450306cd5f4?family=Harmonia+Sans+W06+Semi+Bold+Cn"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+      const savedLang = localStorage.getItem("language") || "he";
+      document.documentElement.lang = savedLang;
+      document.documentElement.dir = savedLang === "he" ? "rtl" : "ltr";
+      document.addEventListener("DOMContentLoaded", () => {
+        if (savedLang === "he") {
+          document.body.classList.add("rtl");
+          document.body.classList.add("he");
+        }
+      });
+    </script>
+    <link
+      href="https://db.onlinewebfonts.com/c/70157cb1204ca26691b11450306cd5f4?family=Harmonia+Sans+W06+Semi+Bold+Cn"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <title>NODUS - Questionnaire</title>
     <style>
-        body {
-            background-image: url("{% static 'images/background-FAQ.png' %}");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #0063A0;
-        }
-        
-        /* Add RTL support */
-        body.rtl {
-            direction: rtl;
-        }
+      body {
+        background-image: url("{% static 'images/background-FAQ.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        font-family: "Montserrat", sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #0063a0;
+      }
 
-        body.he {
-            font-family: 'Assistant', sans-serif;
-        }
+      /* Add RTL support */
+      body.rtl {
+        direction: rtl;
+      }
 
-        .rtl .header nav a {
-            margin-right: 20px;
-            margin-left: 0;
-        }
-        
-        .rtl .logo-name {
-            text-align: right;
-        }
-        
-        .rtl .section-3-title {
-            text-align: right;
-        }
-        
-        .rtl .form-section-question-group {
-            text-align: right;
-        }
+      body.he {
+        font-family: "Assistant", sans-serif;
+      }
 
-        .header {
-            background-color: #0f75bc;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .rtl .header nav a {
+        margin-right: 20px;
+        margin-left: 0;
+      }
 
-        .header img {
-            width: 70px;
-        }
+      .rtl .logo-name {
+        text-align: right;
+      }
 
-        .header nav a {
-            color: white;
-            margin-left: 20px;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+      .rtl .section-3-title {
+        text-align: right;
+      }
 
-        .header nav a:hover {
-            color: #16B06F;
-        }
+      .rtl .form-section-question-group {
+        text-align: right;
+      }
 
-        .hero {
-            background-image: url("{% static 'images/landing-page-background.png' %}");
-            /* Add your image URL here */
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            color: white;
-            text-align: center;
-            padding: 80px 20px 20px;
-            height: 500px;
-        }
+      .header {
+        background-color: #0f75bc;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        #title {
-            margin: 0px;
-            font-size: 3em;
-            color: #0063A0;
-            font-family: 'Montserrat', sans-serif;
-        }
+      .header img {
+        width: 70px;
+      }
 
-        .hero p {
-            margin: 10px;
-            font-size: 2em;
-            color: #0063A0;
-            font-family: 'Montserrat', sans-serif;
-        }
+      .header nav a {
+        color: white;
+        margin-left: 20px;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
 
-        .hero button {
-            margin: 20px;
-            background-color: #01C5A2;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
-            transition: background-color 0.3s ease;
-        }
+      .header nav a:hover {
+        color: #16b06f;
+      }
 
-        .hero button:hover {
-            background-color: #019c84;
-        }
+      .hero {
+        background-image: url("{% static 'images/landing-page-background.png' %}");
+        /* Add your image URL here */
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 80px 20px 20px;
+        height: 500px;
+      }
 
-        .content {
-            margin: 30px 30px;
-            padding: 50px 20px;
-            text-align: center;
-            /* background-color: #e9f5fe; */
-            min-height: 65vh;
-        }
+      #title {
+        margin: 0px;
+        font-size: 3em;
+        color: #0063a0;
+        font-family: "Montserrat", sans-serif;
+      }
 
-        .content button {
-            margin: 20px;
-            background-color: #01C5A2;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 5px;
-            font-family: 'Montserrat', sans-serif;
-            transition: background-color 0.3s ease;
-        }
+      .hero p {
+        margin: 10px;
+        font-size: 2em;
+        color: #0063a0;
+        font-family: "Montserrat", sans-serif;
+      }
 
-        .content button:hover {
-            background-color: #019c84;
-        }
+      .hero button {
+        margin: 20px;
+        background-color: #01c5a2;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        font-family: "Montserrat", sans-serif;
+        transition: background-color 0.3s ease;
+      }
 
-        .content h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            font-weight: bolder;
-        }
+      .hero button:hover {
+        background-color: #019c84;
+      }
 
-        .columns {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            width: 75%;
-            align-items: center;
-            align-self: center;
-        }
+      .content {
+        margin: 30px 30px;
+        padding: 50px 20px;
+        text-align: center;
+        /* background-color: #e9f5fe; */
+        min-height: 65vh;
+      }
 
-        .column {
-            flex: 1;
-            min-width: 200px;
-            margin: 10px;
-            padding: 20px;
-            border-radius: 10px;
-            transition: transform 0.3s ease;
-        }
+      .content button {
+        margin: 20px;
+        background-color: #01c5a2;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        font-family: "Montserrat", sans-serif;
+        transition: background-color 0.3s ease;
+      }
 
-        .column img {
-            width: 50px;
-            height: 50px;
-        }
+      .content button:hover {
+        background-color: #019c84;
+      }
 
-        .column h3 {
-            margin: 0px;
-        }
+      .content h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        font-weight: bolder;
+      }
 
-        .footer {
-            background-color: #0f75bc;
-            color: white;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            bottom: 0px;
-            width: 100%;
-        }
+      .columns {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        width: 75%;
+        align-items: center;
+        align-self: center;
+      }
 
+      .column {
+        flex: 1;
+        min-width: 200px;
+        margin: 10px;
+        padding: 20px;
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+      }
 
-        .footer div {
-            flex: 1;
-            min-width: 200px;
-            margin: 10px;
-        }
+      .column img {
+        width: 50px;
+        height: 50px;
+      }
 
-        .footer a {
-            color: white;
-            text-decoration: none;
-            transition: text-decoration 0.3s ease;
-        }
+      .column h3 {
+        margin: 0px;
+      }
 
-        .footer a:hover {
-            text-decoration: underline;
-        }
+      .footer {
+        background-color: #0f75bc;
+        color: white;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        bottom: 0px;
+        width: 100%;
+      }
 
-        .footer form {
-            display: flex;
-            flex-direction: column;
-        }
+      .footer div {
+        flex: 1;
+        min-width: 200px;
+        margin: 10px;
+      }
 
-        .footer input[type="email"] {
-            padding: 10px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 5px;
-            transition: border 0.3s ease;
-        }
+      .footer a {
+        color: white;
+        text-decoration: none;
+        transition: text-decoration 0.3s ease;
+      }
 
-        .footer input[type="email"]:focus {
-            outline: none;
-            border: 2px solid #00a859;
-        }
+      .footer a:hover {
+        text-decoration: underline;
+      }
 
-        .footer input[type="submit"] {
-            background-color: #00a859;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+      .footer form {
+        display: flex;
+        flex-direction: column;
+      }
 
-        .footer input[type="submit"]:hover {
-            background-color: #007d40;
-        }
+      .footer input[type="email"] {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 5px;
+        transition: border 0.3s ease;
+      }
 
-        .logo-name {
-            text-align: left;
-            text-decoration: none;
-            align-items: center;
-            color: white;
-            font-size: x-large;
-            font: bold;
-            transition: color 0.3s ease;
-        }
+      .footer input[type="email"]:focus {
+        outline: none;
+        border: 2px solid #00a859;
+      }
 
-        .logo-name:hover {
-            color: #16B06F;
-        }
+      .footer input[type="submit"] {
+        background-color: #00a859;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
 
-        .section-3-title {
-            padding: 0px 10% 0px 10%;
-            text-align: left;
-        }
+      .footer input[type="submit"]:hover {
+        background-color: #007d40;
+      }
 
-        .title-icon {
-            display: flex;
-            justify-content: center;
-            flex-direction: row;
-            align-items: center;
-        }
+      .logo-name {
+        text-align: left;
+        text-decoration: none;
+        align-items: center;
+        color: white;
+        font-size: x-large;
+        font: bold;
+        transition: color 0.3s ease;
+      }
 
-        .section-3-content {
-            margin: 0px 20% 0px 20%;
-            padding: 10px 30px 30px 30px;
-            text-align: left;
-            background-color: #e9f5fe;
-            box-shadow: 0px 5px 5px 5px lightgrey;
-        }
+      .logo-name:hover {
+        color: #16b06f;
+      }
 
-        .form {
-            text-align: left;
-        }
+      .section-3-title {
+        padding: 0px 10% 0px 10%;
+        text-align: left;
+      }
 
-        .form-section-question-group {
-            padding: 0px 0px 4% 5%;
-            font-size: 18px;
-        }
+      .title-icon {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        align-items: center;
+      }
 
-        .form-section-answer-group {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-evenly;
-            margin-top: 15px;
-        }
+      .section-3-content {
+        margin: 0px 20% 0px 20%;
+        padding: 10px 30px 30px 30px;
+        text-align: left;
+        background-color: #e9f5fe;
+        box-shadow: 0px 5px 5px 5px lightgrey;
+      }
 
-        .form-section-answer-group input[type="radio"] {
-            opacity: 0;
-            position: absolute;
-        }
+      .form {
+        text-align: left;
+      }
 
-        .form-section-answer-group input[type="checkbox"] {
-            opacity: 0;
-            position: absolute;
-        }
+      .form-section-question-group {
+        padding: 0px 0px 4% 5%;
+        font-size: 18px;
+      }
 
-        .form-section-answer-group label {
-            display: inline-block;
-            width: 50px;
-            /* Adjust size as needed */
-            height: 50px;
-            /* Adjust size as needed */
-            border: 2px solid #007bff;
-            border-radius: 50%;
-            /* Make it circular */
-            text-align: center;
-            line-height: 50px;
-            /* Adjust to vertically center the text */
-            cursor: pointer;
-            background-color: white;
-            color: #007bff;
-            transition: all 0.3s ease;
-            font-size: 20px;
-        }
+      .form-section-answer-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        margin-top: 15px;
+      }
 
-        .form-section-answer-group input[type="radio"]:checked+label {
-            background-color: #007bff;
-            color: white;
-        }
+      .form-section-answer-group input[type="radio"] {
+        opacity: 0;
+        position: absolute;
+      }
 
-        .form-section-answer-group input[type="checkbox"]:checked+label {
-            background-color: #007bff;
-            color: white;
-        }
+      .form-section-answer-group input[type="checkbox"] {
+        opacity: 0;
+        position: absolute;
+      }
 
-        .form-section-answer-group label:hover {
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-        }
+      .form-section-answer-group label {
+        display: inline-block;
+        width: 50px;
+        /* Adjust size as needed */
+        height: 50px;
+        /* Adjust size as needed */
+        border: 2px solid #007bff;
+        border-radius: 50%;
+        /* Make it circular */
+        text-align: center;
+        line-height: 50px;
+        /* Adjust to vertically center the text */
+        cursor: pointer;
+        background-color: white;
+        color: #007bff;
+        transition: all 0.3s ease;
+        font-size: 20px;
+      }
 
-        .form-button {
-            display: flex;
-            justify-content: space-evenly;
-        }
+      .form-section-answer-group input[type="radio"]:checked + label {
+        background-color: #007bff;
+        color: white;
+      }
 
-        .form-section-model-train-group {
-            padding: 0px 0px 4% 5%;
-            font-size: 18px;
-            margin-top: 20px;
-        }
+      .form-section-answer-group input[type="checkbox"]:checked + label {
+        background-color: #007bff;
+        color: white;
+      }
 
-        .form-section-model-train-group input[type="radio"] {
-            opacity: 0;
-            position: absolute;
-        }
+      .form-section-answer-group label:hover {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+      }
 
-        .form-section-model-train-group label {
-            display: inline-block;
-            width: 100px;
-            height: 50px;
-            border: 2px solid #007bff;
-            border-radius: 10%;
-            text-align: center;
-            line-height: 50px;
-            cursor: pointer;
-            background-color: white;
-            color: #007bff;
-            transition: all 0.3s ease;
-            font-size: 20px;
-        }
+      .form-button {
+        display: flex;
+        justify-content: space-evenly;
+      }
 
-        .form-section-model-train-group input[type="radio"]:checked+label {
-            background-color: #007bff;
-            color: white;
-        }
+      .form-section-model-train-group {
+        padding: 0px 0px 4% 5%;
+        font-size: 18px;
+        margin-top: 20px;
+      }
 
-        .form-section-model-train-group label:hover {
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-        }
+      .form-section-model-train-group input[type="radio"] {
+        opacity: 0;
+        position: absolute;
+      }
 
-        .dropdown {
-            display: none;
-            margin-top: 10px;
-        }
+      .form-section-model-train-group label {
+        display: inline-block;
+        width: 100px;
+        height: 50px;
+        border: 2px solid #007bff;
+        border-radius: 10%;
+        text-align: center;
+        line-height: 50px;
+        cursor: pointer;
+        background-color: white;
+        color: #007bff;
+        transition: all 0.3s ease;
+        font-size: 20px;
+      }
 
-        .dropdown select {
-            padding: 10px;
-            font-size: 18px;
-            border-radius: 5px;
-            border: 1px solid #007bff;
-        }
-        
-        /* Language selector styles */
-        .language-selector {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-        .language-btn {
-            background-color: transparent;
-            color: white;
-            border: 1px solid white;
-            padding: 5px 10px;
-            margin: 0 5px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s ease;  
-        }
-        .language-btn:hover, .language-btn.active {
-            background-color: #16B06F;
-            border-color: #16B06F;
-        }
-		    /* Add these rules to your existing styles */
-    body.rtl .form-section-question-group {
+      .form-section-model-train-group input[type="radio"]:checked + label {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .form-section-model-train-group label:hover {
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+      }
+
+      .dropdown {
+        display: none;
+        margin-top: 10px;
+      }
+
+      .dropdown select {
+        padding: 10px;
+        font-size: 18px;
+        border-radius: 5px;
+        border: 1px solid #007bff;
+      }
+
+      /* Language selector styles */
+      .language-selector {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+      }
+      .language-btn {
+        background-color: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 5px 10px;
+        margin: 0 5px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      .language-btn:hover,
+      .language-btn.active {
+        background-color: #16b06f;
+        border-color: #16b06f;
+      }
+      /* Add these rules to your existing styles */
+      body.rtl .form-section-question-group {
         padding: 0px 5% 4% 0px; /* Change padding from left to right */
         text-align: right;
-    }
-    
-    body.rtl .form-section h1 {
+      }
+
+      body.rtl .form-section h1 {
         text-align: right;
-    }
-    
-    body.rtl .title-icon {
+      }
+
+      body.rtl .title-icon {
         flex-direction: row-reverse; /* Reverse the icon and title order */
-    }
-    
-    body.rtl .form-section-model-train-group {
+      }
+
+      body.rtl .form-section-model-train-group {
         padding: 0px 5% 4% 0px;
-    }
-
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <header class="header">
-        <div style="justify-content: right; display: flex; text-align: center; align-items: center;">
-            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px">
-										   
-            <a class="logo-name navigation-element" href="#"
-                onclick="location.href='{% url 'landing' %}'"><strong data-translate="nodus">NODUS</strong></a>
+      <div
+        style="
+          justify-content: right;
+          display: flex;
+          text-align: center;
+          align-items: center;
+        "
+      >
+        <img
+          src="{% static 'images/nodus-icon-removebg-preview.png'%}"
+          alt="NODUS Logo"
+          sizes="50px"
+        />
+
+        <a
+          class="logo-name navigation-element"
+          href="#"
+          onclick="location.href='{% url 'landing' %}'"
+          ><strong data-translate="nodus">NODUS</strong></a
+        >
+      </div>
+      <div style="display: flex; align-items: center">
+        <nav style="padding: 10px">
+          <a
+            class="navigation-element"
+            href="#"
+            onclick="location.href='{% url 'landing' %}'"
+            data-translate="home"
+            >Home</a
+          >
+          <a
+            class="navigation-element"
+            href="#"
+            onclick="location.href='{% url 'consent' %}'"
+            data-translate="start_test"
+            >Start Test</a
+          >
+          <a
+            class="navigation-element"
+            href="#"
+            onclick="location.href='{% url 'FAQ' %}'"
+            data-translate="faq"
+            >FAQ</a
+          >
+        </nav>
+        <!-- Language selector buttons -->
+        <div class="language-selector">
+          <button class="language-btn active" onclick="changeLanguage('en')">
+            EN
+          </button>
+          <button class="language-btn" onclick="changeLanguage('he')">
+            עב
+          </button>
         </div>
-        <div style="display: flex; align-items: center;">
-            <nav style="padding: 10px;">
-                <a class="navigation-element" href="#" onclick="location.href='{% url 'landing' %}'" data-translate="home">Home</a>
-                <a class="navigation-element" href="#" onclick="location.href='{% url 'consent' %}'" data-translate="start_test">Start Test</a>
-                <a class="navigation-element" href="#" onclick="location.href='{% url 'FAQ' %}'" data-translate="faq">FAQ</a>
-            </nav>
-            <!-- Language selector buttons -->
-            <div class="language-selector">
-                <button class="language-btn active" onclick="changeLanguage('en')">EN</button>
-                <button class="language-btn" onclick="changeLanguage('he')">עב</button>
-            </div>
-        </div>
+      </div>
     </header>
 
     <section class="content">
-        <div class="section-3-title">
-            <div class="title-icon">
-                <img src="{% static 'images/questionnaire.png'%}" style="margin:20px;" alt="" width="64" height="64">
-                <h2 id="title" data-translate="questionnaire_title">Questionnaire</h2>
-            </div>
-            <h4 data-translate="questionnaire_intro">In this section, you are asked to fill in the questionnaire below about the child's personal experience
-                at home, school and/or socially in general.</h4>
-            <h4 data-translate="questionnaire_explanation">
-                The questionnaire is split into 3 sections that will test
-                the 3 subtypes of ADHD: <strong>Inattention</strong>, <strong>Hyperactivity</strong> and
-                <strong>Impulsiveness</strong>, and another section for general
-                questions.
-            </h4>
-            <h4 data-translate="questionnaire_scoring">
-                Please choose one of the 4 options for each question: 0 = Not at all | 1 = Just a Little | 2
-                = Often | 3 = Very Often.
-            </h4>
+      <div class="section-3-title">
+        <div class="title-icon">
+          <img
+            src="{% static 'images/questionnaire.png'%}"
+            style="margin: 20px"
+            alt=""
+            width="64"
+            height="64"
+          />
+          <h2 id="title" data-translate="questionnaire_title">Questionnaire</h2>
         </div>
-
-        <div class="section-3-content">
-            <div class="form">
-                <form action="" method="POST">
-
-                    <div class="form-section">
-                        <h1 data-translate="inattention_symptoms">Inattention Symptoms</h1>
-                        <div class="form-section-question-group">
-                            <label for="1" data-translate="question1">1. Fails to give attention to details or makes careless mistakes in
-                                schoolwork, work, or during other activities (e.g.,overlooks or misses details, work is
-                                inaccurate).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans1" id="ans1-0" required />
-                                <label for="ans1-0">0</label>
-
-                                <input type="radio" name="ans1" id="ans1-1" />
-                                <label for="ans1-1">1</label>
-
-                                <input type="radio" name="ans1" id="ans1-2" />
-                                <label for="ans1-2">2</label>
-
-                                <input type="radio" name="ans1" id="ans1-3" />
-                                <label for="ans1-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="2" data-translate="question2">2. Has difficulty sustaining attention to tasks or play activities (e.g., has
-                                difficulty remaining focused during lectures; conversations; or lengthy
-                                reading).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans2" id="ans2-0" required />
-                                <label for="ans2-0">0</label>
-
-                                <input type="radio" name="ans2" id="ans2-1" />
-                                <label for="ans2-1">1</label>
-
-                                <input type="radio" name="ans2" id="ans2-2" />
-                                <label for="ans2-2">2</label>
-
-                                <input type="radio" name="ans2" id="ans2-3" />
-                                <label for="ans2-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="3" data-translate="question3">3. Does not seem to listen when spoken to directly (e.g., mind seems
-                                elsewhere, even in the absence of any obvious distraction).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans3" id="ans3-0" required />
-                                <label for="ans3-0">0</label>
-
-                                <input type="radio" name="ans3" id="ans3-1" />
-                                <label for="ans3-1">1</label>
-
-                                <input type="radio" name="ans3" id="ans3-2" />
-                                <label for="ans3-2">2</label>
-
-                                <input type="radio" name="ans3" id="ans3-3" />
-                                <label for="ans3-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="4" data-translate="question4">4. Does not follow through on instructions and fails to finish schoolwork,
-                                chores, or duties in the workplace (e.g., starts tasks but quickly loses focus and is
-                                easily sidetracked.</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans4" id="ans4-0" required />
-                                <label for="ans4-0">0</label>
-
-                                <input type="radio" name="ans4" id="ans4-1" />
-                                <label for="ans4-1">1</label>
-
-                                <input type="radio" name="ans4" id="ans4-2" />
-                                <label for="ans4-2">2</label>
-
-                                <input type="radio" name="ans4" id="ans4-3" />
-                                <label for="ans4-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="5" data-translate="question5">5. Has difficulty organizing tasks and activities (e.g., difficulty managing
-                                sequential tasks; difficulty keeping materials and belongings in order; messy,
-                                disorganized with work; has poor time management; fails to meet deadlines).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans5" id="ans5-0" required />
-                                <label for="ans5-0">0</label>
-
-                                <input type="radio" name="ans5" id="ans5-1" />
-                                <label for="ans5-1">1</label>
-
-                                <input type="radio" name="ans5" id="ans5-2" />
-                                <label for="ans5-2">2</label>
-
-                                <input type="radio" name="ans5" id="ans5-3" />
-                                <label for="ans5-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="6" data-translate="question6">6. Avoids, dislikes, or is reluctant to engage in tasks that require
-                                sustained mental effort (e.g., schoolwork or homework; for older adolescents and adults,
-                                preparing reports, completing forms, reviewing lengthy papers).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans6" id="ans6-0" required />
-                                <label for="ans6-0">0</label>
-
-                                <input type="radio" name="ans6" id="ans6-1" />
-                                <label for="ans6-1">1</label>
-
-                                <input type="radio" name="ans6" id="ans6-2" />
-                                <label for="ans6-2">2</label>
-
-                                <input type="radio" name="ans6" id="ans6-3" />
-                                <label for="ans6-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="7" data-translate="question7">7. Loses things necessary for tasks or activities (e.g., school materials,
-                                pencils, books, tools, wallets, keys, paperwork, eyeglasses, mobile telephones).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans7" id="ans7-0" required />
-                                <label for="ans7-0">0</label>
-
-                                <input type="radio" name="ans7" id="ans7-1" />
-                                <label for="ans7-1">1</label>
-
-                                <input type="radio" name="ans7" id="ans7-2" />
-                                <label for="ans7-2">2</label>
-
-                                <input type="radio" name="ans7" id="ans7-3" />
-                                <label for="ans7-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="8" data-translate="question8">8. Is easily distracted by extraneous stimuli (for older adolescents and
-                                adults, may include unrelated thoughts).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans8" id="ans8-0" required />
-                                <label for="ans8-0">0</label>
-
-                                <input type="radio" name="ans8" id="ans8-1" />
-                                <label for="ans8-1">1</label>
-
-                                <input type="radio" name="ans8" id="ans8-2" />
-                                <label for="ans8-2">2</label>
-
-                                <input type="radio" name="ans8" id="ans8-3" />
-                                <label for="ans8-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="9" data-translate="question9">9. Is forgetful in daily activities (e.g., doing chores, running errands; for
-                                older adolescents and adults, returning calls, paying bills, keeping
-                                appointments).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans9" id="ans9-0" required />
-                                <label for="ans9-0">0</label>
-
-                                <input type="radio" name="ans9" id="ans9-1" />
-                                <label for="ans9-1">1</label>
-
-                                <input type="radio" name="ans9" id="ans9-2" />
-                                <label for="ans9-2">2</label>
-
-                                <input type="radio" name="ans9" id="ans9-3" />
-                                <label for="ans9-3">3</label>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="form-section">
-                        <h1 data-translate="hyperactivity_symptoms">Hyperactivity Symptoms</h1>
-                        <div class="form-section-question-group">
-                            <label for="10" data-translate="question10">10. Fidgets with or taps hands or feet or squirms in seat.</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans10" id="ans10-0" required />
-                                <label for="ans10-0">0</label>
-
-                                <input type="radio" name="ans10" id="ans10-1" />
-                                <label for="ans10-1">1</label>
-
-                                <input type="radio" name="ans10" id="ans10-2" />
-                                <label for="ans10-2">2</label>
-
-                                <input type="radio" name="ans10" id="ans10-3" />
-                                <label for="ans10-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="11" data-translate="question11">11. Leaves seat in situations in which it is inappropriate (NOTE: in
-                                adolescents or adults may be limited to feelings of restlessness).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans11" id="ans11-0" required />
-                                <label for="ans11-0">0</label>
-
-                                <input type="radio" name="ans11" id="ans11-1" />
-                                <label for="ans11-1">1</label>
-
-                                <input type="radio" name="ans11" id="ans11-2" />
-                                <label for="ans11-2">2</label>
-
-                                <input type="radio" name="ans11" id="ans11-3" />
-                                <label for="ans11-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="12" data-translate="question12">12. Unable to play or engage in leisure activities quietly.</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans12" id="ans12-0" required />
-                                <label for="ans12-0">0</label>
-
-                                <input type="radio" name="ans12" id="ans12-1" />
-                                <label for="ans12-1">1</label>
-
-                                <input type="radio" name="ans12" id="ans12-2" />
-                                <label for="ans12-2">2</label>
-
-                                <input type="radio" name="ans12" id="ans12-3" />
-                                <label for="ans12-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="13" data-translate="question13">13. Has difficulty playing or engaging in leisure activities
-                                quietly.</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans13" id="ans13-0" required />
-                                <label for="ans13-0">0</label>
-
-                                <input type="radio" name="ans13" id="ans13-1" />
-                                <label for="ans13-1">1</label>
-
-                                <input type="radio" name="ans13" id="ans13-2" />
-                                <label for="ans13-2">2</label>
-
-                                <input type="radio" name="ans13" id="ans13-3" />
-                                <label for="ans13-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="14" data-translate="question14">14. Is "on the go" or acts as if "driven by a motor" (e.g., is unable to be
-                                or uncomfortable being still for extended time in restaurants, meetings; may be
-                                experienced by others as being restless or difficult to keep up with).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans14" id="ans14-0" required />
-                                <label for="ans14-0">0</label>
-
-                                <input type="radio" name="ans14" id="ans14-1" />
-                                <label for="ans14-1">1</label>
-
-                                <input type="radio" name="ans14" id="ans14-2" />
-                                <label for="ans14-2">2</label>
-
-                                <input type="radio" name="ans14" id="ans14-3" />
-                                <label for="ans14-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="15" data-translate="question15">15. Talks excessively.</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans15" id="ans15-0" required />
-                                <label for="ans15-0">0</label>
-
-                                <input type="radio" name="ans15" id="ans15-1" />
-                                <label for="ans15-1">1</label>
-
-                                <input type="radio" name="ans15" id="ans15-2" />
-                                <label for="ans15-2">2</label>
-
-                                <input type="radio" name="ans15" id="ans15-3" />
-                                <label for="ans15-3">3</label>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="form-section">
-                        <h1 data-translate="impulsiveness_symptoms">Impulsiveness Symptoms</h1>
-                        <div class="form-section-question-group">
-                            <label for="16" data-translate="question16">16. Blurts out an answer before question has been completed (e.g., completes
-                                people's sentences; cannot wait for turn in conversation). </label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans16" id="ans16-0" required />
-                                <label for="ans16-0">0</label>
-
-                                <input type="radio" name="ans16" id="ans16-1" />
-                                <label for="ans16-1">1</label>
-
-                                <input type="radio" name="ans16" id="ans16-2" />
-                                <label for="ans16-2">2</label>
-
-                                <input type="radio" name="ans16" id="ans16-3" />
-                                <label for="ans16-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="17" data-translate="question17">17. Has difficulty waiting his or her turn (e.g., while waiting in
-                                line).</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans17" id="ans17-0" required />
-                                <label for="ans17-0">0</label>
-
-                                <input type="radio" name="ans17" id="ans17-1" />
-                                <label for="ans17-1">1</label>
-
-                                <input type="radio" name="ans17" id="ans17-2" />
-                                <label for="ans17-2">2</label>
-
-                                <input type="radio" name="ans17" id="ans17-3" />
-                                <label for="ans17-3">3</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="18" data-translate="question18">18. Interrupts or intrudes on others (eg, butts into conversations, games,
-                                or activities; may start using other people's things without asking or receiving
-                                permission; for adolescents and adults may intrude into or take over what others are
-                                doing)</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans18" id="ans18-0" required />
-                                <label for="ans18-0">0</label>
-
-                                <input type="radio" name="ans18" id="ans18-1" />
-                                <label for="ans18-1">1</label>
-
-                                <input type="radio" name="ans18" id="ans18-2" />
-                                <label for="ans18-2">2</label>
-
-                                <input type="radio" name="ans18" id="ans18-3" />
-                                <label for="ans18-3">3</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h1 data-translate="general_section">General</h1>
-                        <div class="form-section-question-group">
-                            <label for="19" data-translate="question19">19. Do these symptoms impair the person's functioning in two or more
-                                settings?</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="ans19" id="ans19-0" required />
-                                <label for="ans19-0" data-translate="yes">Yes</label>
-
-                                <input type="radio" name="ans19" id="ans19-1" />
-                                <label for="ans19-1" data-translate="no">No</label>
-                            </div>
-                        </div>
-
-                        <div class="form-section-question-group">
-                            <label for="20" data-translate="question20">20. Where is there impairment? (Choose all that apply. If none, choose None
-                                )</label>
-                            <div class="form-section-answer-group">
-                                <input type="checkbox" name="ans20[]" id="ans20-0" />
-                                <label for="ans20-0" style="width: 80px;" data-translate="home">Home</label>
-
-                                <input type="checkbox" name="ans20[]" id="ans20-1" />
-                                <label for="ans20-1" style="width: 80px;" data-translate="school">School</label>
-
-                                <input type="checkbox" name="ans20[]" id="ans20-2" />
-                                <label for="ans20-2" style="width: 80px;" data-translate="socially">Socially</label>
-
-                                <input type="checkbox" name="ans20[]" id="ans20-3" />
-                                <label for="ans20-3" style="width: 80px;" data-translate="none">None</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h1 style="text-align: center;" data-translate="model_training">Model Training</h1>
-                        <div class="form-section-model-train-group" style="text-align: center;">
-                            <label for="trainModel" style="width: 400px; text-align: center;" data-translate="use_data_question">Use this data to train our
-                                model?</label>
-                            <div class="form-section-answer-group">
-                                <input type="radio" name="trainModel" id="trainModel-yes" onclick="" required />
-                                <label for="trainModel-yes" data-translate="yes">Yes</label>
-
-                                <input type="radio" name="trainModel" id="trainModel-no" onclick="" />
-                                <label for="trainModel-no" data-translate="no">No</label>
-                            </div>
-                        </div>
-                        <div class="form-button">
-                            <button type="button" onclick="submitForm()" data-translate="submit_button">Submit</button>
-                        </div>
-                    </div>
-
-                </form>
+        <h4 data-translate="questionnaire_intro">
+          In this section, you are asked to fill in the questionnaire below
+          about the child's personal experience at home, school and/or socially
+          in general.
+        </h4>
+        <h4 data-translate="questionnaire_explanation">
+          The questionnaire is split into 3 sections that will test the 3
+          subtypes of ADHD: <strong>Inattention</strong>,
+          <strong>Hyperactivity</strong> and <strong>Impulsiveness</strong>, and
+          another section for general questions.
+        </h4>
+        <h4 data-translate="questionnaire_scoring">
+          Please choose one of the 4 options for each question: 0 = Not at all |
+          1 = Just a Little | 2 = Often | 3 = Very Often.
+        </h4>
+      </div>
+
+      <div class="section-3-content">
+        <div class="form">
+          <form action="" method="POST">
+            <div class="form-section">
+              <h1 data-translate="inattention_symptoms">
+                Inattention Symptoms
+              </h1>
+              <div class="form-section-question-group">
+                <label for="1" data-translate="question1"
+                  >1. Fails to give attention to details or makes careless
+                  mistakes in schoolwork, work, or during other activities
+                  (e.g.,overlooks or misses details, work is inaccurate).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans1" id="ans1-0" required />
+                  <label for="ans1-0">0</label>
+
+                  <input type="radio" name="ans1" id="ans1-1" />
+                  <label for="ans1-1">1</label>
+
+                  <input type="radio" name="ans1" id="ans1-2" />
+                  <label for="ans1-2">2</label>
+
+                  <input type="radio" name="ans1" id="ans1-3" />
+                  <label for="ans1-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="2" data-translate="question2"
+                  >2. Has difficulty sustaining attention to tasks or play
+                  activities (e.g., has difficulty remaining focused during
+                  lectures; conversations; or lengthy reading).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans2" id="ans2-0" required />
+                  <label for="ans2-0">0</label>
+
+                  <input type="radio" name="ans2" id="ans2-1" />
+                  <label for="ans2-1">1</label>
+
+                  <input type="radio" name="ans2" id="ans2-2" />
+                  <label for="ans2-2">2</label>
+
+                  <input type="radio" name="ans2" id="ans2-3" />
+                  <label for="ans2-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="3" data-translate="question3"
+                  >3. Does not seem to listen when spoken to directly (e.g.,
+                  mind seems elsewhere, even in the absence of any obvious
+                  distraction).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans3" id="ans3-0" required />
+                  <label for="ans3-0">0</label>
+
+                  <input type="radio" name="ans3" id="ans3-1" />
+                  <label for="ans3-1">1</label>
+
+                  <input type="radio" name="ans3" id="ans3-2" />
+                  <label for="ans3-2">2</label>
+
+                  <input type="radio" name="ans3" id="ans3-3" />
+                  <label for="ans3-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="4" data-translate="question4"
+                  >4. Does not follow through on instructions and fails to
+                  finish schoolwork, chores, or duties in the workplace (e.g.,
+                  starts tasks but quickly loses focus and is easily
+                  sidetracked.</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans4" id="ans4-0" required />
+                  <label for="ans4-0">0</label>
+
+                  <input type="radio" name="ans4" id="ans4-1" />
+                  <label for="ans4-1">1</label>
+
+                  <input type="radio" name="ans4" id="ans4-2" />
+                  <label for="ans4-2">2</label>
+
+                  <input type="radio" name="ans4" id="ans4-3" />
+                  <label for="ans4-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="5" data-translate="question5"
+                  >5. Has difficulty organizing tasks and activities (e.g.,
+                  difficulty managing sequential tasks; difficulty keeping
+                  materials and belongings in order; messy, disorganized with
+                  work; has poor time management; fails to meet
+                  deadlines).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans5" id="ans5-0" required />
+                  <label for="ans5-0">0</label>
+
+                  <input type="radio" name="ans5" id="ans5-1" />
+                  <label for="ans5-1">1</label>
+
+                  <input type="radio" name="ans5" id="ans5-2" />
+                  <label for="ans5-2">2</label>
+
+                  <input type="radio" name="ans5" id="ans5-3" />
+                  <label for="ans5-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="6" data-translate="question6"
+                  >6. Avoids, dislikes, or is reluctant to engage in tasks that
+                  require sustained mental effort (e.g., schoolwork or homework;
+                  for older adolescents and adults, preparing reports,
+                  completing forms, reviewing lengthy papers).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans6" id="ans6-0" required />
+                  <label for="ans6-0">0</label>
+
+                  <input type="radio" name="ans6" id="ans6-1" />
+                  <label for="ans6-1">1</label>
+
+                  <input type="radio" name="ans6" id="ans6-2" />
+                  <label for="ans6-2">2</label>
+
+                  <input type="radio" name="ans6" id="ans6-3" />
+                  <label for="ans6-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="7" data-translate="question7"
+                  >7. Loses things necessary for tasks or activities (e.g.,
+                  school materials, pencils, books, tools, wallets, keys,
+                  paperwork, eyeglasses, mobile telephones).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans7" id="ans7-0" required />
+                  <label for="ans7-0">0</label>
+
+                  <input type="radio" name="ans7" id="ans7-1" />
+                  <label for="ans7-1">1</label>
+
+                  <input type="radio" name="ans7" id="ans7-2" />
+                  <label for="ans7-2">2</label>
+
+                  <input type="radio" name="ans7" id="ans7-3" />
+                  <label for="ans7-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="8" data-translate="question8"
+                  >8. Is easily distracted by extraneous stimuli (for older
+                  adolescents and adults, may include unrelated
+                  thoughts).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans8" id="ans8-0" required />
+                  <label for="ans8-0">0</label>
+
+                  <input type="radio" name="ans8" id="ans8-1" />
+                  <label for="ans8-1">1</label>
+
+                  <input type="radio" name="ans8" id="ans8-2" />
+                  <label for="ans8-2">2</label>
+
+                  <input type="radio" name="ans8" id="ans8-3" />
+                  <label for="ans8-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="9" data-translate="question9"
+                  >9. Is forgetful in daily activities (e.g., doing chores,
+                  running errands; for older adolescents and adults, returning
+                  calls, paying bills, keeping appointments).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans9" id="ans9-0" required />
+                  <label for="ans9-0">0</label>
+
+                  <input type="radio" name="ans9" id="ans9-1" />
+                  <label for="ans9-1">1</label>
+
+                  <input type="radio" name="ans9" id="ans9-2" />
+                  <label for="ans9-2">2</label>
+
+                  <input type="radio" name="ans9" id="ans9-3" />
+                  <label for="ans9-3">3</label>
+                </div>
+              </div>
             </div>
-        </div>
 
-			  
+            <div class="form-section">
+              <h1 data-translate="hyperactivity_symptoms">
+                Hyperactivity Symptoms
+              </h1>
+              <div class="form-section-question-group">
+                <label for="10" data-translate="question10"
+                  >10. Fidgets with or taps hands or feet or squirms in
+                  seat.</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans10" id="ans10-0" required />
+                  <label for="ans10-0">0</label>
+
+                  <input type="radio" name="ans10" id="ans10-1" />
+                  <label for="ans10-1">1</label>
+
+                  <input type="radio" name="ans10" id="ans10-2" />
+                  <label for="ans10-2">2</label>
+
+                  <input type="radio" name="ans10" id="ans10-3" />
+                  <label for="ans10-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="11" data-translate="question11"
+                  >11. Leaves seat in situations in which it is inappropriate
+                  (NOTE: in adolescents or adults may be limited to feelings of
+                  restlessness).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans11" id="ans11-0" required />
+                  <label for="ans11-0">0</label>
+
+                  <input type="radio" name="ans11" id="ans11-1" />
+                  <label for="ans11-1">1</label>
+
+                  <input type="radio" name="ans11" id="ans11-2" />
+                  <label for="ans11-2">2</label>
+
+                  <input type="radio" name="ans11" id="ans11-3" />
+                  <label for="ans11-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="12" data-translate="question12"
+                  >12. Unable to play or engage in leisure activities
+                  quietly.</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans12" id="ans12-0" required />
+                  <label for="ans12-0">0</label>
+
+                  <input type="radio" name="ans12" id="ans12-1" />
+                  <label for="ans12-1">1</label>
+
+                  <input type="radio" name="ans12" id="ans12-2" />
+                  <label for="ans12-2">2</label>
+
+                  <input type="radio" name="ans12" id="ans12-3" />
+                  <label for="ans12-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="13" data-translate="question13"
+                  >13. Has difficulty playing or engaging in leisure activities
+                  quietly.</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans13" id="ans13-0" required />
+                  <label for="ans13-0">0</label>
+
+                  <input type="radio" name="ans13" id="ans13-1" />
+                  <label for="ans13-1">1</label>
+
+                  <input type="radio" name="ans13" id="ans13-2" />
+                  <label for="ans13-2">2</label>
+
+                  <input type="radio" name="ans13" id="ans13-3" />
+                  <label for="ans13-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="14" data-translate="question14"
+                  >14. Is "on the go" or acts as if "driven by a motor" (e.g.,
+                  is unable to be or uncomfortable being still for extended time
+                  in restaurants, meetings; may be experienced by others as
+                  being restless or difficult to keep up with).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans14" id="ans14-0" required />
+                  <label for="ans14-0">0</label>
+
+                  <input type="radio" name="ans14" id="ans14-1" />
+                  <label for="ans14-1">1</label>
+
+                  <input type="radio" name="ans14" id="ans14-2" />
+                  <label for="ans14-2">2</label>
+
+                  <input type="radio" name="ans14" id="ans14-3" />
+                  <label for="ans14-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="15" data-translate="question15"
+                  >15. Talks excessively.</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans15" id="ans15-0" required />
+                  <label for="ans15-0">0</label>
+
+                  <input type="radio" name="ans15" id="ans15-1" />
+                  <label for="ans15-1">1</label>
+
+                  <input type="radio" name="ans15" id="ans15-2" />
+                  <label for="ans15-2">2</label>
+
+                  <input type="radio" name="ans15" id="ans15-3" />
+                  <label for="ans15-3">3</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h1 data-translate="impulsiveness_symptoms">
+                Impulsiveness Symptoms
+              </h1>
+              <div class="form-section-question-group">
+                <label for="16" data-translate="question16"
+                  >16. Blurts out an answer before question has been completed
+                  (e.g., completes people's sentences; cannot wait for turn in
+                  conversation).
+                </label>
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans16" id="ans16-0" required />
+                  <label for="ans16-0">0</label>
+
+                  <input type="radio" name="ans16" id="ans16-1" />
+                  <label for="ans16-1">1</label>
+
+                  <input type="radio" name="ans16" id="ans16-2" />
+                  <label for="ans16-2">2</label>
+
+                  <input type="radio" name="ans16" id="ans16-3" />
+                  <label for="ans16-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="17" data-translate="question17"
+                  >17. Has difficulty waiting his or her turn (e.g., while
+                  waiting in line).</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans17" id="ans17-0" required />
+                  <label for="ans17-0">0</label>
+
+                  <input type="radio" name="ans17" id="ans17-1" />
+                  <label for="ans17-1">1</label>
+
+                  <input type="radio" name="ans17" id="ans17-2" />
+                  <label for="ans17-2">2</label>
+
+                  <input type="radio" name="ans17" id="ans17-3" />
+                  <label for="ans17-3">3</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="18" data-translate="question18"
+                  >18. Interrupts or intrudes on others (e.g butts into
+                  conversations, games, or activities; may start using other
+                  people's things without asking or receiving permission; for
+                  adolescents and adults may intrude into or take over what
+                  others are doing)</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans18" id="ans18-0" required />
+                  <label for="ans18-0">0</label>
+
+                  <input type="radio" name="ans18" id="ans18-1" />
+                  <label for="ans18-1">1</label>
+
+                  <input type="radio" name="ans18" id="ans18-2" />
+                  <label for="ans18-2">2</label>
+
+                  <input type="radio" name="ans18" id="ans18-3" />
+                  <label for="ans18-3">3</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h1 data-translate="general_section">General</h1>
+              <div class="form-section-question-group">
+                <label for="19" data-translate="question19"
+                  >19. Do these symptoms impair the person's functioning in two
+                  or more settings?</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="radio" name="ans19" id="ans19-0" required />
+                  <label for="ans19-0" data-translate="yes">Yes</label>
+
+                  <input type="radio" name="ans19" id="ans19-1" />
+                  <label for="ans19-1" data-translate="no">No</label>
+                </div>
+              </div>
+
+              <div class="form-section-question-group">
+                <label for="20" data-translate="question20"
+                  >20. Where is there impairment? (Choose all that apply. If
+                  none, choose None )</label
+                >
+                <div class="form-section-answer-group">
+                  <input type="checkbox" name="ans20[]" id="ans20-0" />
+                  <label for="ans20-0" style="width: 80px" data-translate="home"
+                    >Home</label
+                  >
+
+                  <input type="checkbox" name="ans20[]" id="ans20-1" />
+                  <label
+                    for="ans20-1"
+                    style="width: 80px"
+                    data-translate="school"
+                    >School</label
+                  >
+
+                  <input type="checkbox" name="ans20[]" id="ans20-2" />
+                  <label
+                    for="ans20-2"
+                    style="width: 80px"
+                    data-translate="socially"
+                    >Socially</label
+                  >
+
+                  <input type="checkbox" name="ans20[]" id="ans20-3" />
+                  <label for="ans20-3" style="width: 80px" data-translate="none"
+                    >None</label
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h1 style="text-align: center" data-translate="model_training">
+                Model Training
+              </h1>
+              <div
+                class="form-section-model-train-group"
+                style="text-align: center"
+              >
+                <label
+                  for="trainModel"
+                  style="width: 400px; text-align: center"
+                  data-translate="use_data_question"
+                  >Use this data to train our model?</label
+                >
+                <div class="form-section-answer-group">
+                  <input
+                    type="radio"
+                    name="trainModel"
+                    id="trainModel-yes"
+                    onclick=""
+                    required
+                  />
+                  <label for="trainModel-yes" data-translate="yes">Yes</label>
+
+                  <input
+                    type="radio"
+                    name="trainModel"
+                    id="trainModel-no"
+                    onclick=""
+                  />
+                  <label for="trainModel-no" data-translate="no">No</label>
+                </div>
+              </div>
+              <div class="form-button">
+                <button
+                  type="button"
+                  onclick="submitForm()"
+                  data-translate="submit_button"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </section>
 
     <footer class="footer">
-        <div style="text-align: center; align-items: center; padding: 20px;">
-            <h3 data-translate="learn_more">Learn more about ADHD</h3>
-            <p><a href="https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder" data-translate="wikipedia_adhd">Wikipedia - ADHD</a></p>
-            <p><a href="https://www.cdc.gov/adhd/index.html" data-translate="cdc_adhd">CDC.gov - ADHD</a></p>
-        </div>
-        <div style="padding: 20px;">
-            <h3 data-translate="contact_us">Contact Us</h3>
-            <p>Safwan.Halabi@e.braude.ac.il</p>
-            <p>Bishara.Bisharat@e.braude.ac.il</p>
-        </div>
-        <div style="padding: 20px; display: flex; align-items: center; justify-content: center; flex-direction: row;">
-            <h2><strong style="font-size: 30px;" data-translate="nodus">NODUS</strong></h2>
-            <img src="{% static 'images/nodus-icon-removebg-preview.png'%}" alt="NODUS Logo" sizes="50px"
-                style="width: 70px;">
-        </div>
+      <div style="text-align: center; align-items: center; padding: 20px">
+        <h3 data-translate="learn_more">Learn more about ADHD</h3>
+        <p>
+          <a
+            href="https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder"
+            data-translate="wikipedia_adhd"
+            >Wikipedia - ADHD</a
+          >
+        </p>
+        <p>
+          <a
+            href="https://www.cdc.gov/adhd/index.html"
+            data-translate="cdc_adhd"
+            >CDC.gov - ADHD</a
+          >
+        </p>
+      </div>
+      <div style="padding: 20px">
+        <h3 data-translate="contact_us">Contact Us</h3>
+        <p>Safwan.Halabi@e.braude.ac.il</p>
+        <p>Bishara.Bisharat@e.braude.ac.il</p>
+      </div>
+      <div
+        style="
+          padding: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: row;
+        "
+      >
+        <h2>
+          <strong style="font-size: 30px" data-translate="nodus">NODUS</strong>
+        </h2>
+        <img
+          src="{% static 'images/nodus-icon-removebg-preview.png'%}"
+          alt="NODUS Logo"
+          sizes="50px"
+          style="width: 70px"
+        />
+      </div>
     </footer>
 
     <script>
-        // Language translations
-        const translations = {
-            en: {
-                nodus: "NODUS",
-                home: "Home",
-                start_test: "Start Test",
-                faq: "FAQ",
-                questionnaire_title: "Questionnaire",
-                questionnaire_intro: "In this section, you are asked to fill in the questionnaire below about the child's personal experience at home, school and/or socially in general.",
-                questionnaire_explanation: "The questionnaire is split into 3 sections that will test the 3 subtypes of ADHD: <strong>Inattention</strong>, <strong>Hyperactivity</strong> and <strong>Impulsiveness</strong>, and another section for general questions.",
-                questionnaire_scoring: "Please choose one of the 4 options for each question: 0 = Not at all | 1 = Just a Little | 2 = Often | 3 = Very Often.",
-                inattention_symptoms: "Inattention Symptoms",
-                hyperactivity_symptoms: "Hyperactivity Symptoms",
-                impulsiveness_symptoms: "Impulsiveness Symptoms",
-                general_section: "General",
-                model_training: "Model Training",
-                use_data_question: "Use this data to train our model?",
-                yes: "Yes",
-                no: "No",
-                home: "Home",
-                school: "School",
-                socially: "Socially",
-                none: "None",
-                submit_button: "Submit",
-                incomplete_form: "Incomplete Form",
-                some_questions_unanswered: "Some questions are not answered.\nPlease answer all questions.",
-                learn_more: "Learn more about ADHD",
-                wikipedia_adhd: "Wikipedia - ADHD",
-                cdc_adhd: "CDC.gov - ADHD",
-                contact_us: "Contact Us",
-                question1: "1. Fails to give attention to details or makes careless mistakes in schoolwork, work, or during other activities (e.g.,overlooks or misses details, work is inaccurate).",
-                question2: "2. Has difficulty sustaining attention to tasks or play activities (e.g., has difficulty remaining focused during lectures; conversations; or lengthy reading).",
-                question3: "3. Does not seem to listen when spoken to directly (e.g., mind seems elsewhere, even in the absence of any obvious distraction).",
-                question4: "4. Does not follow through on instructions and fails to finish schoolwork, chores, or duties in the workplace (e.g., starts tasks but quickly loses focus and is easily sidetracked.",
-                question5: "5. Has difficulty organizing tasks and activities (e.g., difficulty managing sequential tasks; difficulty keeping materials and belongings in order; messy, disorganized with work; has poor time management; fails to meet deadlines).",
-                question6: "6. Avoids, dislikes, or is reluctant to engage in tasks that require sustained mental effort (e.g., schoolwork or homework; for older adolescents and adults, preparing reports, completing forms, reviewing lengthy papers).",
-                question7: "7. Loses things necessary for tasks or activities (e.g., school materials, pencils, books, tools, wallets, keys, paperwork, eyeglasses, mobile telephones).",
-                question8: "8. Is easily distracted by extraneous stimuli (for older adolescents and adults, may include unrelated thoughts).",
-                question9: "9. Is forgetful in daily activities (e.g., doing chores, running errands; for older adolescents and adults, returning calls, paying bills, keeping appointments).",
-                question10: "10. Fidgets with or taps hands or feet or squirms in seat.",
-                question11: "11. Leaves seat in situations in which it is inappropriate (NOTE: in adolescents or adults may be limited to feelings of restlessness).",
-                question12: "12. Unable to play or engage in leisure activities quietly.",
-                question13: "13. Has difficulty playing or engaging in leisure activities quietly.",
-                question14: "14. Is \"on the go\" or acts as if \"driven by a motor\" (e.g., is unable to be or uncomfortable being still for extended time in restaurants, meetings; may be experienced by others as being restless or difficult to keep up with).",
-                question15: "15. Talks excessively.",
-                question16: "16. Blurts out an answer before question has been completed (e.g., completes people's sentences; cannot wait for turn in conversation).",
-                question17: "17. Has difficulty waiting his or her turn (e.g., while waiting in line).",
-                question18: "18. Interrupts or intrudes on others (eg, butts into conversations, games, or activities; may start using other people's things without asking or receiving permission; for adolescents and adults may intrude into or take over what others are doing)",
-                question19: "19. Do these symptoms impair the person's functioning in two or more settings?",
-                question20: "20. Where is there impairment? (Choose all that apply. If none, choose None)"
-            },
-            he: {
-                nodus: "נודוס",
-                home: "דף הבית",
-                start_test: "התחל בדיקה",
-                faq: "שאלות נפוצות",
-                questionnaire_title: "שאלון",
-                questionnaire_intro: "בחלק זה, אתה מתבקש למלא את השאלון שלהלן על החוויה האישית של הילד בבית, בבית הספר ו/או חברתית באופן כללי.",
-                questionnaire_explanation: "השאלון מחולק ל-3 חלקים שיבדקו את 3 תתי-הסוגים של ADHD: <strong>חוסר קשב</strong>, <strong>היפראקטיביות</strong> ו<strong>אימפולסיביות</strong>, וחלק נוסף לשאלות כלליות.",
-                questionnaire_scoring: "אנא בחר אחת מ-4 האפשרויות לכל שאלה: 0 = בכלל לא | 1 = רק מעט | 2 = לעתים קרובות | 3 = לעתים קרובות מאוד.",
-                inattention_symptoms: "תסמיני חוסר קשב",
-                hyperactivity_symptoms: "תסמיני היפראקטיביות",
-                impulsiveness_symptoms: "תסמיני אימפולסיביות",
-                general_section: "כללי",
-                model_training: "אימון המודל",
-                use_data_question: "להשתמש בנתונים אלה לאימון המודל שלנו?",
-                yes: "כן",
-                no: "לא",
-                home: "בית",
-                school: "בית ספר",
-                socially: "חברתית",
-                none: "אף אחד",
-                submit_button: "שלח",
-                incomplete_form: "טופס לא שלם",
-                some_questions_unanswered: "חלק מהשאלות לא נענו.\nאנא ענה על כל השאלות.",
-                learn_more: "למד עוד על ADHD",
-                wikipedia_adhd: "ויקיפדיה - ADHD",
-                cdc_adhd: "CDC.gov - ADHD",
-                contact_us: "צור קשר",
-                question1: "1. לא מצליח לשים לב לפרטים או עושה טעויות רשלניות בעבודות בית הספר, בעבודה או במהלך פעילויות אחרות (למשל, מתעלם או מפספס פרטים, העבודה לא מדויקת).",
-                question2: "2. מתקשה לשמור על קשב במשימות או בפעילויות משחק (למשל, מתקשה להישאר ממוקד במהלך הרצאות, שיחות או קריאה ממושכת).",
-                question3: "3. לא נראה כמקשיב כשמדברים אליו ישירות (למשל, המחשבות נראות במקום אחר, גם בהיעדר הסחת דעת ברורה).",
-                question4: "4. אינו מבצע הוראות ואינו מסיים עבודות בית ספר, עבודות בית או חובות במקום העבודה (למשל, מתחיל משימות אך במהירות מאבד את המיקוד ומוסט בקלות.",
-                question5: "5. מתקשה בארגון משימות ופעילויות (למשל, קושי בניהול משימות רציפות, קושי בשמירת חומרים וחפצים בסדר, עבודה מבולגנת ולא מאורגנת, ניהול זמן גרוע, כישלון בעמידה בזמנים).",
-                question6: "6. נמנע, לא אוהב או נרתע ממשימות הדורשות מאמץ מנטלי מתמשך (למשל, עבודות בית ספר או שיעורי בית; למתבגרים מבוגרים ומבוגרים, הכנת דוחות, מילוי טפסים, סקירת מסמכים ארוכים).",
-                question7: "7. מאבד דברים הנחוצים למשימות או פעילויות (למשל, חומרי בית ספר, עפרונות, ספרים, כלים, ארנקים, מפתחות, ניירת, משקפיים, טלפונים ניידים).",
-                question8: "8. מוסח בקלות על ידי גירויים חיצוניים (למתבגרים מבוגרים ומבוגרים, עשוי לכלול מחשבות לא קשורות).",
-                question9: "9. שכחן בפעילויות יומיומיות (למשל, ביצוע עבודות בית, ביצוע שליחויות; למתבגרים מבוגרים ומבוגרים, החזרת שיחות טלפון, תשלום חשבונות, שמירה על פגישות).",
-                question10: "10. זז עצבני עם הידיים או הרגליים או מתפתל בכיסא.",
-                question11: "11. עוזב את המושב במצבים בהם זה לא מתאים (הערה: במתבגרים או מבוגרים עשוי להיות מוגבל לתחושות של אי שקט).",
-                question12: "12. אינו מסוגל לשחק או לעסוק בפעילויות פנאי בשקט.",
-                question13: "13. מתקשה לשחק או לעסוק בפעילויות פנאי בשקט.",
-                question14: "14. נמצא \"בתנועה\" או פועל כאילו \"מונע על ידי מנוע\" (למשל, אינו מסוגל או חש אי נוחות להיות בשקט לזמן ממושך במסעדות, פגישות; עשוי להיחוות על ידי אחרים כחסר מנוחה או קשה להדביק את הקצב שלו).",
-                question15: "15. מדבר יתר על המידה.",
-                question16: "16. פולט תשובה לפני שהשאלה הושלמה (למשל, משלים משפטים של אנשים; אינו יכול לחכות לתורו בשיחה).",
-                question17: "17. מתקשה לחכות לתורו (למשל, בעת עמידה בתור).",
-                question18: "18. מפריע או מתפרץ לאחרים (למשל, מתפרץ לשיחות, משחקים או פעילויות; עשוי להתחיל להשתמש בדברים של אחרים מבלי לשאול או לקבל רשות; למתבגרים ומבוגרים עשוי להתפרץ או להשתלט על מה שאחרים עושים)",
-                question19: "19. האם תסמינים אלה פוגעים בתפקוד האדם בשתי סביבות או יותר?",
-                question20: "20. היכן יש פגיעה? (בחר את כל המתאימים. אם אין, בחר באף אחד)"
-            }
-        };
+      // Language translations
+      const translations = {
+        en: {
+          nodus: "NODUS",
+          home: "Home",
+          start_test: "Start Test",
+          faq: "FAQ",
+          questionnaire_title: "Questionnaire",
+          questionnaire_intro:
+            "In this section, you are asked to fill in the questionnaire below about the child's personal experience at home, school and/or socially in general.",
+          questionnaire_explanation:
+            "The questionnaire is split into 3 sections that will test the 3 subtypes of ADHD: <strong>Inattention</strong>, <strong>Hyperactivity</strong> and <strong>Impulsiveness</strong>, and another section for general questions.",
+          questionnaire_scoring:
+            "Please choose one of the 4 options for each question: 0 = Not at all | 1 = Just a Little | 2 = Often | 3 = Very Often.",
+          inattention_symptoms: "Inattention Symptoms",
+          hyperactivity_symptoms: "Hyperactivity Symptoms",
+          impulsiveness_symptoms: "Impulsiveness Symptoms",
+          general_section: "General",
+          model_training: "Model Training",
+          use_data_question: "Use this data to train our model?",
+          yes: "Yes",
+          no: "No",
+          home: "Home",
+          school: "School",
+          socially: "Socially",
+          none: "None",
+          submit_button: "Submit",
+          incomplete_form: "Incomplete Form",
+          some_questions_unanswered:
+            "Some questions are not answered.\nPlease answer all questions.",
+          learn_more: "Learn more about ADHD",
+          wikipedia_adhd: "Wikipedia - ADHD",
+          cdc_adhd: "CDC.gov - ADHD",
+          contact_us: "Contact Us",
+          question1:
+            "1. Fails to give attention to details or makes careless mistakes in schoolwork, work, or during other activities (e.g.,overlooks or misses details, work is inaccurate).",
+          question2:
+            "2. Has difficulty sustaining attention to tasks or play activities (e.g., has difficulty remaining focused during lectures; conversations; or lengthy reading).",
+          question3:
+            "3. Does not seem to listen when spoken to directly (e.g., mind seems elsewhere, even in the absence of any obvious distraction).",
+          question4:
+            "4. Does not follow through on instructions and fails to finish schoolwork, chores, or duties in the workplace (e.g., starts tasks but quickly loses focus and is easily sidetracked.",
+          question5:
+            "5. Has difficulty organizing tasks and activities (e.g., difficulty managing sequential tasks; difficulty keeping materials and belongings in order; messy, disorganized with work; has poor time management; fails to meet deadlines).",
+          question6:
+            "6. Avoids, dislikes, or is reluctant to engage in tasks that require sustained mental effort (e.g., schoolwork or homework; for older adolescents and adults, preparing reports, completing forms, reviewing lengthy papers).",
+          question7:
+            "7. Loses things necessary for tasks or activities (e.g., school materials, pencils, books, tools, wallets, keys, paperwork, eyeglasses, mobile telephones).",
+          question8:
+            "8. Is easily distracted by extraneous stimuli (for older adolescents and adults, may include unrelated thoughts).",
+          question9:
+            "9. Is forgetful in daily activities (e.g., doing chores, running errands; for older adolescents and adults, returning calls, paying bills, keeping appointments).",
+          question10:
+            "10. Fidgets with or taps hands or feet or squirms in seat.",
+          question11:
+            "11. Leaves seat in situations in which it is inappropriate (NOTE: in adolescents or adults may be limited to feelings of restlessness).",
+          question12:
+            "12. Unable to play or engage in leisure activities quietly.",
+          question13:
+            "13. Has difficulty playing or engaging in leisure activities quietly.",
+          question14:
+            '14. Is "on the go" or acts as if "driven by a motor" (e.g., is unable to be or uncomfortable being still for extended time in restaurants, meetings; may be experienced by others as being restless or difficult to keep up with).',
+          question15: "15. Talks excessively.",
+          question16:
+            "16. Blurts out an answer before question has been completed (e.g., completes people's sentences; cannot wait for turn in conversation).",
+          question17:
+            "17. Has difficulty waiting his or her turn (e.g., while waiting in line).",
+          question18:
+            "18. Interrupts or intrudes on others (e.g butts into conversations, games, or activities; may start using other people's things without asking or receiving permission; for adolescents and adults may intrude into or take over what others are doing)",
+          question19:
+            "19. Do these symptoms impair the person's functioning in two or more settings?",
+          question20:
+            "20. Where is there impairment? (Choose all that apply. If none, choose None)",
+        },
+        he: {
+          nodus: "נודוס",
+          home: "דף הבית",
+          start_test: "התחל בדיקה",
+          faq: "שאלות נפוצות",
+          questionnaire_title: "שאלון",
+          questionnaire_intro:
+            "בחלק זה, אתה מתבקש למלא את השאלון שלהלן על החוויה האישית של הילד בבית, בבית הספר ו/או חברתית באופן כללי.",
+          questionnaire_explanation:
+            "השאלון מחולק ל-3 חלקים שיבדקו את 3 תתי-הסוגים של ADHD: <strong>חוסר קשב</strong>, <strong>היפראקטיביות</strong> ו<strong>אימפולסיביות</strong>, וחלק נוסף לשאלות כלליות.",
+          questionnaire_scoring:
+            "אנא בחר אחת מ-4 האפשרויות לכל שאלה: 0 = בכלל לא | 1 = רק מעט | 2 = לעתים קרובות | 3 = לעתים קרובות מאוד.",
+          inattention_symptoms: "תסמיני חוסר קשב",
+          hyperactivity_symptoms: "תסמיני היפראקטיביות",
+          impulsiveness_symptoms: "תסמיני אימפולסיביות",
+          general_section: "כללי",
+          model_training: "אימון המודל",
+          use_data_question: "להשתמש בנתונים אלה לאימון המודל שלנו?",
+          yes: "כן",
+          no: "לא",
+          home: "בית",
+          school: "בית ספר",
+          socially: "חברתית",
+          none: "אף אחד",
+          submit_button: "שלח",
+          incomplete_form: "טופס לא שלם",
+          some_questions_unanswered:
+            "חלק מהשאלות לא נענו.\nאנא ענה על כל השאלות.",
+          learn_more: "למד עוד על ADHD",
+          wikipedia_adhd: "ויקיפדיה - ADHD",
+          cdc_adhd: "CDC.gov - ADHD",
+          contact_us: "צור קשר",
+          question1:
+            "1. לא מצליח לשים לב לפרטים או עושה טעויות רשלניות בעבודות בית הספר, בעבודה או במהלך פעילויות אחרות (למשל, מתעלם או מפספס פרטים, העבודה לא מדויקת).",
+          question2:
+            "2. מתקשה לשמור על קשב במשימות או בפעילויות משחק (למשל, מתקשה להישאר ממוקד במהלך הרצאות, שיחות או קריאה ממושכת).",
+          question3:
+            "3. לא נראה כמקשיב כשמדברים אליו ישירות (למשל, המחשבות נראות במקום אחר, גם בהיעדר הסחת דעת ברורה).",
+          question4:
+            "4. (אינו מבצע הוראות ואינו מסיים עבודות בית ספר, עבודות בית או חובות במקום העבודה (למשל, מתחיל משימות אך במהירות מאבד את המיקוד ומוסט בקלות.",
+          question5:
+            "5. מתקשה בארגון משימות ופעילויות (למשל, קושי בניהול משימות רציפות, קושי בשמירת חומרים וחפצים בסדר, עבודה מבולגנת ולא מאורגנת, ניהול זמן גרוע, כישלון בעמידה בזמנים).",
+          question6:
+            "6. נמנע, לא אוהב או נרתע ממשימות הדורשות מאמץ מנטלי מתמשך (למשל, עבודות בית ספר או שיעורי בית; למתבגרים או מבוגרים, הכנת דוחות, מילוי טפסים, סקירת מסמכים ארוכים).",
+          question7:
+            "7. מאבד דברים הנחוצים למשימות או פעילויות (למשל, חומרי בית ספר, עפרונות, ספרים, כלים, ארנקים, מפתחות, ניירת, משקפיים, טלפונים ניידים).",
+          question8:
+            "8. מוסח בקלות על ידי גירויים חיצוניים (למתבגרים או מבוגרים, עשוי לכלול מחשבות לא קשורות).",
+          question9:
+            "9. שכחן בפעילויות יומיומיות (למשל, ביצוע עבודות בית, ביצוע שליחויות; למתבגרים או מבוגרים, החזרת שיחות טלפון, תשלום חשבונות, שמירה על פגישות).",
+          question10: "10. זז עצבני עם הידיים או הרגליים או מתפתל בכיסא.",
+          question11:
+            "11. עוזב את המושב במצבים בהם זה לא מתאים (הערה: במתבגרים או מבוגרים עשוי להיות מוגבל לתחושות של אי שקט).",
+          question12: "12. אינו מסוגל לשחק או לעסוק בפעילויות פנאי בשקט",
+          question13: "13. מתקשה לשמור על שקט בעת משחק או בפעילויות פנאי.",
+          question14:
+            '14. נמצא "בתנועה" או פועל כאילו "מונע על ידי מנוע" (למשל, אינו מסוגל או חש אי נוחות להיות בשקט לזמן ממושך במסעדות, פגישות; עשוי להיחוות על ידי אחרים כחסר מנוחה או קשה להדביק את הקצב שלו).',
+          question15: "15. מדבר יתר על המידה.",
+          question16:
+            "16. פולט תשובה לפני שהשאלה הושלמה (למשל, משלים משפטים של אנשים; אינו יכול לחכות לתורו בשיחה).",
+          question17: "17. מתקשה לחכות לתורו (למשל, בעת עמידה בתור).",
+          question18:
+            "18. מפריע או מתפרץ לאחרים (למשל, מתפרץ לשיחות, משחקים או פעילויות; עשוי להתחיל להשתמש בדברים של אחרים מבלי לשאול או לקבל רשות; למתבגרים ומבוגרים עשוי להתפרץ או להשתלט על מה שאחרים עושים)",
+          question19:
+            "19. האם תסמינים אלה פוגעים בתפקוד האדם בשתי סביבות או יותר?",
+          question20:
+            "20. היכן יש פגיעה? (בחר את כל המתאימים. אם אין, בחר באף אחד)",
+        },
+      };
 
-        // Function to create custom alert
-        function customAlert(message) {
-            Swal.fire({
-                icon: 'warning',
-                title: translations[currentLanguage].incomplete_form,
-                text: translations[currentLanguage].some_questions_unanswered,
-                confirmButtonText: 'OK'
-            });
+      // Function to create custom alert
+      function customAlert(message) {
+        Swal.fire({
+          icon: "warning",
+          title: translations[currentLanguage].incomplete_form,
+          text: translations[currentLanguage].some_questions_unanswered,
+          confirmButtonText: "OK",
+        });
+      }
+
+      let currentLanguage = localStorage.getItem("language") || "he";
+      document.addEventListener("DOMContentLoaded", () => {
+        changeLanguage(currentLanguage);
+      });
+
+      // Change language function
+      function changeLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem("language", lang);
+
+        document.querySelectorAll(".language-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document
+          .querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`)
+          .classList.add("active");
+
+        // Update text direction and font
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+
+        // Remove any previous language classes
+        document.body.classList.remove("rtl", "he");
+
+        if (lang === "he") {
+          document.body.classList.add("rtl");
+          document.body.classList.add(lang);
         }
 
-        let currentLanguage = localStorage.getItem('language') || 'he';
-        document.addEventListener('DOMContentLoaded', () => {
-             changeLanguage(currentLanguage);
+        // Update all translated elements
+        document.querySelectorAll("[data-translate]").forEach((element) => {
+          const key = element.getAttribute("data-translate");
+          if (translations[lang][key]) {
+            element.innerHTML = translations[lang][key];
+          }
+        });
+      }
+
+      async function uploadAnswers(answers) {
+        const formData = new FormData();
+        formData.append("questionnaire", answers);
+
+        const response = await fetch("/upload_answers/", {
+          method: "POST",
+          body: formData,
         });
 
-            // Change language function
-            function changeLanguage(lang) {
-                currentLanguage = lang;
-                localStorage.setItem('language', lang);
-                
-                document.querySelectorAll('.language-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-            document.querySelector(`.language-btn[onclick="changeLanguage('${lang}')"]`).classList.add('active');
-            
-            // Update text direction and font
-            document.documentElement.lang = lang;
-            document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
-            
-            // Remove any previous language classes
-            document.body.classList.remove('rtl', 'he');
-            
-            if (lang === 'he') {
-                document.body.classList.add('rtl');
-                document.body.classList.add(lang);
-            }
-            
-            // Update all translated elements
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (translations[lang][key]) {
-                    element.innerHTML = translations[lang][key];
-                }
-            });
+        if (response.status === 200) {
+          console.log("Questionnaire upload complete, proceed");
+          callProcessing();
+        } else {
+          console.error("Questionnaire upload failed");
         }
+      }
 
-        async function uploadAnswers(answers) {
-            const formData = new FormData();
-            formData.append('questionnaire', answers);
-
-            const response = await fetch('/upload_answers/', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.status === 200) {
-                console.log("Questionnaire upload complete, proceed");
-                callProcessing();
-            } else {
-                console.error('Questionnaire upload failed');
-            }
-        }
-
-        async function callProcessing() {
-            const response = await fetch('/processing/', {
-                method: 'GET',
-                body: null
-            });
-
-            if (response.ok) {
-                window.location.href = response.url;
-            } else {
-                console.error('Processing failed');
-            }
-        }
-
-        function submitForm() {
-
-            const navigationElements = document.querySelectorAll('a.navigation-element');
-            navigationElements.forEach(element => {
-                element.href = '#'; // Set href to # to avoid navigation
-                element.onclick = (event) => {
-                    event.preventDefault(); // Prevent default behavior
-                    return false; // Ensure any default action is cancelled
-                };
-            });
-
-            // Array to store answers
-            var answers = [];
-
-            // Loop through each question group
-            for (var i = 1; i <= 19; i++) {
-                // Find the selected answer for each question
-                var selectedAnswer = getSelectedAnswer('ans' + i);
-                // Push selected answer to answers array
-                answers.push(selectedAnswer);
-            }
-
-            // Handle checkboxes for question 20
-            var question20Answer = getSelectedCheckboxes('ans20[]');
-            answers.push(question20Answer);
-
-            // Handle radio buttons for model training
-            var trainModelAnswer = getSelectedAnswer('trainModel');
-            if (trainModelAnswer === null) {
-                answers.push(null);
-            }
-            if (trainModelAnswer === translations[currentLanguage].yes) {
-                answers.push("Train model");
-            }
-
-            // Log answers to console (you can remove this line in production)
-            console.log(answers);
-            // You can process the answers further here, like sending them to a server
-
-            var empty = false;
-            for (var i = 0; i < answers.length; i++) {
-                if (answers[i] === null) {
-                    empty = true;
-                    break;
-                }
-            }
-
-            if (!empty) {
-                uploadAnswers(answers);
-                empty = false;
-            } else {
-                empty = false;
-                customAlert(translations[currentLanguage].some_questions_unanswered);
-            }
-        }
-
-        function getSelectedAnswer(name) {
-            var radios = document.getElementsByName(name);
-            for (var j = 0; j < radios.length; j++) {
-                if (radios[j].checked) {
-                    var answerText = radios[j].nextElementSibling.textContent.trim();
-                    if (name === 'ans19') {
-                        return answerText === translations[currentLanguage].yes ? 1 : 0; // Map "Yes" to 1 and "No" to 0
-                    }
-                    return answerText; // Return the answer as-is for other questions
-                }
-            }
-            return null; // Return null or handle case where no answer is selected
-        }
-
-        function getSelectedCheckboxes(name) {
-            var checkboxes = document.getElementsByName(name);
-            var selectedCheckboxes = [];
-            var flag = true;
-            var totalScore = 0;
-            for (var k = 0; k < checkboxes.length; k++) {
-                if (checkboxes[k].checked) {
-                    var answerText = checkboxes[k].nextElementSibling.textContent.trim();
-                    if (answerText === translations[currentLanguage].home) {
-                        flag = false;
-                        totalScore += 1;
-                    } else if (answerText === translations[currentLanguage].school) {
-                        flag = false;
-                        totalScore += 2;
-                    } else if (answerText === translations[currentLanguage].socially) {
-                        flag = false;
-                        totalScore += 3;
-                    } else if (answerText === translations[currentLanguage].none) {
-                        flag = false;
-                        totalScore += 0;
-                    }
-                }
-            }
-            return flag === false ? totalScore : null;
-        }
-
-        // Initialize language to English on page load
-        document.addEventListener('DOMContentLoaded', (event) => {
-            changeLanguage('he');
+      async function callProcessing() {
+        const response = await fetch("/processing/", {
+          method: "GET",
+          body: null,
         });
+
+        if (response.ok) {
+          window.location.href = response.url;
+        } else {
+          console.error("Processing failed");
+        }
+      }
+
+      function submitForm() {
+        const navigationElements = document.querySelectorAll(
+          "a.navigation-element"
+        );
+        navigationElements.forEach((element) => {
+          element.href = "#"; // Set href to # to avoid navigation
+          element.onclick = (event) => {
+            event.preventDefault(); // Prevent default behavior
+            return false; // Ensure any default action is cancelled
+          };
+        });
+
+        // Array to store answers
+        var answers = [];
+
+        // Loop through each question group
+        for (var i = 1; i <= 19; i++) {
+          // Find the selected answer for each question
+          var selectedAnswer = getSelectedAnswer("ans" + i);
+          // Push selected answer to answers array
+          answers.push(selectedAnswer);
+        }
+
+        // Handle checkboxes for question 20
+        var question20Answer = getSelectedCheckboxes("ans20[]");
+        answers.push(question20Answer);
+
+        // Handle radio buttons for model training
+        var trainModelAnswer = getSelectedAnswer("trainModel");
+        if (trainModelAnswer === null) {
+          answers.push(null);
+        }
+        if (trainModelAnswer === translations[currentLanguage].yes) {
+          answers.push("Train model");
+        }
+
+        // Log answers to console (you can remove this line in production)
+        console.log(answers);
+        // You can process the answers further here, like sending them to a server
+
+        var empty = false;
+        for (var i = 0; i < answers.length; i++) {
+          if (answers[i] === null) {
+            empty = true;
+            break;
+          }
+        }
+
+        if (!empty) {
+          uploadAnswers(answers);
+          empty = false;
+        } else {
+          empty = false;
+          customAlert(translations[currentLanguage].some_questions_unanswered);
+        }
+      }
+
+      function getSelectedAnswer(name) {
+        var radios = document.getElementsByName(name);
+        for (var j = 0; j < radios.length; j++) {
+          if (radios[j].checked) {
+            var answerText = radios[j].nextElementSibling.textContent.trim();
+            if (name === "ans19") {
+              return answerText === translations[currentLanguage].yes ? 1 : 0; // Map "Yes" to 1 and "No" to 0
+            }
+            return answerText; // Return the answer as-is for other questions
+          }
+        }
+        return null; // Return null or handle case where no answer is selected
+      }
+
+      function getSelectedCheckboxes(name) {
+        var checkboxes = document.getElementsByName(name);
+        var selectedCheckboxes = [];
+        var flag = true;
+        var totalScore = 0;
+        for (var k = 0; k < checkboxes.length; k++) {
+          if (checkboxes[k].checked) {
+            var answerText =
+              checkboxes[k].nextElementSibling.textContent.trim();
+            if (answerText === translations[currentLanguage].home) {
+              flag = false;
+              totalScore += 1;
+            } else if (answerText === translations[currentLanguage].school) {
+              flag = false;
+              totalScore += 2;
+            } else if (answerText === translations[currentLanguage].socially) {
+              flag = false;
+              totalScore += 3;
+            } else if (answerText === translations[currentLanguage].none) {
+              flag = false;
+              totalScore += 0;
+            }
+          }
+        }
+        return flag === false ? totalScore : null;
+      }
+
+      // Initialize language to English on page load
+      document.addEventListener("DOMContentLoaded", (event) => {
+        changeLanguage("he");
+      });
     </script>
-
-
-
-
-</body>
-
+  </body>
 </html>

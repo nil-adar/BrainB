@@ -13,8 +13,8 @@ import studentRoutes from "./routes/student.routes";
 import diagnosticRoutes from "./routes/diagnostic.routes";
 import taskRoutes from "./routes/task.routes";
 import formRouter from "./routes/form.routes";
-import recommendationsRouter from "./controllers/recommendationsController"; //המלצות
-import path from "path";                         //
+import recommendationsRouter from "./controllers/recommendationsController";
+import path from "path";
 
 const app = express();
 
@@ -32,12 +32,11 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Serve static files in /uploads
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 // Routes
-app.use("/api/users", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/students", studentRoutes);
 app.use("/api/profiles", profileRouter);
@@ -61,7 +60,6 @@ const MONGO_URI =
 
 const connectDB = async () => {
   try {
-    
     await mongoose.connect(MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 10000,
@@ -172,8 +170,6 @@ app.get("*", (req, res): void => {
   }
   res.sendFile(path.join(__dirname, "../../dist", "index.html"));
 });
-
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

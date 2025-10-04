@@ -25,6 +25,7 @@ import EnvironmentalRecommendations from "./pages/EnvironmentalRecommendations";
 //import { ThemeToggle } from "./components/ThemeToggle";
 import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
+import ResetPassword from "./components/auth/forms/ResetPassword";
 
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
@@ -68,6 +69,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
               <Route path="/student-dashboard" element={<StudentDashboard />} />
               <Route path="/parent-dashboard" element={<ParentDashboard />} />

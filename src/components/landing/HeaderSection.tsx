@@ -12,7 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 }*/
 
 interface HeaderSectionProps {
-  loginText: string;
+  loginText?: string;
 }
 
 export function HeaderSection({ loginText }: HeaderSectionProps) {
@@ -32,11 +32,7 @@ export function HeaderSection({ loginText }: HeaderSectionProps) {
         />
       </div>
       <div className="flex items-center gap-4">
-        <LanguageToggle variant="button" className="px-4 py-2" />
-
-        <Button variant="outline" onClick={() => navigate("/login")}>
-          {loginText}
-        </Button>
+        <LanguageToggle variant="button" className="px-5 py-3" />
       </div>
     </header>
   );

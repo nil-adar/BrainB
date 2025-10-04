@@ -1,8 +1,7 @@
-
 import React from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HeroSectionProps {
@@ -10,15 +9,26 @@ interface HeroSectionProps {
   subtitle: string;
   description: string;
   getStarted: string;
+  loginLink?: string;
   isRTL: boolean;
 }
 
-export function HeroSection({ title, subtitle, description, getStarted, isRTL }: HeroSectionProps) {
+export function HeroSection({
+  title,
+  subtitle,
+  description,
+  getStarted,
+  loginLink,
+  isRTL,
+}: HeroSectionProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  
+
   return (
-    <section className="py-8 md:py-16 lg:py-20 px-4 md:px-10 lg:px-20 max-w-7xl mx-auto">
+    <section
+      id="hero"
+      className="py-8 md:py-16 lg:py-20 px-4 md:px-10 lg:px-20 max-w-7xl mx-auto"
+    >
       <div className="flex flex-col items-center justify-center text-center">
         <div className="space-y-4 md:space-y-6 max-w-3xl">
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold animate-fadeIn">
@@ -32,12 +42,33 @@ export function HeroSection({ title, subtitle, description, getStarted, isRTL }:
           </p>
           <Button
             size={isMobile ? "default" : "lg"}
-            className={`mt-6 md:mt-8 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className={`mt-6 md:mt-8 px-8 py-4 rounded-xl 
+              bg-gradient-to-r from-emerald-300 to-cyan-400 
+              text-white font-semibold text-lg shadow-lg 
+              hover:opacity-80 transition ${isRTL ? "flex-row-reverse" : ""}`}
             onClick={() => navigate("/register")}
           >
             {getStarted}
-            <ArrowRight className={`ml-2 ${isRTL ? 'rotate-180' : ''} ${isMobile ? 'w-4 h-4' : ''}`} />
+            <ArrowRight
+              className={`ml-2 ${isRTL ? "rotate-180" : ""} ${
+                isMobile ? "w-4 h-4" : ""
+              }`}
+            />
           </Button>
+          {/* LOGIN*/}
+          {loginLink && (
+            <div className="mt-3 text-sm text-muted-foreground">
+              <span>
+                {isRTL ? "כבר יש לך חשבון? " : "Already have an account? "}
+              </span>
+              <Link
+                to="/login"
+                className="underline hover:no-underline font-medium"
+              >
+                {isRTL ? "התחבר כאן" : "Login here"}
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>

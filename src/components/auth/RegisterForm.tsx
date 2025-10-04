@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +43,11 @@ interface RegisterFormProps {
   isRTL: boolean;
   language: "en" | "he";
 }
-export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormProps) => {
+export const RegisterForm = ({
+  translations: t,
+  isRTL,
+  language,
+}: RegisterFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -62,20 +65,21 @@ export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormP
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSelectChange = (value: "student" | "parent" | "teacher" | "admin") => {
-    setFormData(prev => ({
+  const handleSelectChange = (
+    value: "student" | "parent" | "teacher" | "admin"
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      role: value
+      role: value,
     }));
   };
 
- 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -124,7 +128,6 @@ export const RegisterForm = ({ translations: t, isRTL, language }: RegisterFormP
       setIsLoading(false);
     }
   };
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -35,56 +34,59 @@ export const LoginForm = ({ translations: t, isRTL }: LoginFormProps) => {
       authService.login(credentials),
     onSuccess: (data) => {
       if (data.user) {
-        // Store user data in localStorage for persistence
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem("user", JSON.stringify(data.user));
         console.log("🧠 התחברות הצליחה, role:", data.user.role);
-      if (data.user.role === 'student') {
-        localStorage.setItem('studentId', data.user._id); 
-      }
-        toast.success(isRTL ? `ברוך הבא, ${data.user.name}!` : `Welcome, ${data.user.name}!`, {
-          className: isRTL ? "rtl" : "ltr"
-        });
-        
-        // Navigate based on user role
+        if (data.user.role === "student") {
+          localStorage.setItem("studentId", data.user._id);
+        }
+        toast.success(
+          isRTL
+            ? `ברוך הבא, ${data.user.name}!`
+            : `Welcome, ${data.user.name}!`,
+          {
+            className: isRTL ? "rtl" : "ltr",
+          }
+        );
+
         switch (data.user.role) {
-          case 'admin':
-            navigate('/dashboard');
+          case "admin":
+            navigate("/dashboard");
             break;
-          case 'teacher':
-            navigate('/teacher-dashboard');
+          case "teacher":
+            navigate("/teacher-dashboard");
             break;
-          case 'parent':
-            navigate('/parent-dashboard');
+          case "parent":
+            navigate("/parent-dashboard");
             break;
-          case 'student':
-            navigate('/student-dashboard');
+          case "student":
+            navigate("/student-dashboard");
             break;
           default:
-            navigate('/dashboard');
+            navigate("/dashboard");
         }
       } else if (data.error) {
         toast.error(data.error, {
-          className: isRTL ? "rtl" : "ltr"
+          className: isRTL ? "rtl" : "ltr",
         });
       } else {
         toast.error(t.errors.invalidCredentials, {
-          className: isRTL ? "rtl" : "ltr"
+          className: isRTL ? "rtl" : "ltr",
         });
       }
     },
     onError: () => {
       toast.error(t.errors.invalidCredentials, {
-        className: isRTL ? "rtl" : "ltr"
+        className: isRTL ? "rtl" : "ltr",
       });
     },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!uniqueId || !password) {
       toast.error(t.errors.missingFields, {
-        className: isRTL ? "rtl" : "ltr"
+        className: isRTL ? "rtl" : "ltr",
       });
       return;
     }
@@ -119,7 +121,9 @@ export const LoginForm = ({ translations: t, isRTL }: LoginFormProps) => {
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className={`absolute inset-y-0 ${isRTL ? 'left-0 pl-3' : 'right-0 pr-3'} flex items-center`}
+          className={`absolute inset-y-0 ${
+            isRTL ? "left-0 pl-3" : "right-0 pr-3"
+          } flex items-center`}
         >
           {showPassword ? (
             <EyeOff className="h-5 w-5 text-gray-400" />
@@ -132,28 +136,35 @@ export const LoginForm = ({ translations: t, isRTL }: LoginFormProps) => {
       <Button
         type="submit"
         className={`w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-full flex items-center justify-center gap-2 ${
-          isRTL ? 'flex-row-reverse' : ''
+          isRTL ? "flex-row-reverse" : ""
         }`}
         disabled={loginMutation.isPending}
       >
         <span>
-          {loginMutation.isPending 
-            ? (isRTL ? "מתחבר..." : "Logging in...") 
+          {loginMutation.isPending
+            ? isRTL
+              ? "מתחבר..."
+              : "Logging in..."
             : t.login}
         </span>
-        <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
+        <ArrowRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
       </Button>
 
       <div className="text-center space-y-2">
-        <button 
-          onClick={() => navigate("/register")} 
+        <button
+          type="button"
+          onClick={() => navigate("/register")}
           className="text-blue-600 hover:underline"
         >
           {t.register}
         </button>
         <div className="text-gray-600 text-sm">
           {t.forgot}{" "}
-          <button className="text-blue-600 hover:underline">
+          <button
+            type="button"
+            onClick={() => navigate("/reset-password")}
+            className="text-blue-600 hover:underline"
+          >
             {t.reset}
           </button>
         </div>

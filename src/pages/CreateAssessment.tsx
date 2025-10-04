@@ -12,6 +12,7 @@ import { Student } from "@/types/school";
 import { useQuery } from "@tanstack/react-query";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useSettings } from "@/components/SettingsContext";
+import HelpButton from "@/components/HelpButton";
 
 const translations = {
   en: {
@@ -72,7 +73,7 @@ const translations = {
 export default function CreateAssessment() {
   const navigate = useNavigate();
   const { language, setLanguage } = useSettings();
-
+  const isHeb = language === "he";
   const t = translations[language];
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -158,19 +159,33 @@ export default function CreateAssessment() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="flex justify-between items-center mb-6">
-        <LanguageToggle showIcon={true} showText={true} variant="toolbar" />
-      </div>
-
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 mb-6 hover:bg-gray-100 p-2 rounded-lg"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        <span>{t.back}</span>
-      </button>
-
       <div className="max-w-2xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <LanguageToggle showIcon={true} showText={true} variant="toolbar" />
+        </div>
+
+        {/* Top bar: Back + Help */}
+        <div
+          className={`flex items-center mb-4 justify-between ${
+            isHeb ? "flex-row-reverse" : ""
+          }`}
+        >
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 mb-6 hover:bg-gray-100 p-2 rounded-lg"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>{t.back}</span>
+          </button>
+
+          {/* כפתור העזרה – שפה אוטומטית, עמוד מתאים */}
+          <HelpButton
+            page="createAssessment"
+            language={language}
+            variant="icon" // אפשר "icon" אם את מעדיפה איקון בלבד
+            className="px-4 py-2" // padding עדין כדי שלא יידחף למטה
+          />
+        </div>
         <h1 className="text-2xl font-bold mb-6">{t.createNewAssessment}</h1>
 
         {isSuccess ? (

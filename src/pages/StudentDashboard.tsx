@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
 import { translations } from "@/utils/studentDashboardData";
 
@@ -34,6 +35,7 @@ import { useSettings } from "@/components/SettingsContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { UserMenu } from "@/components/header/UserMenu";
 import { getTimeBasedGreeting } from "@/utils/timeGreetings";
+import HelpButton from "@/components/HelpButton";
 
 /**
  * StudentDashboard.tsx
@@ -319,6 +321,11 @@ export default function StudentDashboard() {
                 </h1>
               </div>
               <div className="flex items-center gap-3">
+                <HelpButton
+                  page="studentDashboard"
+                  language={language}
+                  variant="icon"
+                />
                 <LanguageToggle variant="button" />
                 <UserMenu
                   translations={{

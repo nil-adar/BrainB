@@ -10,6 +10,7 @@ import { NotificationsDropdown } from "@/components/parent/NotificationsDropdown
 import type { ParentNotification } from "@/hooks/useParentNotifications";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { getLocalizedDate } from "@/utils/dateTranslations";
+import HelpButton from "@/components/HelpButton";
 
 interface ParentHeaderProps {
   language: "en" | "he";
@@ -74,6 +75,12 @@ export const ParentHeader = ({
           {/* צד ימין - כלים */}
           <div className="flex items-center gap-4">
             <LanguageToggle variant="button" />
+            <HelpButton
+              page="parentDashboard"
+              language={language}
+              variant="icon"
+              className="rounded-full hover:bg-blue-50 shadow-sm"
+            />
             {/* תפריט התראות */}
             <NotificationsDropdown
               notifications={notifications}

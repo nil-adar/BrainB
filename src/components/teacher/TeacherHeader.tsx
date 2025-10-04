@@ -8,6 +8,7 @@ import { Logo } from "@/components/ui/logo";
 import { UserMenu } from "@/components/header/UserMenu";
 import { useNavigate } from "react-router-dom";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import HelpButton from "@/components/HelpButton";
 
 interface TeacherHeaderProps {
   currentDate?: string;
@@ -70,6 +71,11 @@ export const TeacherHeader = ({
           </div>
           <div className="flex items-center gap-4">
             <span className="text-gray-600">{currentDate}</span>
+            <HelpButton
+              page="teacherDashboard"
+              language={language}
+              variant="icon"
+            />
             <LanguageToggle variant="button" />
             <NotificationsDropdown
               notifications={notifications as any}
