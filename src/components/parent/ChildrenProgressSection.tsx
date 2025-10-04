@@ -110,9 +110,13 @@ export const ChildrenProgressSection = ({
             <Button
               variant="ghost"
               className="w-full text-emerald-700 hover:underline hover:bg-emerald-100"
-              onClick={() =>
-                (window.location.href = `http://localhost:8080/recommendations?studentId=${child.id}`)
-              }
+              onClick={() => {
+                const baseUrl =
+                  window.location.hostname === "localhost"
+                    ? "http://localhost:8080"
+                    : window.location.origin;
+                window.location.href = `${baseUrl}/recommendations?studentId=${child.id}`;
+              }}
             >
               {t.viewRecommendationsFor || "View recommendations for"}{" "}
               {child.firstName} {child.lastName}
