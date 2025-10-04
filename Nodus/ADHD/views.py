@@ -438,7 +438,8 @@ def results(request):
             }
             print("📡 Sending results to BrainBridge:", data_to_send)
             
-            API_BASE_URL = os.getenv('BRAINBRIDGE_API_URL', 'http://localhost:5000')
+            #API_BASE_URL = os.getenv('BRAINBRIDGE_API_URL', 'http://localhost:5000')
+            API_BASE_URL = os.getenv('BRAINBRIDGE_API_URL', 'https://brain-bridge.net')
             response = requests.post(f"{API_BASE_URL}/api/diagnostic/results", json=data_to_send)
 
             print("✅ Server response status:", response.status_code)

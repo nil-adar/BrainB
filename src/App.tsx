@@ -26,14 +26,14 @@ import EnvironmentalRecommendations from "./pages/EnvironmentalRecommendations";
 import LandingPage from "./pages/LandingPage";
 import { useEffect } from "react";
 import ResetPassword from "./components/auth/forms/ResetPassword";
-
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import QuestionnaireFormPage from "@/pages/QuestionnaireFormPage";
 import { SettingsProvider } from "@/components/SettingsContext";
 import SettingsToggle from "@/components/SettingsToggle";
-import api from "@/services/api"; //
+import api from "@/services/api";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

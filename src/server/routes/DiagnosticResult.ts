@@ -1,3 +1,4 @@
+//src\server\routes\DiagnosticResult.ts
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IDiagnosticResult extends Document {

@@ -1,3 +1,4 @@
+//src\server\routes\diagnostic.routes.ts
 import express, { Request, Response } from "express";
 import { DiagnosticSessionModel } from "../models/DiagnosticSession";
 import mongoose from "mongoose";
