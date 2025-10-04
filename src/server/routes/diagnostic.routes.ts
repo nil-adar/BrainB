@@ -3,8 +3,7 @@ import { DiagnosticSessionModel } from "../models/DiagnosticSession";
 import mongoose from "mongoose";
 import crypto from "crypto";
 import { DiagnosticResultModel } from "../models/DiagnosticResult";
-const NODUS_BASE_URL =
-  process.env.NODUS_BASE_URL || "http://127.0.0.1:8000";
+const NODUS_BASE_URL = process.env.NODUS_BASE_URL || "http://127.0.0.1:8000";
 const router = express.Router();
 
 // יצירת סשן אבחון חיצוני לתלמיד
@@ -40,80 +39,93 @@ router.post("/create", async (req: Request, res: Response): Promise<void> => {
 });
 
 // בדיקה אם טוקן קיים - נוסיף בהמשך אם צריך
-router.get("/validate/:token", async (req: Request, res: Response): Promise<void> => {
-  const token = req.params.token;
+router.get(
+  "/validate/:token",
+  async (req: Request, res: Response): Promise<void> => {
+    const token = req.params.token;
 
-  try {
-    const session = await DiagnosticSessionModel.findOne({ sessionToken: token });
+    try {
+      const session = await DiagnosticSessionModel.findOne({
+        sessionToken: token,
+      });
 
-    if (!session) {
-      res.status(404).json({ error: "Token not found" });
-      return;
+      if (!session) {
+        res.status(404).json({ error: "Token not found" });
+        return;
+      }
+
+      if (session.expiresAt < new Date()) {
+        res.status(410).json({ error: "Token expired" });
+        return;
+      }
+
+      res
+        .status(200)
+        .json({ message: "Token is valid", studentId: session.studentId });
+    } catch (err) {
+      console.error("Error validating token:", err);
+      res.status(500).json({ error: "Failed to validate token" });
     }
-
-    if (session.expiresAt < new Date()) {
-      res.status(410).json({ error: "Token expired" });
-      return;
-    }
-
-    res.status(200).json({ message: "Token is valid", studentId: session.studentId });
-  } catch (err) {
-    console.error("Error validating token:", err);
-    res.status(500).json({ error: "Failed to validate token" });
   }
-});
+);
 
 // בדיקה אם יש אבחון פעיל עבור תלמיד
-router.get("/has-active/:studentId", async (req: Request, res: Response): Promise<void> => {
-  const { studentId } = req.params;
+router.get(
+  "/has-active/:studentId",
+  async (req: Request, res: Response): Promise<void> => {
+    const { studentId } = req.params;
 
-  if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
-    res.status(400).json({ valid: false, error: "Invalid studentId" });
-    return;
-  }
-
-  try {
-    const session = await DiagnosticSessionModel.findOne({
-      studentId,
-      status: "pending",
-      expiresAt: { $gt: new Date() },
-    });
-
-    if (session) {
-      res.status(200).json({
-        valid: true,
-        sessionToken: session.sessionToken,
-      });
-    } else {
-      res.status(200).json({ valid: false });
-    }
-  } catch (err) {
-    console.error("שגיאה בבדיקת סשן אבחון:", err);
-    res.status(500).json({ valid: false, error: "Server error" });
-  }
-});
-router.get("/session/:studentId", async (req: Request, res: Response): Promise<void> => {
-  const { studentId } = req.params;
-
-  try {
-    const session = await DiagnosticSessionModel.findOne({
-      studentId,
-      expiresAt: { $gt: new Date() }, // רק אם לא פג תוקף
-    });
-
-    if (!session) {
-      res.status(404).json({ message: "אין אבחון זמין" });
+    if (!studentId || !mongoose.Types.ObjectId.isValid(studentId)) {
+      res.status(400).json({ valid: false, error: "Invalid studentId" });
       return;
     }
 
-    res.status(200).json({
-      sessionUrl: `${NODUS_BASE_URL}/?token=${session.sessionToken}&studentId=${studentId}`,
-      expiresAt: session.expiresAt,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "שגיאה בבדיקת האבחון" });
+    try {
+      const session = await DiagnosticSessionModel.findOne({
+        studentId,
+        status: "pending",
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (session) {
+        res.status(200).json({
+          valid: true,
+          sessionToken: session.sessionToken,
+        });
+      } else {
+        res.status(200).json({ valid: false });
+      }
+    } catch (err) {
+      console.error("שגיאה בבדיקת סשן אבחון:", err);
+      res.status(500).json({ valid: false, error: "Server error" });
+    }
   }
-});
+);
+router.get(
+  "/session/:studentId",
+  async (req: Request, res: Response): Promise<void> => {
+    const { studentId } = req.params;
+
+    try {
+      const session = await DiagnosticSessionModel.findOne({
+        studentId,
+        expiresAt: { $gt: new Date() }, // רק אם לא פג תוקף
+      });
+
+      if (!session) {
+        res.status(404).json({ message: "אין אבחון זמין" });
+        return;
+      }
+
+      res.status(200).json({
+        sessionUrl: `${NODUS_BASE_URL}/?token=${session.sessionToken}&studentId=${studentId}`,
+        expiresAt: session.expiresAt,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "שגיאה בבדיקת האבחון" });
+    }
+  }
+);
 router.post("/results", async (req: Request, res: Response): Promise<void> => {
   const { sessionToken, percentages, dominantSubtype, timestamp } = req.body;
 
@@ -140,9 +152,15 @@ router.post("/results", async (req: Request, res: Response): Promise<void> => {
       studentId: session.studentId,
       sessionToken: session.sessionToken,
       percentages,
-      
+
       dominantSubtype,
       timestamp: timestamp ? new Date(timestamp) : new Date(),
+    });
+
+    // ✅ עדכון סטטוס המשתמש
+    await mongoose.model("User").findByIdAndUpdate(session.studentId, {
+      diagnosticStatus: "completed",
+      lastDiagnosticDate: new Date(),
     });
 
     // אפשר לעדכן את הסטטוס של הסשן ל-"completed"

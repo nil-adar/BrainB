@@ -421,8 +421,9 @@ def results(request):
                 "timestamp": datetime.utcnow().isoformat()
             }
             print("📡 Sending results to BrainBridge:", data_to_send)
-
-            response = requests.post("http://localhost:5000/api/diagnostic/results", json=data_to_send)
+            
+            API_BASE_URL = os.getenv('BRAINBRIDGE_API_URL', 'http://localhost:5000')
+            response = requests.post(f"{API_BASE_URL}/api/diagnostic/results", json=data_to_send)
 
             print("✅ Server response status:", response.status_code)
             print("📄 Server response body:", response.text)
