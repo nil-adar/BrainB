@@ -434,29 +434,6 @@
         "
       >
         <div
-          id="backToBrainBridge"
-          style="
-            width: 220px;
-            height: 70px;
-            background-color: #00c39a;
-            color: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          "
-          onmouseover="this.style.backgroundColor='#019c84'; this.style.transform='translateY(-2px)'"
-          onmouseout="this.style.backgroundColor='#00c39a'; this.style.transform='translateY(0)'"
-          data-translate="back_to_brainbridge"
-        >
-          חזור ל־BrainBridge
-        </div>
-
-        <div
           id="recommendationsButton"
           style="
             width: 220px;
@@ -487,9 +464,9 @@
             ? "http://localhost:8080"
             : "https://brain-bridge.net";
 
-        document.getElementById("backToBrainBridge").onclick = () => {
+        /*document.getElementById("backToBrainBridge").onclick = () => {
           window.location.href = BASE_URL;
-        };
+        };*/
 
         const studentId = localStorage.getItem("studentId");
         document.getElementById("recommendationsButton").onclick = () => {
