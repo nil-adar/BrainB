@@ -23,7 +23,10 @@ from bson.binary import Binary
 from .token_verification import verify_token
 import requests
 from datetime import datetime
+import tempfile
 
+TEMP_DIR = Path(tempfile.gettempdir()) / 'nodus_files'
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
 ### MODEL ###
 
 eye_tracking_input_shape = (3,)  # 3 values per sample: mean, median, std
@@ -262,11 +265,17 @@ def clean(request):
     reaction = False
     initial = False
 
-    save_path_initial = Path('ADHD/temporary_files/' + str(session_id)+ "_initial-video.webm" )
-    save_path_eye = Path('ADHD/temporary_files/' + str(session_id)+ "_recorded-video.webm" )
-    save_path_vocal = Path('ADHD/temporary_files/' + str(session_id)+ "_audio-recording.mp3" )
-    save_path_questionnaire = Path('ADHD/temporary_files/' + str(session_id)+ "_questionnaire.txt" )
-    save_path_reaction = Path('ADHD/temporary_files/'  + str(session_id)+ "_reaction-time-arrays.txt")
+    #save_path_initial = Path('ADHD/temporary_files/' + str(session_id)+ "_initial-video.webm" )
+    #save_path_eye = Path('ADHD/temporary_files/' + str(session_id)+ "_recorded-video.webm" )
+    #save_path_vocal = Path('ADHD/temporary_files/' + str(session_id)+ "_audio-recording.mp3" )
+    #save_path_questionnaire = Path('ADHD/temporary_files/' + str(session_id)+ "_questionnaire.txt" )
+    #save_path_reaction = Path('ADHD/temporary_files/'  + str(session_id)+ "_reaction-time-arrays.txt")
+
+    save_path_initial = TEMP_DIR / f"{session_id}_initial-video.webm"
+    save_path_eye = TEMP_DIR / f"{session_id}_recorded-video.webm"
+    save_path_vocal = TEMP_DIR / f"{session_id}_audio-recording.mp3"
+    save_path_questionnaire = TEMP_DIR / f"{session_id}_questionnaire.txt"
+    save_path_reaction = TEMP_DIR / f"{session_id}_reaction-time-arrays.txt"
     try:    
         os.remove(save_path_eye)
         eye = True
@@ -330,11 +339,16 @@ def results(request):
 
     # Feed data to DL model and retrieve the probabilities
     ip = request.META['REMOTE_ADDR'] # Extract IP to conduct analysis on files with this IP
-    save_path_eye = Path('ADHD/temporary_files/' + str(session_id)+ "_recorded-video.webm" )
-    save_path_vocal = Path('ADHD/temporary_files/' + str(session_id)+ "_audio-recording.mp3" )
-    save_path_questionnaire = Path('ADHD/temporary_files/' + str(session_id)+ "_questionnaire.txt" )
-    save_path_reaction = Path('ADHD/temporary_files/'  + str(session_id)+ "_reaction-time-arrays.txt")
+    #save_path_eye = Path('ADHD/temporary_files/' + str(session_id)+ "_recorded-video.webm" )
+    #save_path_vocal = Path('ADHD/temporary_files/' + str(session_id)+ "_audio-recording.mp3" )
+    #save_path_questionnaire = Path('ADHD/temporary_files/' + str(session_id)+ "_questionnaire.txt" )
+    #save_path_reaction = Path('ADHD/temporary_files/'  + str(session_id)+ "_reaction-time-arrays.txt")
     
+    save_path_eye = TEMP_DIR / f"{session_id}_recorded-video.webm"
+    save_path_vocal = TEMP_DIR / f"{session_id}_audio-recording.mp3"
+    save_path_questionnaire = TEMP_DIR / f"{session_id}_questionnaire.txt"
+    save_path_reaction = TEMP_DIR / f"{session_id}_reaction-time-arrays.txt"
+
     questionnaire = ''
     reaction = ""
     reaction_time_base = ''
@@ -379,7 +393,9 @@ def results(request):
 
     
     if (not questionnaire.split(',')[-1].isnumeric()):
-        data_file_path = Path('ADHD/temporary_files/data.txt')
+        #data_file_path = Path('ADHD/temporary_files/data.txt')
+        data_file_path = TEMP_DIR / 'data.txt'
+
         with open(data_file_path,'a') as f:
 
             eye = eye_analysis
@@ -519,7 +535,9 @@ def upload_video(request):
 
     if request.method == 'POST' and request.FILES.get('initial-video'):
         video = request.FILES['initial-video']
-        save_path = Path('ADHD/temporary_files/' + str(session_id)+ "_" + video.name )
+        #save_path = Path('ADHD/temporary_files/' + str(session_id)+ "_" + video.name )
+        save_path = TEMP_DIR / f"{session_id}_{video.name}"
+
         with open(save_path, 'wb+') as destination:
             for chunk in video.chunks():
                 destination.write(chunk)
@@ -534,11 +552,15 @@ def upload_video(request):
         video = request.FILES['recorded-video']
         base_reaction_time = request.POST['reactionTimeBase']
         dis_reaction_time = request.POST['reactionTimeDistractors']
-        save_path = Path('ADHD/temporary_files/' + str(session_id)+ "_" + video.name )
+        #save_path = Path('ADHD/temporary_files/' + str(session_id)+ "_" + video.name )
+        save_path = TEMP_DIR / f"{session_id}_{video.name}"
+
         with open(save_path, 'wb+') as destination:
             for chunk in video.chunks():
                 destination.write(chunk)
-        save_path_arrays = Path('ADHD/temporary_files/'  + str(session_id)+ "_reaction-time-arrays.txt")
+        #save_path_arrays = Path('ADHD/temporary_files/'  + str(session_id)+ "_reaction-time-arrays.txt")
+        save_path_arrays = TEMP_DIR / f"{session_id}_reaction-time-arrays.txt"
+
         with open(save_path_arrays, 'w+') as destination:
             destination.write(base_reaction_time)
             destination.write('\n')
@@ -682,7 +704,9 @@ def upload_voice(request):
 
     if request.method == 'POST' and request.FILES.get('audio-recording'):
         audio = request.FILES['audio-recording']
-        save_path = Path('ADHD/temporary_files/' + str(session_id)+ "_" + audio.name )
+        #save_path = Path('ADHD/temporary_files/' + str(session_id)+ "_" + audio.name )
+        save_path = TEMP_DIR / f"{session_id}_{audio.name}"
+
         with open(save_path, 'wb+') as destination:
             for chunk in audio.chunks():
                 destination.write(chunk)
@@ -716,7 +740,9 @@ def upload_answers(request):
 
     if request.method == 'POST' and request.POST.get('questionnaire'): 
         answers = request.POST['questionnaire']
-        save_path_arrays = Path('ADHD/temporary_files/' + str(session_id)+ "_questionnaire.txt")
+        #save_path_arrays = Path('ADHD/temporary_files/' + str(session_id)+ "_questionnaire.txt")
+        save_path_arrays = TEMP_DIR / f"{session_id}_questionnaire.txt"
+
         with open(save_path_arrays, 'w+') as destination:
             destination.write(answers)
         request.session['progress'] = 'step5'
