@@ -46,7 +46,7 @@ app.use("/api/messages", messageRouter);
 app.use("/api/diagnostic", diagnosticRoutes);
 app.use("/api/forms", formRouter);
 app.use("/api", taskRoutes);
-app.use("/api", recommendationsRouter); // המלצות
+app.use("/api", recommendationsRouter); 
 
 // Status endpoint
 app.get("/api/status", (req, res) => {

@@ -445,7 +445,7 @@ def results(request):
             print("✅ Server response status:", response.status_code)
             print("📄 Server response body:", response.text)
 
-            if response.status_code == 200:
+            if response.status_code == 201:
               print("✅ Results sent successfully to BrainBridge.")
             else:
               print("⚠️ Failed to send results to BrainBridge:", response.status_code, response.text)

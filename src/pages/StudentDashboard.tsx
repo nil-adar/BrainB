@@ -36,6 +36,7 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { UserMenu } from "@/components/header/UserMenu";
 import { getTimeBasedGreeting } from "@/utils/timeGreetings";
 import HelpButton from "@/components/HelpButton";
+import { NODUS_BASE_URL } from "@/config/api";
 
 /**
  * StudentDashboard.tsx
@@ -252,7 +253,7 @@ export default function StudentDashboard() {
     return () => {
       clearInterval(timer);
     };
-  }, [currentTask]);
+  }, [currentTask, timeLeft, t.timeUpForTask]);
 
   const navigate = useNavigate();
 
@@ -262,9 +263,6 @@ export default function StudentDashboard() {
     console.log("🧪 Student ID:", studentId);
 
     if (assessmentToken && studentId) {
-      const NODUS_BASE_URL =
-        import.meta.env.VITE_NODUS_URL || "http://127.0.0.1:8000";
-
       const url = `${NODUS_BASE_URL}/?token=${assessmentToken}&studentId=${studentId}`;
       window.open(url, "_blank");
     } else {
