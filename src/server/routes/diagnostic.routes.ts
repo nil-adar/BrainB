@@ -4,7 +4,7 @@ import { DiagnosticSessionModel } from "../models/DiagnosticSession";
 import mongoose from "mongoose";
 import crypto from "crypto";
 import { DiagnosticResultModel } from "../models/DiagnosticResult";
-const NODUS_BASE_URL = process.env.NODUS_BASE_URL || "http://127.0.0.1:8000";
+const NODUS_BASE_URL = process.env.NODUS_BASE_URL || "https://acceptable-joy-production-a391.up.railway.app";
 const router = express.Router();
 
 // יצירת סשן אבחון חיצוני לתלמיד
