@@ -85,13 +85,14 @@ const translateField = (val: unknown, targetLang: Lang): string => {
 
 interface Props {
   recommendations: Recommendation[];
-  //language: "he" | "en";
-  isLoading?: boolean; // הוספה חדשה
+  isLoading?: boolean;
+  noAdhd?: boolean;
 }
 
 const RecommendationPdfView = ({
   recommendations,
   isLoading = false,
+  noAdhd = false,
 }: Props) => {
   const { language } = useSettings();
   const [searchTerm, setSearchTerm] = useState("");
@@ -183,7 +184,7 @@ const RecommendationPdfView = ({
     setFilteredData(searchResults);
     setIsSearching(false);
 
-    if (searchResults.length === 0) {
+    /*if (searchResults.length === 0) {
       alert(
         language === "he"
           ? `לא נמצאו תוצאות עבור: "${searchTerm}"`
@@ -195,8 +196,42 @@ const RecommendationPdfView = ({
           ? `נמצאו ${searchResults.length} תוצאות עבור: "${searchTerm}"`
           : `Found ${searchResults.length} results for: "${searchTerm}"`
       );
-    }
+    }*/
   };
+  if (noAdhd) {
+    return (
+      <div className="flex items-center justify-center h-96 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border-2 border-green-200">
+        <div className="text-center p-8 max-w-md">
+          <h3 className="text-2xl font-bold text-green-800 mb-3">
+            {language === "he"
+              ? "אין צורך בהמלצות"
+              : "No Recommendations Needed"}
+          </h3>
+          <p className="text-gray-700">
+            {language === "he"
+              ? "לא אותרו סימנים להפרעות קשב וריכוז, לכן אין צורך בהמלצות מיוחדות."
+              : "No signs of ADHD were detected, so special recommendations are not needed."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // אם אנחנו עדיין בטעינה, הצג loading
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">
+            {language === "he"
+              ? "טוען המלצות..."
+              : "Loading recommendations..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const clearSearch = () => {
     setSearchTerm("");

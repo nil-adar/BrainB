@@ -84,6 +84,7 @@ interface RecommendationResponseData {
   allergyList?: string[];
   recommendationTypesList?: string[];
   message?: string;
+  noAdhd?: boolean;
 }
 
 const translations = {
@@ -548,6 +549,7 @@ export default function Recommendations() {
   }, [contextLanguage, currentLanguage]);
 
   const [role, setRole] = useState<string | null>(null);
+  const [noAdhdDetected, setNoAdhdDetected] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -587,10 +589,6 @@ export default function Recommendations() {
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [studentName, setStudentName] = useState<string>("");
-
-  /*const localUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const loggedUserId = localUser._id;
-  const viewerRole = localUser?.role;*/
 
   const studentId =
     new URLSearchParams(location.search).get("studentId") ||
@@ -636,10 +634,6 @@ export default function Recommendations() {
   const [recommendationData, setRecommendationData] =
     useState<RecommendationResponseData | null>(null);
 
-  /*const goToViewerDashboard = useCallback(() => {
-    navigate(getViewerDashboardUrl(viewerRole));
-  }, [navigate, viewerRole]);*/
-
   const goToViewerDashboard = useCallback(() => {
     const r = currentUserRole;
     if (r === "teacher" || r === "student" || r === "parent" || r === "admin") {
@@ -668,6 +662,15 @@ export default function Recommendations() {
         if (recommendationsResponse.ok) {
           const data: RecommendationResponseData =
             await recommendationsResponse.json();
+
+          if (
+            data.noAdhd === true ||
+            data.recommendationTypesList?.includes("No ADHD")
+          ) {
+            setNoAdhdDetected(true);
+            setRecommendations([]);
+            return data;
+          }
 
           const filteredRecommendations = data.recommendations || [];
           setRecommendations(filteredRecommendations);
@@ -884,27 +887,6 @@ export default function Recommendations() {
     { label: t.title },
   ];
 
-  /*const getGreetingTitle = () => {
-    if (!viewerRole || !studentId || !studentName) return t.unknownUser;
-
-    const isSelf = String(loggedUserId) === String(studentId);
-    const timeGreeting = getTimeBasedGreeting(currentLanguage);
-
-    if (viewerRole === "student" && isSelf) {
-      return `${timeGreeting} ${studentName}`;
-    }
-
-    if (viewerRole === "parent") {
-      return `${timeGreeting} - ${t.viewingAsParent} ${studentName}`;
-    }
-
-    if (viewerRole === "teacher") {
-      return `${timeGreeting} - ${t.viewingAsTeacher} ${studentName}`;
-    }
-
-    return t.unknownUser;
-  };*/
-
   const getGreetingTitle = () => {
     const timeGreeting = getTimeBasedGreeting(currentLanguage);
     if (!studentId || !studentName) return t.unknownUser;
@@ -1009,253 +991,301 @@ export default function Recommendations() {
           />
         )}
 
-        {/* No Recommendations State */}
-        {!loading && recommendations.length === 0 && studentId && (
+        {!loading && noAdhdDetected && (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🤷‍♂️</div>
-            <p
-              className={`text-gray-600 ${isRTL ? "text-right" : "text-left"}`}
-            >
-              {t.noRecommendations}
-            </p>
+            <Card className="max-w-2xl mx-auto p-8 bg-gradient-to-br from-green-50 to-blue-50">
+              <h3 className="text-2xl font-bold text-green-800 mb-4">
+                {isRTL ? "תוצאה חיובית!" : "Great News!"}
+              </h3>
+              <p className="text-lg text-gray-700 mb-4">
+                {isRTL
+                  ? "בהתאם לאבחון שבוצע, לא אותרו סימנים משמעותיים להפרעות קשב וריכוז (ADHD)."
+                  : "Based on the assessment conducted, no significant signs of ADHD were detected."}
+              </p>
+              <p className="text-gray-600">
+                {isRTL
+                  ? "לכן, אין צורך בהמלצות מותאמות אישית בשלב זה."
+                  : "Therefore, personalized recommendations are not needed at this time."}
+              </p>
+              <div className="mt-6">
+                <Button
+                  onClick={goToViewerDashboard}
+                  className="bg-gradient-to-br from-green-400 to-blue-400 hover:bg-blue-700"
+                >
+                  {isRTL ? "חזרה לדשבורד" : "Back to Dashboard"}
+                </Button>
+              </div>
+            </Card>
           </div>
         )}
 
-        {/* ADHD Guide Header */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-4 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
-            <h1 className="text-3xl font-bold text-gray-800">{t.guideTitle}</h1>
-          </div>
-          <p className="text-lg text-gray-600 mb-6 text-center">
-            {t.guideSubtitle}
-          </p>
-
-          {/* Target Audience */}
-          <div
-            className={`flex items-center justify-center gap-10 text-sm text-gray-600 ${
-              isRTL ? "flex-row-reverse" : ""
-            }`}
-          >
-            <div
-              className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}
-            >
-              <Users
-                className={`h-5 w-5 text-blue-500 ${isRTL ? "ml-2" : "mr-2"}`}
-              />
-              <span>{t.forParents}</span>
-            </div>
-            <div
-              className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}
-            >
-              <BookOpen
-                className={`h-5 w-5 text-green-500 ${isRTL ? "ml-2" : "mr-2"}`}
-              />
-              <span>{t.forTeachers}</span>
-            </div>
-            <div
-              className={`flex items-center ${isRTL ? "flex-row-reverse" : ""}`}
-            >
-              <Activity
-                className={`h-5 w-5 text-purple-500 ${isRTL ? "ml-2" : "mr-2"}`}
-              />
-              <span>{t.forChildren}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Recommendation Type Cards - Fixed Height */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
-          {/* Nutrition Card */}
-          <Card
-            className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            <div
-              className={`bg-green-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
-              <div
-                className={`text-4xl mb-4 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                🍎
-              </div>
-              <h3
-                className={`text-xl font-bold text-gray-800 mb-2 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.nutritionTitle}
-              </h3>
+        {/* No Recommendations State (when there IS ADHD but no recs) */}
+        {!loading &&
+          !noAdhdDetected &&
+          recommendations.length === 0 &&
+          studentId && (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🤷‍♂️</div>
               <p
-                className={`text-gray-600 text-sm mb-4 flex-1 ${
+                className={`text-gray-600 ${
                   isRTL ? "text-right" : "text-left"
                 }`}
               >
-                {t.nutritionDescription}
+                {t.noRecommendations}
               </p>
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700 mt-auto"
-                onClick={() =>
-                  navigate(
-                    `/nutritional-recommendations?studentId=${studentId}`
-                  )
-                }
-              >
-                {t.viewRecommendations} →
-              </Button>
             </div>
-          </Card>
+          )}
+        {!noAdhdDetected && (
+          <>
+            {/* ADHD Guide Header */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8 mb-4 text-center">
+              <div className="flex items-center justify-center mb-4">
+                <BookOpen className="h-8 w-8 text-blue-600 mr-3" />
+                <h1 className="text-3xl font-bold text-gray-800">
+                  {t.guideTitle}
+                </h1>
+              </div>
+              <p className="text-lg text-gray-600 mb-6 text-center">
+                {t.guideSubtitle}
+              </p>
 
-          {/* Physical Activity Card */}
-          <Card
-            className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            <div
-              className={`bg-blue-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
+              {/* Target Audience */}
               <div
-                className={`text-4xl mb-4 ${
-                  isRTL ? "text-right" : "text-left"
+                className={`flex items-center justify-center gap-10 text-sm text-gray-600 ${
+                  isRTL ? "flex-row-reverse" : ""
                 }`}
               >
-                🏃‍♂️
+                <div
+                  className={`flex items-center ${
+                    isRTL ? "flex-row-reverse" : ""
+                  }`}
+                >
+                  <Users
+                    className={`h-5 w-5 text-blue-500 ${
+                      isRTL ? "ml-2" : "mr-2"
+                    }`}
+                  />
+                  <span>{t.forParents}</span>
+                </div>
+                <div
+                  className={`flex items-center ${
+                    isRTL ? "flex-row-reverse" : ""
+                  }`}
+                >
+                  <BookOpen
+                    className={`h-5 w-5 text-green-500 ${
+                      isRTL ? "ml-2" : "mr-2"
+                    }`}
+                  />
+                  <span>{t.forTeachers}</span>
+                </div>
+                <div
+                  className={`flex items-center ${
+                    isRTL ? "flex-row-reverse" : ""
+                  }`}
+                >
+                  <Activity
+                    className={`h-5 w-5 text-purple-500 ${
+                      isRTL ? "ml-2" : "mr-2"
+                    }`}
+                  />
+                  <span>{t.forChildren}</span>
+                </div>
               </div>
-              <h3
-                className={`text-xl font-bold text-gray-800 mb-2 ${
+            </div>
+
+            {/* Recommendation Type Cards - Fixed Height */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
+              {/* Nutrition Card */}
+              <Card
+                className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
                   isRTL ? "text-right" : "text-left"
                 }`}
               >
-                {t.physicalTitle}
+                <div
+                  className={`bg-green-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  <div
+                    className={`text-4xl mb-4 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    🍎
+                  </div>
+                  <h3
+                    className={`text-xl font-bold text-gray-800 mb-2 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t.nutritionTitle}
+                  </h3>
+                  <p
+                    className={`text-gray-600 text-sm mb-4 flex-1 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t.nutritionDescription}
+                  </p>
+                  <Button
+                    className="w-full bg-green-600 hover:bg-green-700 mt-auto"
+                    onClick={() =>
+                      navigate(
+                        `/nutritional-recommendations?studentId=${studentId}`
+                      )
+                    }
+                  >
+                    {t.viewRecommendations} →
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Physical Activity Card */}
+              <Card
+                className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                <div
+                  className={`bg-blue-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  <div
+                    className={`text-4xl mb-4 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    🏃‍♂️
+                  </div>
+                  <h3
+                    className={`text-xl font-bold text-gray-800 mb-2 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t.physicalTitle}
+                  </h3>
+                  <p
+                    className={`text-gray-600 text-sm mb-4 flex-1 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t.physicalDescription}
+                  </p>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 mt-auto"
+                    onClick={() =>
+                      navigate(
+                        `/physical-recommendations?studentId=${studentId}`
+                      )
+                    }
+                  >
+                    {t.viewRecommendations} →
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Environmental Card */}
+              <Card
+                className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
+                  isRTL ? "text-right" : "text-left"
+                }`}
+              >
+                <div
+                  className={`bg-purple-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
+                    isRTL ? "text-right" : "text-left"
+                  }`}
+                >
+                  <div
+                    className={`text-4xl mb-4 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    🏠
+                  </div>
+                  <h3
+                    className={`text-xl font-bold text-gray-800 mb-2 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t.environmentalTitle}
+                  </h3>
+                  <p
+                    className={`text-gray-600 text-sm mb-4 flex-1 ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t.environmentalDescription}
+                  </p>
+                  <Button
+                    className="w-full bg-purple-600 hover:bg-purple-700 mt-auto"
+                    onClick={() =>
+                      navigate(
+                        `/Environmental-recommendations?studentId=${studentId}`
+                      )
+                    }
+                  >
+                    {t.viewRecommendations} →
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* How to Use Guide */}
+            <div className="bg-white rounded-lg p-3 shadow-sm border mb-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                {t.howToUse}
               </h3>
-              <p
-                className={`text-gray-600 text-sm mb-4 flex-1 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.physicalDescription}
-              </p>
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 mt-auto"
-                onClick={() =>
-                  navigate(`/physical-recommendations?studentId=${studentId}`)
-                }
-              >
-                {t.viewRecommendations} →
-              </Button>
-            </div>
-          </Card>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-gray-600">1</span>
+                  </div>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    {t.step1Title}
+                  </h4>
+                  <p className="text-gray-600 text-sm">{t.step1Description}</p>
+                </div>
 
-          {/* Environmental Card */}
-          <Card
-            className={`p-5 hover:shadow-lg transition-shadow h-full flex flex-col ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          >
-            <div
-              className={`bg-purple-100 rounded-lg p-6 mb-4 flex-1 flex flex-col ${
-                isRTL ? "text-right" : "text-left"
-              }`}
-            >
-              <div
-                className={`text-4xl mb-4 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                🏠
+                <div className="text-center">
+                  <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-gray-600">2</span>
+                  </div>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    {t.step2Title}
+                  </h4>
+                  <p className="text-gray-600 text-sm">{t.step2Description}</p>
+                </div>
+
+                <div className="text-center">
+                  <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-gray-600">3</span>
+                  </div>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    {t.step3Title}
+                  </h4>
+                  <p className="text-gray-600 text-sm">{t.step3Description}</p>
+                </div>
               </div>
+            </div>
+
+            <div className="text-center">
               <h3
-                className={`text-xl font-bold text-gray-800 mb-2 ${
+                className={`text-xl font-semibold mb-4 ${
                   isRTL ? "text-right" : "text-left"
                 }`}
-              >
-                {t.environmentalTitle}
-              </h3>
-              <p
-                className={`text-gray-600 text-sm mb-4 flex-1 ${
-                  isRTL ? "text-right" : "text-left"
-                }`}
-              >
-                {t.environmentalDescription}
-              </p>
-              <Button
-                className="w-full bg-purple-600 hover:bg-purple-700 mt-auto"
-                onClick={() =>
-                  navigate(
-                    `/Environmental-recommendations?studentId=${studentId}`
-                  )
-                }
-              >
-                {t.viewRecommendations} →
-              </Button>
+              ></h3>
+              <Card className="p-6">
+                <RecommendationPdfView
+                  recommendations={recommendations}
+                  isLoading={!studentId || loading}
+                  noAdhd={noAdhdDetected}
+                />
+              </Card>
             </div>
-          </Card>
-        </div>
-
-        {/* How to Use Guide */}
-        <div className="bg-white rounded-lg p-3 shadow-sm border mb-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-            {t.howToUse}
-          </h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-gray-600">1</span>
-              </div>
-              <h4 className="font-semibold text-gray-800 mb-2">
-                {t.step1Title}
-              </h4>
-              <p className="text-gray-600 text-sm">{t.step1Description}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-gray-600">2</span>
-              </div>
-              <h4 className="font-semibold text-gray-800 mb-2">
-                {t.step2Title}
-              </h4>
-              <p className="text-gray-600 text-sm">{t.step2Description}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-gray-600">3</span>
-              </div>
-              <h4 className="font-semibold text-gray-800 mb-2">
-                {t.step3Title}
-              </h4>
-              <p className="text-gray-600 text-sm">{t.step3Description}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Formal Recommendations Section */}
-        <div className="text-center">
-          <h3
-            className={`text-xl font-semibold mb-4 ${
-              isRTL ? "text-right" : "text-left"
-            }`}
-          ></h3>
-          <Card className="p-6">
-            {(() => {
-              /*console.log("🐞 PDF Recommendations Preview:", recommendations);*/
-              return null;
-            })()}
-            <RecommendationPdfView
-              recommendations={recommendations}
-              isLoading={!studentId || recommendations.length === 0}
-            />
-          </Card>
-        </div>
+          </>
+        )}
       </main>
       {showTypeSelectionModal && recommendationData && (
         <RecommendationTypeSelectionModal

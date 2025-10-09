@@ -325,105 +325,6 @@ router.get(
               );
             }
           }
-          /*if (viewParam === "main" && existingRecs.diagnosisTypes?.length > 1) {
-            const mainType = existingRecs.mainDiagnosisType;
-
-            if (!mainType) {
-              console.warn(
-                "⚠️ Missing mainType for multi-type recommendation, using first from diagnosisTypes"
-              );
-              const fallbackMainType = existingRecs.diagnosisTypes[0];
-
-              if (fallbackMainType) {
-                console.log("🔍 Using fallback main type:", fallbackMainType);
-
-                filteredRecommendations = filteredRecommendations.filter(
-                  (rec: any) => {
-                    // Check if this is a special recommendation (trauma/professional assessment)
-                    const hasSpecialTag = (rec.tags || []).some((tag: string) =>
-                      ["trauma_suspected", "professional_assessment"].includes(
-                        tag
-                      )
-                    );
-
-                    if (hasSpecialTag) {
-                      return true; // Always include special recommendations
-                    }
-
-                    // Check if the recommendation belongs to the main type
-                    const diagnosisType = rec.diagnosis_type;
-                    let diagnosisArray: string[] = [];
-
-                    if (typeof diagnosisType === "string") {
-                      diagnosisArray = [diagnosisType];
-                    } else if (Array.isArray(diagnosisType)) {
-                      diagnosisArray = diagnosisType;
-                    } else if (diagnosisType?.en) {
-                      diagnosisArray = Array.isArray(diagnosisType.en)
-                        ? diagnosisType.en
-                        : [diagnosisType.en];
-                    }
-
-                    const hasMainType = diagnosisArray.some((type: string) =>
-                      type
-                        .toLowerCase()
-                        .includes(fallbackMainType.toLowerCase())
-                    );
-
-                    return hasMainType;
-                  }
-                );
-              } else {
-                console.error(
-                  "❌ No valid diagnosis types found, skipping filtering"
-                );
-                // Do not filter anything if there is no valid data
-              }
-            } else {
-              console.log(
-                "🔍 Filtering existing recommendations for main type:",
-                mainType
-              );
-
-              filteredRecommendations = filteredRecommendations.filter(
-                (rec: any) => {
-                  // Check if this is a special recommendation (trauma/professional assessment)
-                  const hasSpecialTag = (rec.tags || []).some((tag: string) =>
-                    ["trauma_suspected", "professional_assessment"].includes(
-                      tag
-                    )
-                  );
-
-                  if (hasSpecialTag) {
-                    return true;
-                  }
-
-                  // בדוק אם ההמלצה שייכת לסוג העיקרי
-                  const diagnosisType = rec.diagnosis_type;
-                  let diagnosisArray: string[] = [];
-
-                  if (typeof diagnosisType === "string") {
-                    diagnosisArray = [diagnosisType];
-                  } else if (Array.isArray(diagnosisType)) {
-                    diagnosisArray = diagnosisType;
-                  } else if (diagnosisType?.en) {
-                    diagnosisArray = Array.isArray(diagnosisType.en)
-                      ? diagnosisType.en
-                      : [diagnosisType.en];
-                  }
-
-                  const hasMainType = diagnosisArray.some((type: string) =>
-                    type.toLowerCase().includes(mainType.toLowerCase())
-                  );
-
-                  return hasMainType;
-                }
-              );
-            }
-
-            console.log(
-              `🔍 Filtered from ${existingRecs.recommendations.length} to ${filteredRecommendations.length} recommendations`
-            );*/
 
           const response = {
             recommendations: filteredRecommendations,
@@ -479,11 +380,37 @@ router.get(
       );
       if (maxPercentage === noAdhd_pct && noAdhd_pct >= MIN_NO_ADHD_VAL) {
         console.log("🔍 Stage 1: No ADHD detected, terminating");
+
+        // שמירת תוצאה זו במסד הנתונים
+        await StudentRecommendationsModel.findOneAndUpdate(
+          { studentId: new mongoose.Types.ObjectId(studentId) },
+          {
+            studentId,
+            recommendations: [],
+            tagsUsed: [],
+            allergyList: [],
+            professionalSupport: false,
+            diagnosisTypes: ["No ADHD"],
+            mainDiagnosisType: "No ADHD",
+            subtypeDiagnosisTypes: [],
+            noAdhd: true, // דגל מיוחד
+            updatedAt: new Date(),
+          },
+          {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true,
+          }
+        );
+
         res.json({
           noAdhd: true,
           message:
-            "No signs for ADHD were detected, no need for recommendations",
+            lang === "he"
+              ? "לא אותרו סימנים להפרעות קשב וריכוז, אין צורך בהמלצות"
+              : "No signs of ADHD were detected, no recommendations needed",
           recommendations: [],
+          recommendationTypesList: ["No ADHD"],
         });
         return;
       }
