@@ -707,7 +707,6 @@ export default function Recommendations() {
 
   const loadCurrentUser = useCallback(async () => {
     try {
-      // A) קודם כל – נסי להביא את המשתמש המחובר מ- localStorage.user
       const raw = localStorage.getItem("user");
       if (raw) {
         try {
@@ -753,16 +752,23 @@ export default function Recommendations() {
         } catch {}
       }
 
-      // D) ברירת מחדל בטוחה – לא "student"
+      // E) ברירת מחדל
       setCurrentUserRole("unknown");
       setCurrentUserId(null);
       return { userId: null, role: "unknown" as const };
     } catch {
+      // Fallback אם יש studentId
+      if (studentId) {
+        setCurrentUserId(studentId);
+        setCurrentUserRole("student");
+        return { userId: studentId, role: "student" as const };
+      }
+
       setCurrentUserRole("unknown");
       setCurrentUserId(null);
       return { userId: null, role: "unknown" as const };
     }
-  }, []);
+  }, [studentId]);
 
   useEffect(() => {
     const initializeComponent = async () => {

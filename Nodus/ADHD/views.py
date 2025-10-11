@@ -110,6 +110,42 @@ model_pred.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['
 model_pred.summary()
 
 weight_path = Path('ADHD/static/weights/93model15.weights.h5')
+import os
+import sys
+
+print("\n" + "="*70)
+print("🔍 DJANGO STARTUP - PATH DEBUG:")
+print("="*70)
+print(f"📂 Current Working Directory: {os.getcwd()}")
+print(f"📂 This file location (__file__): {__file__}")
+print(f"📂 Python sys.path[0]: {sys.path[0]}")
+print("="*70)
+
+weight_path = Path('ADHD/static/weights/93model15.weights.h5')
+
+print(f"🎯 Looking for weights at: {weight_path}")
+print(f"🎯 Absolute path: {weight_path.absolute()}")
+print(f"🎯 File exists? {os.path.exists(weight_path)}")
+
+if not os.path.exists(weight_path):
+    print("❌ FILE NOT FOUND at expected location!")
+    print("\n🔍 Trying alternative paths:")
+    
+    # נסה נתיב עם Nodus
+    alt_path1 = Path('Nodus/ADHD/static/weights/93model15.weights.h5')
+    print(f"   Option 1: {alt_path1}")
+    print(f"   Exists? {os.path.exists(alt_path1)}")
+    
+    # נסה נתיב מלא
+    alt_path2 = Path('D:/DEG/BrainBridge/BrainB/Nodus/ADHD/static/weights/93model15.weights.h5')
+    print(f"   Option 2: {alt_path2}")
+    print(f"   Exists? {os.path.exists(alt_path2)}")
+    
+else:
+    print(f"✅ FILE FOUND!")
+    print(f"📦 File size: {os.path.getsize(weight_path) / (1024*1024):.2f} MB")
+
+print("="*70 + "\n")
 model_pred.load_weights(weight_path)
 
 # Create your views here
@@ -794,9 +830,16 @@ def extract_jitter_shimmer_hnr(audio_path):
 #     return prediction[0]
 
 def model(eye, react1, react2, vocal, questions):
-
+    print("=" * 50)
+    print("🔍 DEBUG - Input to model:")
+    print(f"  eye: {eye}")
+    print(f"  react1: {react1}")
+    print(f"  react2: {react2}")
+    print(f"  vocal: {vocal}")
+    print(f"  questions: {questions}")
+    print("=" * 50)
+    
     tup = []
-
     for item in eye:
       tup.append(item)
     for item in vocal:
@@ -808,11 +851,18 @@ def model(eye, react1, react2, vocal, questions):
     for item in react2:
       tup.append(item)
 
+    print(f"🔍 Full input array (length={len(tup)}): {tup}")
+    
     ndarray_of_arrays = np.array([np.array([x]) for x in tup])
-
     final = np.array(ndarray_of_arrays)
     final = np.expand_dims(final, axis=0)
+    
+    print(f"🔍 Shape before model: {final.shape}")  # צריך (1, 34, 1)
+    
     prediction = model_pred.predict(final)
+    
+    print(f"🔍 Raw prediction: {prediction[0]}")
+    print("=" * 50)
 
     return prediction[0]
 
