@@ -29,9 +29,10 @@ Tech stack:
 The platform combines a modern tech stack with accessibility and ease of use, aiming to offer effective support for people with ADHD in both educational and personal contexts.
 
 ## 📄 Project Artifacts
-- **Poster (PDF):** [View](final_poster.pdf)
-- **Project Book – Part A (PDF):** [View](project_book_Managing_Attention_Difficulties_phaseA.pdf) ·
-- **Project Book – Part B (PDF):** [View](Capstone_Project-PhaseB_BrainBridge.pdf) ·
+- **Poster (PDF):** [View](./final_poster.pdf) · [Download](./final_poster.pdf?raw=1)
+- **Project Book – Part A (PDF):** [View](./project_book_Managing_Attention_Difficulties_phaseA.pdf) · [Download](./project_book_Managing_Attention_Difficulties_phaseA.pdf?raw=1)
+- **Project Book – Part B (PDF):** [View](./Capstone_Project-PhaseB_BrainBridge.pdf) · [Download](./Capstone_Project-PhaseB_BrainBridge.pdf?raw=1)
+
 
 ## 🚀 How to Run the Project
 
@@ -64,8 +65,8 @@ npm run server
 ```
 API example: http://localhost:5000
 
-#### Terminal 3 – NODUS (Django) //in order to be able to make an assasment
-_Required only if you want to run the **external diagnostic engine** that creates an **External Assessment** to unlock recommendations._
+#### Terminal 3 – NODUS (Django) 
+Required only if you want to run the external diagnostic engine that creates an External Assessment to unlock recommendations.
 ```bash
 cd Nodus
 py -m venv .venv
@@ -90,16 +91,3 @@ npm install -g ts-node typescript
 This setup allows you to:
 - View the frontend at `http://localhost:8080`
 - Have the backend API listening on your defined port (e.g., `5000`)
----
-
-
-
-
-
-
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
