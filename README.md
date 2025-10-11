@@ -27,14 +27,11 @@ The project is built using:
 The platform combines a modern tech stack with accessibility and ease of use, aiming to offer effective support for people with ADHD in both educational and personal contexts.
 
 ## 📄 Project Artifacts
-
 - **Poster (PDF):** [View](final_poster.pdf)
 
-- **Project Book – Part A (PDF):**  
-  [View](project_book_Managing_Attention_Difficulties_phaseA.pdf.pdf) ·
+- **Project Book – Part A (PDF):** [View](project_book_Managing_Attention_Difficulties_phaseA.pdf.pdf) ·
 
-- **Project Book – Part B (PDF):** 
- [View]() ·
+- **Project Book – Part B (PDF):** [View](Capstone_Project-PhaseB_BrainBridge.pdf.pdf) ·
 
 ## 🚀 How to Run the Project
 
