@@ -4,7 +4,7 @@
 
 ## Landing Page
 
-![Landing page](LANDING_PAGE.png)
+![Landing page](LANDING_PAGE.jpg)
 ## Project Description
 
 This project is a platform designed to support individuals with ADHD. The system provides smart tools and features to assist users in managing their daily challenges and improving their quality of life.
