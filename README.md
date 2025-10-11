@@ -31,7 +31,7 @@ The platform combines a modern tech stack with accessibility and ease of use, ai
 - **Poster (PDF):** [View](final_poster.pdf) · [Download](https://raw.githubusercontent.com/<USER>/<REPO>/main/docs/final_poster.pdf)
 
 - **Project Book – Part A (PDF):**  
-  [View](./docs/project%20book%20Managing%20Attention%20Difficulties%20S%26N%20-%20Phase%20A.pdf) ·
+  [View](project book Managing Attention Difficulties S&N - Phase A.pdf) ·
   [Download](https://raw.githubusercontent.com/<USER>/<REPO>/main/docs/project%20book%20Managing%20Attention%20Difficulties%20S%26N%20-%20Phase%20A.pdf)
 
 
