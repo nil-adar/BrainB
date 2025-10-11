@@ -28,7 +28,7 @@ The platform combines a modern tech stack with accessibility and ease of use, ai
 
 ## 📄 Project Artifacts
 
-- **Poster (PDF):** [View](./docs/final_poster.pdf) · [Download](https://raw.githubusercontent.com/<USER>/<REPO>/main/docs/final_poster.pdf)
+- **Poster (PDF):** [View](final_poster.pdf) · [Download](https://raw.githubusercontent.com/<USER>/<REPO>/main/docs/final_poster.pdf)
 
 - **Project Book – Part A (PDF):**  
   [View](./docs/project%20book%20Managing%20Attention%20Difficulties%20S%26N%20-%20Phase%20A.pdf) ·
