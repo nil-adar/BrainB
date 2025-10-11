@@ -28,12 +28,13 @@ The platform combines a modern tech stack with accessibility and ease of use, ai
 
 ## 📄 Project Artifacts
 
-- **Poster (PDF):** [View](final_poster.pdf) · [Download](https://raw.githubusercontent.com/<USER>/<REPO>/main/docs/final_poster.pdf)
+- **Poster (PDF):** [View](final_poster.pdf) · [Download – Poster](./final_poster.pdf?raw=1)
 
 - **Project Book – Part A (PDF):**  
-  [View](project book Managing Attention Difficulties S&N - Phase A.pdf) ·
-  [Download](https://raw.githubusercontent.com/<USER>/<REPO>/main/docs/project%20book%20Managing%20Attention%20Difficulties%20S%26N%20-%20Phase%20A.pdf)
+  [View](project_book_Managing_Attention_Difficulties_phaseA.pdf.pdf) ·
+  [Download – Phase A PDF](./project_book_Managing_Attention_Difficulties_phaseA.pdf.pdf?raw=1)
 
+- **Project Book – Part B (PDF):** 
 
 ## 🚀 How to Run the Project
 
