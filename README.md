@@ -86,9 +86,9 @@ npm i
 ### Step 3: Configure environment
 Create .env file:
 ```bash
-PORT=5000
-MONGODB_URI=your_connection_string
-NODUS_BASE_URL=http://localhost:8000
+
+MONGODB_URI=connection_string
+
 ```
 
 #### Terminal 4 – Run services
