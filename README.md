@@ -1,60 +1,79 @@
-## 🔗 Live System
-https://brain-bridge.net/
+# BrainBridge
 
-## 🔗 Repository / All Materials
-https://github.com/nil-adar/BrainB
+**A cross-platform system for personalized ADHD support in educational settings**
 
-## Landing Page
-![Landing page](LANDING_PAGE.jpg)
+[![Live Demo](https://img.shields.io/badge/demo-brain--bridge.net-blue)](https://brain-bridge.net/)
+[![Documentation](https://img.shields.io/badge/docs-project%20book-green)](Capstone_Project-PhaseB_BrainBridge.pdf)
+[![Video](https://img.shields.io/badge/video-demo-red)](https://youtu.be/3yylb_jKSqg)
 
-## Project Description
+Capstone Project | Braude College of Engineering  
+Sandra Knizhnik & Nil Adar | Mentor: Dr. Natali Levi-Soskin
 
-This project is a platform designed to support individuals with ADHD. The system provides smart tools and features to assist users in managing their daily challenges and improving their quality of life.
+---
 
-### 🎥 Demo Video
-[![Watch the demo](https://img.youtube.com/vi/3yylb_jKSqg/0.jpg)](https://youtu.be/3yylb_jKSqg)
+## Overview
 
-Click the thumbnail above to watch a 2-minute walkthrough of BrainBridge in action.  
+BrainBridge is a web-based platform that integrates diagnostic assessment with evidence-based intervention strategies for students with ADHD. The system implements an 11-stage recommendation pipeline that generates personalized support plans across three domains: environmental adjustments, nutritional interventions, and physical activity.
 
-Key features include:
+**Key capabilities:**
+- Multi-role workflows for teachers, parents, and students
+- Integration with external diagnostic platform (NODUS)
+- Real-time collaboration tools and progress tracking
+- Bilingual interface (Hebrew/English) with full RTL support
 
-- Smart assessment based on external ADHD diagnosis (via Nodus)
-- Learning and progress monitoring
-- Personalized recommendations tailored to user needs
-- Tools for daily focus, planning, and symptom management
+![Landing Page](LANDING_PAGE.jpg)
 
-Tech stack:
-- Vite · React · TypeScript · Tailwind CSS
+---
 
-The platform combines a modern tech stack with accessibility and ease of use, aiming to offer effective support for people with ADHD in both educational and personal contexts.
+## Architecture
 
-## 📄 Project Artifacts
-- **Poster (PDF):** [View](./final_poster.pdf) ·
-- **Project Book – Part A (PDF):** [View](./project_book_Managing_Attention_Difficulties_phaseA.pdf) · 
-- **Project Book – Part B (PDF):** [View](./Capstone_Project-PhaseB_BrainBridge.pdf) ·
+The system consists of three main components:
 
+1. **Frontend** – React + TypeScript interface with role-based access control
+2. **Backend** – Node.js/Express API implementing the recommendation pipeline
+3. **NODUS** – External Python/Django diagnostic engine with deep learning model
+
+**Technology Stack:**
+- Frontend: React 18, TypeScript, Vite, Tailwind CSS
+- Backend: Node.js, Express, TypeScript
+- Database: MongoDB with Mongoose ODM
+- External: Python 3.10, Django, TensorFlow
+
+---
+
+## Installation
+
+### Prerequisites
+- Node.js ≥ 16.x
+- Python 3.10+ (for NODUS only)
+- MongoDB (local or hosted)
+
+### Setup
 
 ## 🚀 How to Run the Project
 
 ### Step 1: Clone the repository
 ```bash
 git clone https://github.com/nil-adar/BrainB.git
+cd BrainB```
 ```
 
-### Step 2: Navigate to the project directory
-```bash
-cd BrainB
-```
-
-### Step 3: Install dependencies
+### Step 2: Install dependencies
 ```bash
 npm i
 ```
 
-### Step 4: Run the development servers (open three terminals)
-Open **three terminals**:
+### Step 3: Configure environment
+Create .env file:
+```bash
+PORT=5000
+MONGODB_URI=your_connection_string
+NODUS_BASE_URL=http://localhost:8000
+```
 
-#### Terminal 1 – Frontend (Vite)
+#### Terminal 4 – Run services
+Open three terminals:
+Terminal 1 – Frontend
 ```bash
 npm run dev
 ```
@@ -63,31 +82,49 @@ npm run dev
 ```bash
 npm run server
 ```
-API example: http://localhost:5000
 
 #### Terminal 3 – NODUS (Django) 
 Required only if you want to run the external diagnostic engine that creates an External Assessment to unlock recommendations.
 ```bash
 cd Nodus
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
+python -m venv .venv
+source .venv/bin/activate  # Windows: .\.venv\Scripts\activate
 pip install -r requirements.txt
-py manage.py migrate
-py manage.py runserver 8000                                       # when done, to return
+python manage.py migrate
+python manage.py runserver 8000
 ```
-Backend ENV (example):
-Create backend/.env (or your config) with:
-```bash
-NODUS_BASE_URL=http://localhost:8000/api   # or https://nodus.your-domain/api
-NODUS_API_KEY=your-key-here                # if applicable
-```
-If you already have a hosted NODUS, you can skip Terminal 3 and just set NODUS_BASE_URL to the hosted URL.
 
 💡 Ensure ts-node is available for backend dev:
 ```bash
 npm install -g ts-node typescript
 ```
 
-This setup allows you to:
-- View the frontend at `http://localhost:8080`
-- Have the backend API listening on your defined port (e.g., `5000`)
+Documentation
+Project Book – Phase A (Literature review and research methodology)
+Project Book – Phase B (Implementation and validation)
+Project Poster
+Demo Video (2-minute walkthrough)
+
+Key Features Documented:
+
+11-stage recommendation filtering pipeline
+ADHD subtype classification algorithm
+Multi-role system workflows
+Database schema and API design
+Comprehensive testing procedures
+
+License
+Developed as an academic capstone project at Braude College of Engineering.
+
+Acknowledgments
+Mentor: Dr. Natali Levi-Soskin
+Institution: Braude College of Engineering, Software Engineering Department
+Clinical Consultation: Liora Gaz
+Special thanks to all participants who contributed to user testing and validation.
+
+Contact
+For questions or collaboration:
+Sandra Knizhnik: [Sandra.knizhnik@e.braude.ac.il]
+Nil Adar: [nil.adar@e.braude.ac.il]
+
+Repository: https://github.com/nil-adar/BrainB
