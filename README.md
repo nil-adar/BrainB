@@ -120,12 +120,11 @@ npm install -g ts-node typescript
 ```
 
 ## **Documentation**
-Project Book – Phase A (Literature review and research methodology) - [View](./project_book_Managing_Attention_Difficulties_phaseA.pdf)
+[Project Book – Phase A (Literature review and research methodology)](./project_book_Managing_Attention_Difficulties_phaseA.pdf)
 
+[Project Book – Phase B (Implementation and validation)](./Capstone_Project-PhaseB_BrainBridge.pdf)
 
-Project Book – Phase B (Implementation and validation) - [View](./Capstone_Project-PhaseB_BrainBridge.pdf)
-
-Project Poster - [View](./final_poster.pdf)
+[Project Poster](./final_poster.pdf)
 
 
 
