@@ -1,9 +1,12 @@
 # BrainBridge
-
-**A cross-platform system for personalized ADHD support in educational settings**
-
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D16-green.svg)](https://nodejs.org)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
+[![SUS Score](https://img.shields.io/badge/SUS%20Score-83.75%2F100-brightgreen.svg)](docs/usability-study.pdf)
 [![Live Demo](https://img.shields.io/badge/demo-brain--bridge.net-blue)](https://brain-bridge.net/)
 [![Video](https://img.shields.io/badge/video-demo-red)](https://youtu.be/3yylb_jKSqg)
+
+*A cross-platform system for personalized ADHD support in educational settings*
 
 Capstone Project | Braude College of Engineering 
 
@@ -17,11 +20,26 @@ Capstone Project | Braude College of Engineering
 
 BrainBridge is a web-based platform that integrates diagnostic assessment with evidence-based intervention strategies for students with ADHD. The system implements an 11-stage recommendation pipeline that generates personalized support plans across three domains: environmental adjustments, nutritional interventions, and physical activity.
 
+## 🎯 Who Is This For?
+
+BrainBridge is designed for:
+- **Educators** managing students with attention challenges
+- **Parents** seeking evidence-based support strategies
+- **Researchers** exploring personalized ADHD interventions
+- **Schools** implementing data-driven student support systems
+
+  
 **Key capabilities:**
 - Multi-role workflows for teachers, parents, and students
 - Integration with external diagnostic platform (NODUS)
 - Real-time collaboration tools and progress tracking
 - Bilingual interface (Hebrew/English) with full RTL support
+
+## 🚀 Quick Start (Try it Live)
+Visit [https://brain-bridge.net](https://brain-bridge.net) and use these test accounts:
+- **Teacher**: `312167216` / `123456`
+- **Student**: `312121054` / `123456`
+- **Parent**: `067487850` / `123456`
 
 ![Landing Page](LANDING_PAGE.jpg)
 
@@ -110,18 +128,27 @@ Project Book – Phase B (Implementation and validation) - [View](./Capstone_Pro
 Project Poster - [View](./final_poster.pdf)
 
 
-**Key Features Documented:**
 
-11-stage recommendation filtering pipeline
-- ADHD subtype classification algorithm
-- Multi-role system workflows
-- Database schema and API design
-- Comprehensive testing procedures
 
-⚖️ License
+## 🧠 Core Innovation: 11-Stage Recommendation Engine
+
+Our pipeline combines diagnostic data with contextual factors:
+
+1. **Stages 1-6**: ADHD subtype classification (using NODUS output)
+2. **Stage 7**: Environmental screening (trauma/situational factors)
+3. **Stages 8-11**: Tag-based filtering + allergy exclusions + parent input
+
+📊 **Result**: Personalized recommendations across:
+- 🏫 Environmental adjustments (24 strategies)
+- 🥗 Nutritional interventions (18 recommendations)
+- 🏃 Physical activity plans (22 exercises)
+
+
+
+## ⚖️ License
 Developed as an academic capstone project at Braude College of Engineering.
 
-Acknowledgments
+## Acknowledgments
 
 👨‍🏫 **Mentor:** Dr. Natali Levi-Soskin
 
@@ -132,7 +159,7 @@ Acknowledgments
 🤝 Special thanks to all participants who contributed to user testing and validation.
 
 
-**Contact For questions or collaboration:**
+## **Contact For questions or collaboration:**
 
 Sandra Knizhnik: [Sandra.knizhnik@e.braude.ac.il]
 
