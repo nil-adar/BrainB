@@ -3,11 +3,13 @@
 **A cross-platform system for personalized ADHD support in educational settings**
 
 [![Live Demo](https://img.shields.io/badge/demo-brain--bridge.net-blue)](https://brain-bridge.net/)
-[![Documentation](https://img.shields.io/badge/docs-project%20book-green)](Capstone_Project-PhaseB_BrainBridge.pdf)
 [![Video](https://img.shields.io/badge/video-demo-red)](https://youtu.be/3yylb_jKSqg)
 
-Capstone Project | Braude College of Engineering  
-Sandra Knizhnik & Nil Adar | Mentor: Dr. Natali Levi-Soskin
+Capstone Project | Braude College of Engineering 
+
+**Developed by:** Sandra Knizhnik & Nil Adar
+
+**Mentor:** Dr. Natali Levi-Soskin
 
 ---
 
@@ -100,31 +102,40 @@ npm install -g ts-node typescript
 ```
 
 Documentation
-Project Book – Phase A (Literature review and research methodology)
-Project Book – Phase B (Implementation and validation)
-Project Poster
-Demo Video (2-minute walkthrough)
+Project Book – Phase A (Literature review and research methodology) - [View](./project_book_Managing_Attention_Difficulties_phaseA.pdf)
 
-Key Features Documented:
+
+Project Book – Phase B (Implementation and validation) - [View](./Capstone_Project-PhaseB_BrainBridge.pdf)
+
+Project Poster - [View](./final_poster.pdf)
+
+
+**Key Features Documented:**
 
 11-stage recommendation filtering pipeline
-ADHD subtype classification algorithm
-Multi-role system workflows
-Database schema and API design
-Comprehensive testing procedures
+- ADHD subtype classification algorithm
+- Multi-role system workflows
+- Database schema and API design
+- Comprehensive testing procedures
 
-License
+⚖️ License
 Developed as an academic capstone project at Braude College of Engineering.
 
 Acknowledgments
-Mentor: Dr. Natali Levi-Soskin
-Institution: Braude College of Engineering, Software Engineering Department
-Clinical Consultation: Liora Gaz
-Special thanks to all participants who contributed to user testing and validation.
 
-Contact
-For questions or collaboration:
+👨‍🏫 **Mentor:** Dr. Natali Levi-Soskin
+
+🎓 **Institution:** Braude College of Engineering, Software Engineering Department
+
+🧪 **Clinical Consultation:** Liora Gaz
+
+🤝 Special thanks to all participants who contributed to user testing and validation.
+
+
+**Contact For questions or collaboration:**
+
 Sandra Knizhnik: [Sandra.knizhnik@e.braude.ac.il]
+
 Nil Adar: [nil.adar@e.braude.ac.il]
 
 Repository: https://github.com/nil-adar/BrainB
